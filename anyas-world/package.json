@@ -2,7 +2,7 @@
   "name": "anyas-world",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://anyap0p.github.io",
+  "homepage": "https://anyamind.github.io",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -19,7 +19,7 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "echo anyaprice.com > ./build/CNAME && gh-pages -d build",
+    "deploy": "echo anya.observer > ./build/CNAME && gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -44,6 +44,6 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.1.0"
+    "gh-pages": "^6.2.0"
   }
 }
