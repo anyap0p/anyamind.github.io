@@ -2,25 +2,27 @@
     position: sticky;
     flex-basis: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 76vh;
+    height: 100vh;
+    overflow:hidden;
 }
 
 .welcome-block{
     max-width: 70%;
     min-width: 30vw;
-    padding-top: 10rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
+    gap: 5%;
 }
 
 .welcome-header{
+    width: 24vw;
     font-size: 3rem;
-    font-family: 'Margesh';
+    font-family: 'Instrument Serif';
     color: #006970;
     margin: 0.25em 0rem;
     opacity: 0;
@@ -29,14 +31,51 @@
 
 .welcome-body{
     font-size: 1.5rem;
-    font-family: 'Palanquin';
+    font-family: 'Instrument Serif';
     font-weight: light;
-    color: #728485;
+    color: #db5b5b;
+    white-space: pre;
     line-height: 2rem;
-    max-width: 75%;
+    width: 25%;
     margin: 0;
     opacity: 0;
     animation: OpacityAnim 1s ease-in 1 1.5s forwards;
+}
+
+.intro-image {
+    overflow: hidden;
+    object-position: center center;
+    object-fit: cover;
+    border-radius: 15px;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: inherit;
+}
+
+.image-container {
+    display: inline-block;
+    margin: 2.5% 2.5%;
+    padding: 3px;
+    margin-top: 3%;
+    border-radius: 15px;
+    width: 25%;
+    background-color: #574240;
+}
+
+.repeating-text{
+    position: sticky;
+    width: fit-content;
+    flex-basis: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    height: 50vh;
+}
+
+.welcome-header:hover{
+    color: #77A28E;
+    position: relative;
+    scrollbar-color: rgb(156, 156, 190);
 }
 
 @keyframes OpacityAnim {

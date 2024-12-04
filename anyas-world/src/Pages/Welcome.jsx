@@ -7,13 +7,12 @@ import SocialsBar from '../Components/Socials'
 function Welcome () {
     return (
         <div id="welcome-page">
-            <NavigationBar
+            {/* <NavigationBar
                 jumpAnimation={true}
                 moveInAnimation={true}
             />
-            <SocialsBar animate={true}></SocialsBar>
+            <SocialsBar animate={true}></SocialsBar> */}
             <QuickAboutMe></QuickAboutMe>
-            <WorkExamples></WorkExamples>
         </div>
     )
 }

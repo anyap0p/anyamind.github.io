@@ -1,6 +1,6 @@
 .App {
   text-align: center; 
-  background-color: #CCE8E8ff;
+  background-color: #a9ad9b;
 }
 
 @font-face {
@@ -97,7 +97,7 @@
 @media (max-width: 900px) { 
 
   .landing-container {
-    height: 70vh !important; 
+    height: 100vh !important; 
   } 
 
   .left-nav-container {
