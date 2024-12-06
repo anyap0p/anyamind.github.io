@@ -10,7 +10,7 @@ function Art () {
                 jumpAnimation={false}
                 moveInAnimation={false}
             />
-            <SocialsBar animate={false}></SocialsBar>
+            {/* <SocialsBar animate={false}></SocialsBar> */}
             <UnderConstruction></UnderConstruction>
         </div>
     )

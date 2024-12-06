@@ -20,9 +20,13 @@
 }
 
 .welcome-header{
-    width: 24vw;
+    z-index: 1;
+    width: 50%;
+    position: relative;
+    min-width: max-content;
     font-size: 3rem;
     font-family: 'Instrument Serif';
+    white-space: pre-line;
     color: #006970;
     margin: 0.25em 0rem;
     opacity: 0;
@@ -30,6 +34,7 @@
 }
 
 .welcome-body{
+    z-index: -1;
     font-size: 1.5rem;
     font-family: 'Instrument Serif';
     font-weight: light;
@@ -52,30 +57,214 @@
     aspect-ratio: inherit;
 }
 
-.image-container {
-    display: inline-block;
+.carousel-container {
+    z-index: 0;
+    display: table-column;
     margin: 2.5% 2.5%;
     padding: 3px;
     margin-top: 3%;
     border-radius: 15px;
-    width: 25%;
-    background-color: #574240;
+    width: 10%;
 }
 
+.carousel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px; /* Adjust gap between images if needed */
+    animation: scroll 20s linear infinite;
+}
+
+.carouselY {
+    position: absolute; /* Position carouselY over carousel */
+    top: 25%;
+    left: 20%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px; /* Adjust gap between images if needed */
+    animation: scrollY 20s linear infinite;
+}
+
+.carousel-image {
+    flex: 0 0 auto; /* Prevent images from shrinking or growing */
+    width: auto; /* Adjust width */
+    height: 60vh; /* Maintain aspect ratio */
+    border-radius: 15px;
+    object-fit: cover;
+}
+
+.carouselY-image {
+    flex: 0 0 auto; /* Prevent images from shrinking or growing */
+    width: 20vw; /* Adjust width */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 15px;
+    object-fit: cover;
+}
+
+
+@keyframes scroll {
+    0% {
+        transform: translateX(-40rem);
+    }
+    100% {
+        transform: translateX(-80rem);
+    }
+}
+
+@keyframes scrollY {
+    0% {
+        transform: translateY(-10rem);
+    }
+    100% {
+        transform: translateY(-40rem);
+    }
+}
+
+
 .repeating-text{
-    position: sticky;
+    position: absolute;
+    left: 30%;
+    top: 20%;
     width: fit-content;
     flex-basis: 100%;
     display: flex;
     flex-direction: column;
     justify-content: left;
     height: 50vh;
+    z-index: 0;
 }
 
 .welcome-header:hover{
     color: #77A28E;
     position: relative;
     scrollbar-color: rgb(156, 156, 190);
+}
+
+.left-nav-containeranimate {
+    position: relative;
+    flex-basis: 25vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    height: 100vh;
+    z-index: 1;
+    transform: translateX(0%);
+    opacity: 0;
+    animation: slideIn 3s ease forwards;
+    animation-delay: 1s;
+}
+
+.left-nav-containeranimate::before {
+    content: '';
+    position: absolute;
+    width: 9rem;
+    height: 16rem; 
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    background-color: #abc9c9;
+    z-index: -1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    transform: scale(1.1); 
+}
+
+.nav-letter {
+    display: inline-block;
+}
+
+.nav-letteranimate {
+    display: inline-block;
+    animation: jump 0.6s ease-in-out 1; 
+}
+
+.head-text{
+    font-family: 'Instrument Serif';
+    color: #324B4Bff;
+    font-size: 30px;
+    font-size-adjust: ex-height 0.5;
+    position: relative;
+}
+
+.head-text:hover {
+    color: #abc9c9;
+}
+
+.top-nav-box:hover .glitter-on-hover {
+    visibility: visible;
+    animation: glitterMove 4s steps(1) infinite; /* Apply the animation */
+}
+
+::selection {
+    background: #abc9c9;
+    color: #4F3F3F;
+}
+
+.glitter-on-hover {
+    position: absolute;
+    top: 60%;
+    left: 70%;
+    width: 20%;
+    text-align: center;
+    z-index: 2;
+    visibility: hidden;
+}
+
+.nav-text{
+    font-family: 'Instrument Serif';
+    color: #324B4Bff;
+    font-size: 30px;
+    position: relative;
+    text-decoration: none;
+}
+
+.nav-text:hover{
+    color: #77A28E;
+    position: relative;
+    scrollbar-color: rgb(156, 156, 190);
+}
+
+@keyframes glitterMove {
+    0%, 100% {
+        top: 5%;
+        left: 0%;
+        transform: rotate(-15deg);
+    }
+    25% {
+        top: 55%;
+        left: 80%;
+        transform: rotate(0deg);
+    }
+    50% {
+        top: 55%;
+        left: 1%;
+        transform: rotate(-5deg);
+    }
+    75% {
+        top: 10%;
+        left: 80%;
+        transform: rotate(15deg);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(500%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+}
+
+@keyframes jump {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px); /* Adjust the height of the jump */
+    }
 }
 
 @keyframes OpacityAnim {

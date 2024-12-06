@@ -20,7 +20,7 @@ function NavigationBar ({jumpAnimation, moveInAnimation}) {
         <div className={`left-nav-container${moveInAnimation ? 'animate' : ''}`}>
             <div className='top-nav-box'>
                 <a href='#/welcome' className='head-text'>
-                    {createLetterSpans("anya price", 2.5)}
+                    {createLetterSpans("anyamind", 2.5)}
                 </a>
                 <img src={sparkles} className='glitter-on-hover' alt=''></img>
             </div>

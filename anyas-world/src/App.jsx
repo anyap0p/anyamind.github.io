@@ -16,6 +16,10 @@ class App extends Component{
             <Routes>
               <Route path="/" element={<Welcome />} />
               <Route path="/home" element={<Welcome />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/art" element={<Art />} />
+              <Route path="/work" element={<Art />} />
+              <Route path="/welcome" element={<Welcome />} />
             </Routes>
           </HashRouter>
         </React.Suspense>

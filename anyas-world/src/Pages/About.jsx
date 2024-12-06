@@ -11,7 +11,7 @@ function About () {
                 moveInAnimation={false}
             />
             <FullAboutMe></FullAboutMe>
-            <SocialsBar animate={false}></SocialsBar>
+            {/* <SocialsBar animate={false}></SocialsBar> */}
         </div>
     )
 }
