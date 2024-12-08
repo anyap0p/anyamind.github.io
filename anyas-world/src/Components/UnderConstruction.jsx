@@ -5,10 +5,10 @@ function UnderConstruction () {
     return (
         <div className='about-me-container'>
             <div className='about-block'>
-                <h1 className='welcome-header'>
+                <h1 className='about-header'>
                     Pardon the dust
                 </h1>
-                <h1 className='welcome-body'>
+                <h1 className='about-body'>
                     We are under construction. Come back soon :-)
                 </h1>
             </div>

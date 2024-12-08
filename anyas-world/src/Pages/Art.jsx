@@ -5,12 +5,11 @@ import SocialsBar from '../Components/Socials'
 
 function Art () {
     return (
-        <div id="art-page">
+        <div class="page">
             <NavigationBar
                 jumpAnimation={false}
                 moveInAnimation={false}
             />
-            {/* <SocialsBar animate={false}></SocialsBar> */}
             <UnderConstruction></UnderConstruction>
         </div>
     )

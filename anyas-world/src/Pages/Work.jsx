@@ -14,14 +14,14 @@ import SocialsBar from '../Components/Socials'
 
 function Work () {
     return (
-        <div id="work-page">
+        <div class="page">
             <NavigationBar
                 jumpAnimation={false}
                 moveInAnimation={false}
             />
             <SocialsBar animate={false}></SocialsBar>
             <sticky-grid-2>
-                <div id='work-examples' className='work-column-1'>
+                {/* <div id='work-examples' className='work-column-1'>
                     <TuneMeInPreview opacityEffect={false} />
                     <AttackDiffPurePreview opacityEffect={false} />
                 </div>
@@ -32,7 +32,7 @@ function Work () {
                 <div className='work-column-3'>
                     <ConnectFourPreview opacityEffect={false} />
                     <HawkEyePreview opacityEffect={false} />
-                </div>
+                </div> */}
             </sticky-grid-2>
         </div>
     )

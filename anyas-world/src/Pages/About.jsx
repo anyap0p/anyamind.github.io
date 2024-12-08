@@ -5,7 +5,7 @@ import SocialsBar from '../Components/Socials';
 
 function About () {
     return (
-        <div id="about-me-page">
+        <div class="page">
             <NavigationBar
                 jumpAnimation={false}
                 moveInAnimation={false}

@@ -1,6 +1,6 @@
 import React from 'react';
 import WorkBox from './Workbox';
-import NotifBotPhoto from '../../Icons/music_notif_bot_preview.png'
+import NotifBotPhoto from '../../Icons/altseeingi.gif'
 
 function MusicNotifBotPreview ({opacityEffect}) {
     return (

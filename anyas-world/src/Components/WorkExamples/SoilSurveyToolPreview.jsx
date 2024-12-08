@@ -1,7 +1,7 @@
 import React from 'react';
 import WorkBox from './Workbox';
-import SoilSurveyPhoto from '../../Icons/Soil Survey Tool Preview.png'
-import SoilSurveyGif from '../../Icons/soil_survey_gif.gif'
+import SoilSurveyPhoto from '../../Icons/altseeingi.gif'
+import SoilSurveyGif from '../../Icons/altseeingi.gif'
 
 function SoilSurveyToolPreview ({opacityEffect}) {
     return (

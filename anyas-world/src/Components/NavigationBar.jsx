@@ -30,13 +30,8 @@ function NavigationBar ({jumpAnimation, moveInAnimation}) {
                 </a>
             </div>
             <div className='nav-box'>
-                <a href='/#/work' style={{ animationDelay: '8s' }} className='nav-text'>
-                    {createLetterSpans("work", 3.5)}
-                </a>
-            </div>
-            <div className='nav-box'>
-                <a href='/#/art' className='nav-text'>
-                    {createLetterSpans("art", 4)}
+                <a href='/#/art' style={{ animationDelay: '8s' }} className='nav-text'>
+                    {createLetterSpans("art", 3.5)}
                 </a>
             </div>
         </div>

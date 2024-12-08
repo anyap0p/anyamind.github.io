@@ -6,7 +6,7 @@ import SocialsBar from '../Components/Socials'
 
 function Welcome () {
     return (
-        <div id="welcome-page">
+        <div class="page">
             {/* <NavigationBar
                 jumpAnimation={true}
                 moveInAnimation={true}

@@ -1,8 +1,8 @@
 import React from 'react';
 import WorkBox from './Workbox';
 import './Work.css';
-import TuneMeInPhoto from '../../Icons/tune_me_in_sample.png'
-import TuneMeInGif from '../../Icons/tune_me_in.gif'
+import TuneMeInPhoto from '../../Icons/altseeingi.gif'
+import TuneMeInGif from '../../Icons/altseeingi.gif'
 
 function TuneMeInPreview ({opacityEffect}) {
     return (

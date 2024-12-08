@@ -9,8 +9,6 @@ import MusicNotifBotPreview from './MusicNotifBotPreview'
 import AttackDiffPurePreview from './AttackDiffPurePreview';
 import ConnectFourPreview from './ConnectFourPreview';
 
-import SAWCover from '../../Icons/saw.jpg'
-
 function WorkExamples () {
 
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -22,7 +20,7 @@ function WorkExamples () {
 
     return (
         <div style={{width: '100%', height: 'fit-content', backgroundColor: '#CCE8E8ff'}}>
-            <Link to="#work-examples" className='see-my-work' style={{'animationDuration': '0.5s'}}> view my work </Link>
+            {/* <Link to="#work-examples" className='see-my-work' style={{'animationDuration': '0.5s'}}> view my work </Link>
             <Arrow></Arrow>
             <sticky-grid>
                 <div id='work-examples' className='work-column-left'>
@@ -46,7 +44,7 @@ function WorkExamples () {
                     <img className='album-cover-container' src={SAWCover} alt=""></img>
                     <text className='music-text'>BOO! Music player soon...</text>
                 </div>
-            )}
+            )} */}
         </div>
     )
 }

@@ -72,7 +72,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 10px; /* Adjust gap between images if needed */
-    animation: scroll 20s linear infinite;
+    animation: scroll 10s linear infinite alternate;
 }
 
 .carouselY {
@@ -82,22 +82,22 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    gap: 10px; /* Adjust gap between images if needed */
-    animation: scrollY 20s linear infinite;
+    gap: 10px; 
+    animation: scrollY 20s linear infinite alternate;
 }
 
 .carousel-image {
-    flex: 0 0 auto; /* Prevent images from shrinking or growing */
-    width: auto; /* Adjust width */
-    height: 60vh; /* Maintain aspect ratio */
+    flex: 0 0 auto;
+    width: auto;
+    height: 60vh;
     border-radius: 15px;
     object-fit: cover;
 }
 
 .carouselY-image {
-    flex: 0 0 auto; /* Prevent images from shrinking or growing */
-    width: 20vw; /* Adjust width */
-    height: auto; /* Maintain aspect ratio */
+    flex: 0 0 auto;
+    width: 20vw; 
+    height: auto; 
     border-radius: 15px;
     object-fit: cover;
 }
@@ -108,7 +108,7 @@
         transform: translateX(-40rem);
     }
     100% {
-        transform: translateX(-80rem);
+        transform: translateX(-50rem);
     }
 }
 

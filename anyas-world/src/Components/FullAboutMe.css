@@ -1,24 +1,24 @@
 .about-me-container{
-    position: sticky;
+    margin: auto;
     flex-basis: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    margin-top: auto;
+    max-height: 100vh;
 }
 
 .about-block{
     max-width: 50rem;
     min-width: 30vw;
-    padding: 12rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.welcome-header{
+.about-header{
     font-size: 3rem;
     font-family: 'Margesh';
     color: #006970;
@@ -27,11 +27,11 @@
     animation: OpacityAnim 2s ease-in 1 0.5s forwards;
 }
 
-.welcome-body{
+.about-body{
     font-size: 1.5rem;
-    font-family: 'Palanquin';
+    font-family: 'Margesh';
     font-weight: light;
-    color: #728485;
+    color: #db5b5b;
     line-height: 2rem;
     max-width: 75%;
     margin: 0;

@@ -46,15 +46,6 @@ function QuickAboutMe () {
                             glitterEyeAlt,
                             glitterEye,
                             glitterEyeAlt,
-                            glitterEye,
-                            glitterEyeAlt,
-                            glitterEye,
-                            glitterEyeAlt,
-                            glitterEye,
-                            glitterEyeAlt,
-                            glitterEye,
-                            glitterEyeAlt,
-                            glitterEye,
                         ].map((image, index) => (
                             <img
                                 key={index}

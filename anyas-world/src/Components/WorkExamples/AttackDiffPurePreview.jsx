@@ -1,7 +1,7 @@
 import React from 'react';
 import WorkBox from './Workbox';
-import AdvPhoto from '../../Icons/diffpure_attack_preview.png'
-import AdvGif from '../../Icons/Diffpure_Preview.gif'
+import AdvPhoto from '../../Icons/allseeingi.gif'
+import AdvGif from '../../Icons/altseeingi.gif'
 
 function AttackDiffPurePreview ({opacityEffect}) {
     return (

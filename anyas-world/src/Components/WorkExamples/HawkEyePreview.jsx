@@ -1,7 +1,7 @@
 import React from 'react';
 import WorkBox from './Workbox';
-import HawkEyeGif from '../../Icons/hawkeye_preview.gif'
-import HawkEyePhoto from '../../Icons/hawkeye_preview.jpg'
+import HawkEyeGif from '../../Icons/altseeingi.gif'
+import HawkEyePhoto from '../../Icons/altseeingi.gif'
 
 function HawkEyePreview ({opacityEffect}) {
     return (

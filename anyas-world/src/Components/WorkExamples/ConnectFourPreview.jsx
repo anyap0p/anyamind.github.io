@@ -1,7 +1,7 @@
 import React from 'react';
 import WorkBox from './Workbox';
-import Connect4Gif from '../../Icons/connect4_preview.gif'
-import Connect4Image from '../../Icons/connect4_preview.png'
+import Connect4Gif from '../../Icons/altseeingi.gif'
+import Connect4Image from '../../Icons/altseeingi.gif'
 
 function ConnectFourPreview ({opacityEffect}) {
     return (
