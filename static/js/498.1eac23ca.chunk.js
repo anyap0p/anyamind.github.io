@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkanyas_world=self.webpackChunkanyas_world||[]).push([[498],{6:(s,a,n)=>{n.r(a),n.d(a,{default:()=>t});n(43),n(948),n(559),n(176),n(30),n(13),n(336),n(344),n(481);var e=n(579);var i=n(222),r=n(960);const t=function(){return(0,e.jsxs)("div",{class:"page",children:[(0,e.jsx)(i.A,{jumpAnimation:!1,moveInAnimation:!1}),(0,e.jsx)(r.A,{animate:!1}),(0,e.jsx)("sticky-grid-2",{})]})}}}]);
+//# sourceMappingURL=498.1eac23ca.chunk.js.map
