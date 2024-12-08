@@ -10,12 +10,12 @@ function ConnectFourPreview ({opacityEffect}) {
             body="Embedded Connect4 on a TM4C123 microcontroller."
             image={Connect4Image}
             hoverImage={Connect4Gif}
-            header="TECH STACK"
-            skillsUsed="Assembly, C++, Arm Cortex-M4F based MCU"
-            imageHeight='70vh'
+            header=""
+            skillsUsed=""
             delayAppearance='3s'
-            aspectRatio='6 / 7'
             opacityEffect={opacityEffect}
+            imageHeight='40vh'
+            aspectRatio='1 / 1'
         />
     )
 }

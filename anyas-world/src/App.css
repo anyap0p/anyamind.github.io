@@ -1,15 +1,14 @@
 .App {
   text-align: center; 
   background-color: #a9ad9b;
-  width: 100vw;
   min-width: 250px;
   min-height: 100vh;
   height: max-content;
 }
 
 .page {
-  min-width: 100vw;
   min-height: 100vh;
+  height: max-content;
 }
 
 @font-face {

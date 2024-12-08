@@ -4,7 +4,6 @@ import './App.css';
 import Loading from './Components/Loading'
 const Welcome = lazy(() => import('./Pages/Welcome'));
 const About = lazy(() => import('./Pages/About'));
-const Work = lazy(() => import('./Pages/Work'));
 const Art = lazy(() => import('./Pages/Art'));
 
 class App extends Component{

@@ -10,12 +10,12 @@ function HawkEyePreview ({opacityEffect}) {
             body="Computer vision for unmanned aerial vehicles."
             image={HawkEyePhoto}
             hoverImage={HawkEyeGif}
-            header="TECH STACK"
-            skillsUsed="Pytorch, Tensorboard, Bazel"
-            imageHeight='35vh'
+            header=""
+            skillsUsed=""
             delayAppearance='3s'
             opacityEffect={opacityEffect}
-            aspectRatio='20 / 11'
+            imageHeight='40vh'
+            aspectRatio='1 / 1'
         />
     )
 }

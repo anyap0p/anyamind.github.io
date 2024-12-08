@@ -1,12 +1,14 @@
 .work-box{
     background-color: #B1CBCE;
-    border-radius: 15px;
+    border-radius: 0%;
     margin: 15px;
     grid-column: 4 / 9;
     display: flex;
-    position: relative;
+    justify-content: center;
+    align-items: center;
     transition: opacity 1s ease, visibility 1s ease;
     width: fit-content;
+    height: fit-content;
 }
 
 .work-box-visible {
@@ -14,24 +16,80 @@
     visibility: visible;
 }
 
-.work-box-content-container{
+.work-box-content-container {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 10px;
     box-sizing: border-box;
-    display: flex;
+    height: fit-content;
 }
 
 .work-title {
+    position: absolute;
+    bottom: 0%;
+    left: 0%;
     height: fit-content;
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
+    animation-duration: 2s;
+    z-index: -2;
+    background-color: linear-gradient ( to top, rgb(210, 208, 141, 1), rgb(210, 208, 141, 0) );
+}
+
+.work-title:before, .work-title:after {
+    content: ''; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    animation-duration: 2s;
+}
+
+.work-title:before {
+    background-color:rgb(207, 243, 207);
+    background-image:
+        radial-gradient(at 90% 43%, hsla(289,21%,76%,1) 0px, transparent 50%),
+        radial-gradient(at 81% 10%, hsla(255,12%,67%,1) 0px, transparent 50%),
+        radial-gradient(at 43% 97%, hsla(216,22%,52%,1) 0px, transparent 50%),
+        radial-gradient(at 71% 92%, hsla(188,45%,67%,1) 0px, transparent 50%),
+        radial-gradient(at 34% 73%, hsla(52,64%,70%,1) 0px, transparent 50%),
+        radial-gradient(at 10% 44%, hsla(161,48%,73%,1) 0px, transparent 50%);
+    animation: OpacityAnim 5s ease-in-out 0s infinite alternate;
+    -mask-image: -webkit-gradient(linear, left top, 
+    left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
+    -webkit-mask-image: -webkit-gradient(linear, left top, 
+    left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
+
+}
+
+.work-title:after {
+    background-color:#ff99cc;
+    background-image:
+        radial-gradient(at 19% 79%, hsla(91,98%,77%,1) 0px, transparent 50%),
+        radial-gradient(at 20% 11%, hsla(204,71%,78%,1) 0px, transparent 50%),
+        radial-gradient(at 81% 75%, hsla(51,67%,70%,1) 0px, transparent 50%),
+        radial-gradient(at 72% 1%, hsla(354,97%,72%,1) 0px, transparent 50%),
+        radial-gradient(at 31% 13%, hsla(128,96%,69%,1) 0px, transparent 50%),
+        radial-gradient(at 86% 34%, hsla(279,99%,65%,1) 0px, transparent 50%),
+        radial-gradient(at 47% 83%, hsla(356,86%,71%,1) 0px, transparent 50%);
+    animation: OpacityAnim 5s ease-in-out calc(-1 * 5s) infinite alternate;
+    -mask-image: -webkit-gradient(linear, left top, 
+    left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
+    -webkit-mask-image: -webkit-gradient(linear, left top, 
+    left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
+}
+
+@keyframes OpacityAnim {
+    0%{opacity: 1.0}
+    100%{opacity: 0.0}
 }
 
 .work-header {
-    font-family: 'Palanquin';
+    font-family: 'Instrument Serif';
     font-weight: bold;
     text-align: start;
     width: 78%;
@@ -99,22 +157,19 @@
 }
 
 .work-image-container {
-    margin: 2.5% 2.5%;
-    margin-top: 3%;
-    border-radius: 15px;
-    width: 95%;
-    background-color: #4A6365;
+    background-color: beige;
     position: relative;
+    top: 0%;
+    left: 0%;
+    height: fit-content;
 }
 
 .work-image {
     overflow: hidden;
     object-position: center center;
     object-fit: cover;
-    border-radius: 15px;
     width: 100%;
     height: 100%;
-    aspect-ratio: inherit;
 }
 
 .overlay {
@@ -125,34 +180,6 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
     z-index: 900;
-}
-
-.ribbon-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-.development-banner {
-    position: absolute;
-    bottom: -14%;
-    left: -100%;
-    background-color: beige; /* Choose a color that stands out */
-    color: black;
-    padding: 10px;
-    transform: translate(50%, 50%) rotate(45deg);
-    transform-origin: top right;
-    font-size: 0.8em;
-    z-index: 10;
-    white-space: nowrap;
-    text-align: center;
-    width: 100%; 
-    font-family: 'Instrument Serif';
-    font-size: 1rem;
-    box-shadow: 0 2px 5px rgba(124, 124, 124, 0.4); /* Optional shadow for better visibility */
 }
 
 .zoomed-modal {
@@ -205,6 +232,10 @@
 
 .work-box:hover .see-more-asterisk {
     display: inline-block; /* Show on hover */
+}
+
+.work-box:hover .work-title {
+    z-index: 1;
 }
 
 .see-more-asterisk:hover + .popup {

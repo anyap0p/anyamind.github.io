@@ -70,18 +70,19 @@ const WorkBox = ({ title, body, image, hoverImage, header, skillsUsed, imageHeig
 
     return (
         <div ref={workBoxRef} className='work-box' style={{ opacity: opacity }}>
-            {underDevelopment && <div className='ribbon-container'> <div className="development-banner">Under Construction - Coming Soon - Under Construction - Coming Soon</div> </div>}
             {isZoomed && <div className="scrollbar-overlay"></div>}
             <div className='work-box-content-container'>
                 <div className='work-title'>
+                    <h1 className='work-header'>{" "}</h1>
+                    <h1 className='work-header'>{" "}</h1>
                     <h1 className='work-header'>{title}</h1>
-                    <h3 className='work-body'>{body}</h3>
+                    {body !== "" && <h3 className='work-body'>{body}</h3>}
                 </div>
-                <h1 className='see-more-asterisk'
-                        onMouseEnter={() => setIsPopupVisible(true)}
-                        onMouseLeave={() => setIsPopupVisible(false)}>
-                        *
-                    </h1>
+                {/* <h1 className='see-more-asterisk'
+                    onMouseEnter={() => setIsPopupVisible(true)}
+                    onMouseLeave={() => setIsPopupVisible(false)}>
+                    *
+                </h1> */}
                 <div className='work-image-container'
                      style = {{
                         aspectRatio: aspectRatio,
@@ -95,14 +96,14 @@ const WorkBox = ({ title, body, image, hoverImage, header, skillsUsed, imageHeig
                         alt=''
                         onClick={toggleZoom}
                     />
-                    {isPopupVisible && (
+                    {/* {isPopupVisible && (
                         <div className="popup">
                             <div className='popup-text-container '>
                                 <h3 className='popup-header'> {header} </h3>
                                 <p className='popup-body'> {skillsUsed} </p>
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
                 {isZoomed && (
                     <div className="zoomed-modal" style={{aspectRatio: aspectRatio}}>

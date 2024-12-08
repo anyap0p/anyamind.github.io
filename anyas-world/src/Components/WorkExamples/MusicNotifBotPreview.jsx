@@ -6,16 +6,16 @@ function MusicNotifBotPreview ({opacityEffect}) {
     return (
         <WorkBox 
             title="MusicNotifBot"
-            body="Your friendly neighorhood discord bot, here to compile your favorite artist's recent releases."
+            body=""
             image={NotifBotPhoto}
             hoverImage={NotifBotPhoto}
-            header="TECH STACK"
-            skillsUsed="discord.py, last.fm API, Spotify API"
-            imageHeight='60vh'
+            header=""
+            skillsUsed=""
             delayAppearance='5s'
             underDevelopment={true}
             opacityEffect={opacityEffect}
-            aspectRatio='6 / 7'
+            imageHeight='40vh'
+            aspectRatio='1 / 1'
         />
     )
 }
