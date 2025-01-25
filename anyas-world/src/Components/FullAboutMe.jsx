@@ -6,10 +6,11 @@ function FullAboutMe () {
         <div className='about-me-container'>
             <div className='about-block'>
                 <h1 className='about-header'>
-                    Pardon the dust
+                    anya price is a multimedia artist and writer based in dallas
                 </h1>
                 <h1 className='about-body'>
-                    We are under construction. Come back soon :-)
+                    operating across digital and physical landscapes, anya's work explores permanence,
+                    liminality, and identity in an increasingly surveilled world.
                 </h1>
             </div>
         </div>

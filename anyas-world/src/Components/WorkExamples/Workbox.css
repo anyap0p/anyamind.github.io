@@ -23,6 +23,7 @@
     justify-content: flex-start;
     box-sizing: border-box;
     height: fit-content;
+    overflow: hidden;
 }
 
 .work-title {
@@ -58,7 +59,7 @@
         radial-gradient(at 71% 92%, hsla(188,45%,67%,1) 0px, transparent 50%),
         radial-gradient(at 34% 73%, hsla(52,64%,70%,1) 0px, transparent 50%),
         radial-gradient(at 10% 44%, hsla(161,48%,73%,1) 0px, transparent 50%);
-    animation: OpacityAnim 5s ease-in-out 0s infinite alternate;
+    animation: OpacityAnimWork 5s ease-in-out 0s infinite alternate;
     -mask-image: -webkit-gradient(linear, left top, 
     left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
     -webkit-mask-image: -webkit-gradient(linear, left top, 
@@ -76,26 +77,25 @@
         radial-gradient(at 31% 13%, hsla(128,96%,69%,1) 0px, transparent 50%),
         radial-gradient(at 86% 34%, hsla(279,99%,65%,1) 0px, transparent 50%),
         radial-gradient(at 47% 83%, hsla(356,86%,71%,1) 0px, transparent 50%);
-    animation: OpacityAnim 5s ease-in-out calc(-1 * 5s) infinite alternate;
+    animation: OpacityAnimWork 5s ease-in-out calc(-1 * 5s) infinite alternate;
     -mask-image: -webkit-gradient(linear, left top, 
     left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
     -webkit-mask-image: -webkit-gradient(linear, left top, 
     left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)));
 }
 
-@keyframes OpacityAnim {
+@keyframes OpacityAnimWork {
     0%{opacity: 1.0}
     100%{opacity: 0.0}
 }
 
 .work-header {
     font-family: 'Instrument Serif';
-    font-weight: bold;
     text-align: start;
     width: 78%;
-    color: #324B4D;
+    color: #3a494a;
     line-height: 1em;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     margin: 15px;
 }
 
@@ -157,6 +157,7 @@
 }
 
 .work-image-container {
+    cursor: pointer;
     background-color: beige;
     position: relative;
     top: 0%;
@@ -227,7 +228,7 @@
 }
 
 .work-box:hover {
-    box-shadow: 0px 0px 30px #8a9091;
+    box-shadow: 0px 0px 30px #f9c9b9;
 }
 
 .work-box:hover .see-more-asterisk {

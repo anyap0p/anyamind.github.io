@@ -5,6 +5,7 @@ import Loading from './Components/Loading'
 const Welcome = lazy(() => import('./Pages/Welcome'));
 const About = lazy(() => import('./Pages/About'));
 const Art = lazy(() => import('./Pages/Art'));
+const Portrait = lazy(() => import('./Pages/Portrait'))
 
 class App extends Component{
   render() {
@@ -18,6 +19,7 @@ class App extends Component{
               <Route path="/about" element={<About />} />
               <Route path="/art" element={<Art />} />
               <Route path="/work" element={<Art />} />
+              <Route path="/bio" element={<Portrait />} />
               <Route path="/welcome" element={<Welcome />} />
             </Routes>
           </HashRouter>

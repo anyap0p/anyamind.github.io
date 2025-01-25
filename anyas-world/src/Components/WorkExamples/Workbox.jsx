@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import './Workbox.css'
+import ZoomedModal from './ZoomedModal';
 
-const WorkBox = ({ title, body, image, hoverImage, header, skillsUsed, imageHeight, underDevelopment, aspectRatio, opacityEffect }) => {
+const WorkBox = ({ title, body, image, hoverImage, aspectRatio, opacityEffect }) => {
 
     const [isHovered, setIsHovered] = useState(false);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -48,15 +49,15 @@ const WorkBox = ({ title, body, image, hoverImage, header, skillsUsed, imageHeig
     };
 
     const toggleZoom = () => {
-        if (opacityEffect === false) {
-            setIsZoomed(!isZoomed);
-            isZoomed ? enableScroll() : disableScroll();
-        }
+        // if (opacityEffect === false) {
+        //     setIsZoomed(!isZoomed);
+        //     isZoomed ? enableScroll() : disableScroll();
+        // }
     };
 
     useEffect(() => {
         if (opacityEffect === false) {
-            setPointerType('zoom-in');
+            setPointerType('default');
             setOpacity(1);
             return;
         }
@@ -71,50 +72,38 @@ const WorkBox = ({ title, body, image, hoverImage, header, skillsUsed, imageHeig
     return (
         <div ref={workBoxRef} className='work-box' style={{ opacity: opacity }}>
             {isZoomed && <div className="scrollbar-overlay"></div>}
-            <div className='work-box-content-container'>
+            <div className='work-box-content-container'
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                        onClick={toggleZoom}>
                 <div className='work-title'>
                     <h1 className='work-header'>{" "}</h1>
                     <h1 className='work-header'>{" "}</h1>
                     <h1 className='work-header'>{title}</h1>
                     {body !== "" && <h3 className='work-body'>{body}</h3>}
                 </div>
-                {/* <h1 className='see-more-asterisk'
-                    onMouseEnter={() => setIsPopupVisible(true)}
-                    onMouseLeave={() => setIsPopupVisible(false)}>
-                    *
-                </h1> */}
                 <div className='work-image-container'
                      style = {{
                         aspectRatio: aspectRatio,
                         cursor: pointerType
-                     }}
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}>
+                     }}>
                     <img 
                         className='work-image'
                         src={isHovered ? hoverImage : image}
                         alt=''
-                        onClick={toggleZoom}
                     />
-                    {/* {isPopupVisible && (
-                        <div className="popup">
-                            <div className='popup-text-container '>
-                                <h3 className='popup-header'> {header} </h3>
-                                <p className='popup-body'> {skillsUsed} </p>
-                            </div>
-                        </div>
-                    )} */}
                 </div>
-                {isZoomed && (
-                    <div className="zoomed-modal" style={{aspectRatio: aspectRatio}}>
-                        <div className="overlay" onClick={toggleZoom}></div>
-                        <img 
-                            className="zoomed-image" 
-                            src={hoverImage ? hoverImage : image}
-                            onClick={toggleZoom}
-                            alt="" 
-                        />
-                    </div>
+                {false && (
+                    <ZoomedModal
+                        images={[image, hoverImage]}
+                        textContent={
+                            <div>
+                                <h2>{title}</h2>
+                                <p>{body}</p>
+                            </div>
+                        }
+                        onClose={toggleZoom}
+                    />
                 )}
             </div>
         </div>

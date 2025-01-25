@@ -1,14 +1,32 @@
 .App {
   text-align: center; 
-  background-color: #a9ad9b;
+  background-color: #f9e7dd;
   min-width: 250px;
   min-height: 100vh;
   height: max-content;
 }
 
 .page {
+  position: relative;
   min-height: 100vh;
   height: max-content;
+}
+
+.background {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: absolute;
+  font-family: monospace;
+  white-space: pre;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  font: "Lucida Console"
 }
 
 @font-face {
@@ -200,6 +218,11 @@
   }
 
   .left-nav-containeranimate::before {
+    width: 5rem !important;
+    height: 8rem !important; 
+  }
+
+  .left-nav-container2animate::before {
     width: 5rem !important;
     height: 8rem !important; 
   }

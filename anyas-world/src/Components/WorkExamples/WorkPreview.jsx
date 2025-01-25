@@ -5,7 +5,7 @@ import './Work.css';
 
 import KikisLobbyPreview from './KikisLobbyPreview';
 import OnAWalk from './OnAWalkPreview'
-import SoapBracelet from './SoapBracelet';
+import SoapBraceletPreview from './SoapBraceletPreview';
 
 function WorkExamples () {
 
@@ -26,7 +26,7 @@ function WorkExamples () {
                     <OnAWalk opacityEffect={true}/>
                 </div>
                 <div className='work-column-right'>
-                    <SoapBracelet opacityEffect={true}/>
+                    <SoapBraceletPreview opacityEffect={true}/>
                     <a href='/#/work' className='see-more-work'>
                         see more work
                     </a>

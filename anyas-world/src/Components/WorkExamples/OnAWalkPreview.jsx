@@ -1,19 +1,19 @@
 import React from 'react';
 import WorkBox from './Workbox';
 import OnAWalk from '../../Icons/onawalk.png'
-import SoilSurveyGif from '../../Icons/altseeingi.gif'
+import OnAWalkGif from '../../Icons/onawalk.gif'
 
-function SoilSurveyToolPreview ({opacityEffect}) {
+function OnAWalkPreview ({opacityEffect}) {
     return (
         <WorkBox 
             title="on a walk"
             body=""
             image={OnAWalk}
-            hoverImage={OnAWalk}
+            hoverImage={OnAWalkGif}
             header=""
             skillsUsed=""
             imageHeight='40vh'
-            aspectRatio='3 / 4'
+            aspectRatio='5 / 4'
             delayAppearance='5s'
             underDevelopment={false}
             opacityEffect={opacityEffect}
@@ -21,4 +21,4 @@ function SoilSurveyToolPreview ({opacityEffect}) {
     )
 }
 
-export default SoilSurveyToolPreview
+export default OnAWalkPreview

@@ -33,7 +33,7 @@ function QuickAboutMe () {
                     onMouseEnter={() => setTitleHovered(true)}
                     onMouseLeave={() => setTitleHovered(false)}
                 >
-                    {titleHovered ? '⚝\n⅌\n♱\n⚝' : `anya`}
+                    {/* {titleHovered ? '⚝\n⅌\n♱\n⚝' : `anya`} */}
                 </h1>
                 <div className="carousel-container">
                     <div className="carousel">
@@ -70,21 +70,6 @@ function QuickAboutMe () {
                             gatePeep,
                             gatePeep,
                             gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
-                            gatePeep,
                         ].map((image, index) => (
                             <img
                                 key={index}
@@ -97,7 +82,7 @@ function QuickAboutMe () {
                     </div>
                 </div>
                 <div className='repeating-text'>
-                    {Array.from({ length: 20 }, (_, index) => (
+                    {/* {Array.from({ length: 20 }, (_, index) => (
                         <h1 
                             key={index} 
                             className='welcome-body'
@@ -106,9 +91,9 @@ function QuickAboutMe () {
                         >
                             {hoverIndex === index? 'on ur mind' : `anya  mind`}
                         </h1>
-                    ))}
+                    ))} */}
                 </div>
-                <div className={`left-nav-container${moveInAnimation ? 'animate' : ''}`}>
+                <div className={`left-nav-container2${moveInAnimation ? 'animate' : ''}`}>
                     <a href='/#/work' style={{ animationDelay: '8s', '--diamond-width': '2rem', '--diamond-height': '2rem' }} className='nav-text'>
                         {createLetterSpans("art", 3.5)}
                     </a>

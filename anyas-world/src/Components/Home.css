@@ -39,7 +39,7 @@
         radial-gradient(at 71% 92%, hsla(188,45%,67%,1) 0px, transparent 50%),
         radial-gradient(at 34% 73%, hsla(52,64%,70%,1) 0px, transparent 50%),
         radial-gradient(at 10% 44%, hsla(161,48%,73%,1) 0px, transparent 50%);
-    animation: OpacityAnim var(--anim-duration) ease-in-out 0s infinite alternate;
+    animation: OpacityAnimGradient var(--anim-duration) ease-in-out 0s infinite alternate;
 }
 
 #gradient:after {
@@ -52,10 +52,10 @@
         radial-gradient(at 31% 13%, hsla(128,96%,69%,1) 0px, transparent 50%),
         radial-gradient(at 86% 34%, hsla(279,99%,65%,1) 0px, transparent 50%),
         radial-gradient(at 47% 83%, hsla(356,86%,71%,1) 0px, transparent 50%);
-    animation: OpacityAnim var(--anim-duration) ease-in-out calc(-1 * var(--anim-duration)) infinite alternate;
+    animation: OpacityAnimGradient var(--anim-duration) ease-in-out calc(-1 * var(--anim-duration)) infinite alternate;
 }
 
-@keyframes OpacityAnim {
+@keyframes OpacityAnimGradient {
     0%{opacity: 1.0}
     100%{opacity: 0.0}
 }

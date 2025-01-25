@@ -25,18 +25,18 @@
     position: relative;
     min-width: max-content;
     font-size: 3rem;
-    font-family: 'Instrument Serif';
+    font-family: 'Margesh';
     white-space: pre-line;
     color: #006970;
     margin: 0.25em 0rem;
     opacity: 0;
-    animation: OpacityAnim 2s ease-in 1 0.5s forwards;
+    animation: OpacityAnimQuick 2s ease-in 1 0.5s forwards;
 }
 
 .welcome-body{
     z-index: -1;
     font-size: 1.5rem;
-    font-family: 'Instrument Serif';
+    font-family: 'Margesh';
     font-weight: light;
     color: #db5b5b;
     white-space: pre;
@@ -44,7 +44,7 @@
     width: 25%;
     margin: 0;
     opacity: 0;
-    animation: OpacityAnim 1s ease-in 1 1.5s forwards;
+    animation: OpacityAnimQuick 1s linear 1 1.5s forwards;
 }
 
 .intro-image {
@@ -141,7 +141,7 @@
     scrollbar-color: rgb(156, 156, 190);
 }
 
-.left-nav-containeranimate {
+.left-nav-container2animate {
     position: relative;
     flex-basis: 25vw;
     display: flex;
@@ -157,7 +157,7 @@
     animation-delay: 1s;
 }
 
-.left-nav-containeranimate::before {
+.left-nav-container2animate::before {
     content: '';
     position: absolute;
     width: 9rem;
@@ -267,7 +267,7 @@
     }
 }
 
-@keyframes OpacityAnim {
+@keyframes OpacityAnimQuick {
     0% {
         opacity: 0;
     }
