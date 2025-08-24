@@ -1,8 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import ShadowPlay from '../../Icons/shadowplay.png';
-import ShadowPlayGif from '../../Icons/shadowplay.gif';
+import WorkBox from '../Workbox';
+import ShadowPlay from '../../../Icons/shadowplay.png';
+import ShadowPlayGif from '../../../Icons/shadowplay.gif';
 
 function ShadowPlayPreview ({opacityEffect}) {
     return (

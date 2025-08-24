@@ -1,8 +1,8 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import KikisLobby from '../../Icons/kikisLobby2.jpg'
-import KikisLobbyGif from '../../Icons/kikilobby.gif'
+import WorkBox from '../Workbox';
+import '../Work.css';
+import KikisLobby from '../../../Icons/kikisLobby2.jpg'
+import KikisLobbyGif from '../../../Icons/kikilobby.gif'
 
 function KikisLobbyPreview ({opacityEffect}) {
     return (

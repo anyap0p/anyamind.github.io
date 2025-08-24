@@ -1,7 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import OnAWalk from '../../Icons/onawalk.png'
-import OnAWalkGif from '../../Icons/onawalk.gif'
+import WorkBox from '../Workbox';
+import OnAWalk from '../../../Icons/onawalk.png'
+import OnAWalkGif from '../../../Icons/onawalk.gif'
 
 function OnAWalkPreview ({opacityEffect}) {
     return (

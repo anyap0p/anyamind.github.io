@@ -3,9 +3,9 @@ import { HashLink as Link } from 'react-router-hash-link';
 import Arrow from '../Arrow'
 import './Work.css';
 
-import KikisLobbyPreview from './KikisLobbyPreview';
-import OnAWalk from './OnAWalkPreview'
-import SoapBraceletPreview from './SoapBraceletPreview';
+import KikisLobbyPreview from './Thumbnails/KikisLobbyPreview';
+import OnAWalk from './Thumbnails/OnAWalkPreview'
+import SoapBraceletPreview from './Thumbnails/SoapBraceletPreview';
 
 function WorkExamples () {
 

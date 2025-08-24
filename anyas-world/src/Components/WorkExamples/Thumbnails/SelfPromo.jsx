@@ -1,8 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import SelfPromo from '../../Icons/selfpromo.jpg';
-import SelfPromoGif from '../../Icons/selfpromo.jpg';
+import WorkBox from '../Workbox';
+import SelfPromo from '../../../Icons/selfpromo.jpg';
+import SelfPromoGif from '../../../Icons/selfpromo.jpg';
 
 function SelfPromoPreview ({opacityEffect}) {
     return (

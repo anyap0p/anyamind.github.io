@@ -1,8 +1,8 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import AnyaTV from '../../Icons/anyatv.png';
-import AnyaTVGif from '../../Icons/anyatv2.gif';
+import WorkBox from '../Workbox';
+import '../Work.css';
+import AnyaTV from '../../../Icons/anyatv.png';
+import AnyaTVGif from '../../../Icons/anyatv2.gif';
 
 function AnyaTvPreview ({opacityEffect}) {
     return (

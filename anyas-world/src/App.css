@@ -1,6 +1,6 @@
 .App {
   text-align: center; 
-  background-color: #f9e7dd;
+  background-color: #fffaf7;
   min-width: 250px;
   min-height: 100vh;
   height: max-content;
@@ -27,6 +27,13 @@
   top: 50%;
   left: 50%;
   font: "Lucida Console"
+}
+
+@font-face {
+  font-family: 'Aventine';
+  src: url('./Fonts/Aventine.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
@@ -155,6 +162,15 @@
     height: auto !important;
     padding: 10px 10px !important;
   }
+
+  .media-filter {
+    top: 55px !important;
+  }
+
+  .media-filter button {
+    font-size: 0.9em  !important;
+  }
+
 
   .nav-text{
     font-size: 1em !important;

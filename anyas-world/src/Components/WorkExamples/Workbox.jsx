@@ -1,10 +1,11 @@
 // WorkBox.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import './Workbox.css'
 import ZoomedModal from './ZoomedModal';
 
-const WorkBox = ({ title, body, image, hoverImage, aspectRatio, opacityEffect }) => {
+const WorkBox = ({ title, body, image, hoverImage, aspectRatio, opacityEffect, link }) => {
 
     const [isHovered, setIsHovered] = useState(false);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -12,7 +13,7 @@ const WorkBox = ({ title, body, image, hoverImage, aspectRatio, opacityEffect })
     const [isZoomed, setIsZoomed] = useState(false);
     const [pointerType, setPointerType] = useState('default');
     const workBoxRef = useRef(null);
-
+    const navigate = useNavigate();
     const calculateVisibility = useCallback(() => {
 
         if (opacityEffect === false) {
@@ -75,7 +76,12 @@ const WorkBox = ({ title, body, image, hoverImage, aspectRatio, opacityEffect })
             <div className='work-box-content-container'
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
-                        onClick={toggleZoom}>
+                        onClick={() => 
+                            { if (link) {
+                                    navigate(link);
+                                }
+                            }
+                        }>
                 <div className='work-title'>
                     <h1 className='work-header'>{" "}</h1>
                     <h1 className='work-header'>{" "}</h1>

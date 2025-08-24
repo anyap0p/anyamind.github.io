@@ -1,8 +1,8 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import Beast from '../../Icons/beast.png';
-import BeastGif from '../../Icons/beast.gif';
+import WorkBox from '../Workbox';
+import '../Work.css';
+import Beast from '../../../Icons/beast.png';
+import BeastGif from '../../../Icons/beast.gif';
 
 function BeastPreview ({opacityEffect}) {
     return (

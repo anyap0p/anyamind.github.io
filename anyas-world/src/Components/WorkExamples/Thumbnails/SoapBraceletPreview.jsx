@@ -1,7 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import SoapBraceletImage from '../../Icons/thePassionOfSoapBracelet.jpg'
-import AdvGif from '../../Icons/altseeingi.gif'
+import WorkBox from '../Workbox';
+import SoapBraceletImage from '../../../Icons/thePassionOfSoapBracelet.jpg'
+import AdvGif from '../../../Icons/altseeingi.gif'
 
 function SoapBraceletPreview ({opacityEffect}) {
     return (

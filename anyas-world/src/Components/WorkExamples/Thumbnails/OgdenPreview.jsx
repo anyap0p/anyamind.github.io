@@ -1,7 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import OgdenPhoto from '../../Icons/ogden.jpg'
-import OgdenGif from '../../Icons/ogden.gif'
+import WorkBox from '../Workbox';
+import OgdenPhoto from '../../../Icons/ogden.jpg'
+import OgdenGif from '../../../Icons/ogden.gif'
 
 function OgdenPreview ({opacityEffect}) {
     return (

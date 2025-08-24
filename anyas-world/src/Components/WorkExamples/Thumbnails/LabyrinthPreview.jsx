@@ -1,7 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import Labyrinth from '../../Icons/labyrinth.jpg';
-import LabyrinthGif from '../../Icons/labyrinthFast.gif';
+import WorkBox from '../Workbox';
+import Labyrinth from '../../../Icons/labyrinth.jpg';
+import LabyrinthGif from '../../../Icons/labyrinthFast.gif';
 
 function LabyrinthPreview ({opacityEffect}) {
     return (
@@ -17,6 +17,7 @@ function LabyrinthPreview ({opacityEffect}) {
             opacityEffect={opacityEffect}
             imageHeight='40vh'
             aspectRatio='70 / 55'
+            link='/art/labyrinth'
         />
     )
 }

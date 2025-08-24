@@ -1,8 +1,8 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import AtTheMall from '../../Icons/atthemall.jpg';
-import AtTheMallGif from '../../Icons/atthemall.gif';
+import WorkBox from '../Workbox';
+import '../Work.css';
+import AtTheMall from '../../../Icons/atthemall.jpg';
+import AtTheMallGif from '../../../Icons/atthemall.gif';
 
 function AtTheMallPreview ({opacityEffect}) {
     return (

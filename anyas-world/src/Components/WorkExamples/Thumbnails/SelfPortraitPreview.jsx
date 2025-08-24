@@ -1,8 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import SelfPortrait from '../../Icons/selfportrait.png'
-import SelfPortraitGif from '../../Icons/selfportrait.gif'
+import WorkBox from '../Workbox';
+import SelfPortrait from '../../../Icons/selfportrait.png'
+import SelfPortraitGif from '../../../Icons/selfportrait.gif'
 
 function SelfPortraitPreview ({opacityEffect}) {
     return (

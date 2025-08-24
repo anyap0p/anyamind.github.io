@@ -1,8 +1,7 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import './Work.css';
-import Tetrafold from '../../Icons/tetrafold.jpg';
-import TetrafoldGif from '../../Icons/tetrafold.gif';
+import WorkBox from '../Workbox';
+import Tetrafold from '../../../Icons/tetrafold.jpg';
+import TetrafoldGif from '../../../Icons/tetrafold.gif';
 
 function TetrafoldPreview ({opacityEffect}) {
     return (

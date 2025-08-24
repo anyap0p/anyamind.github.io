@@ -1,6 +1,6 @@
 import React from 'react';
-import WorkBox from './Workbox';
-import LawAndRage from '../../Icons/lawAndRage.PNG';
+import WorkBox from '../Workbox';
+import LawAndRage from '../../../Icons/lawAndRage.PNG';
 
 function LawAndRagePreview ({opacityEffect}) {
     return (
