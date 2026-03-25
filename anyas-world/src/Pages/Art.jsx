@@ -17,8 +17,10 @@ import AtTheMallPreview from '../Components/WorkExamples/Thumbnails/AtTheMall';
 import SelfPromoPreview from '../Components/WorkExamples/Thumbnails/SelfPromo';
 import ThroughTheBlindsPreview from '../Components/WorkExamples/Thumbnails/ThroughTheBlinds';
 import SelfPortraitPreview from '../Components/WorkExamples/Thumbnails/SelfPortraitPreview';
+import MermaidMotelPreview from '../Components/WorkExamples/Thumbnails/MermaidMotel';  
 
 const workExamples = [
+    { id: 14, component: <MermaidMotelPreview opacityEffect={false} />, mediaType: ['digital media'] },
     { id: 0, component: <AnyaTvPreview opacityEffect={false} />, mediaType: ['performance', 'digital media'] },
     { id: 11, component: <SoapBraceletPreview opacityEffect={false} />, mediaType: ['performance', 'sculpture'] },
     { id: 8, component: <BeastPreview opacityEffect={false} />, mediaType: ['printed works'] },

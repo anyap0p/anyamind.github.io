@@ -16,6 +16,7 @@ function OgdenPreview ({opacityEffect}) {
             opacityEffect={opacityEffect}
             imageHeight='40vh'
             aspectRatio='11 / 8'
+            link="/art/piece/ogden"
         />
     )
 }

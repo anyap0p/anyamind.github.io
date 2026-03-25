@@ -1,16 +1,15 @@
 import React from 'react';
 import WorkBox from '../Workbox';
-import '../Work.css';
-import AtTheMall from '../../../Icons/atthemall.jpg';
-import AtTheMallGif from '../../../Icons/atthemall.gif';
+import MermaidMotel from '../../../Icons/mermaidMotel.png';
+import MermaidMotelGif from '../../../Icons/mermaidMotel.gif';
 
-function AtTheMallPreview ({opacityEffect}) {
+function MermaidMotelPreview ({opacityEffect}) {
     return (
         <WorkBox 
-            title="at the mall"
+            title="mermaid motel"
             body=""
-            image={AtTheMall}
-            hoverImage={AtTheMallGif}
+            image={MermaidMotel}
+            hoverImage={MermaidMotelGif}
             header=""
             skillsUsed=""
             imageHeight='40vh'
@@ -18,9 +17,9 @@ function AtTheMallPreview ({opacityEffect}) {
             delayAppearance='1s'
             opacityEffect={opacityEffect}
             underDevelopment={false}
-            link="/art/piece/at-the-mall"
+            link="/art/mermaid-motel"
         />
     )
 }
 
-export default AtTheMallPreview
+export default MermaidMotelPreview

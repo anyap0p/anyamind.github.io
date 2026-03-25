@@ -16,7 +16,8 @@ function SelfPromoPreview ({opacityEffect}) {
             aspectRatio='3 / 4'
             delayAppearance='1s'
             opacityEffect={opacityEffect}
-            underDevelopment={true}
+            underDevelopment={false}
+            link="/art/piece/self-promo"
         />
     )
 }

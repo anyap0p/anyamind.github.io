@@ -17,6 +17,7 @@ function OnAWalkPreview ({opacityEffect}) {
             delayAppearance='5s'
             underDevelopment={false}
             opacityEffect={opacityEffect}
+            link="/art/piece/on-a-walk"
         />
     )
 }

@@ -1,0 +1,140 @@
+.art-gallery-chrome {
+    background-color: #fffaf7;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+    padding: 2rem 0 1.5rem;
+    position: relative;
+    min-width: 0;
+}
+
+/* Side arrows in fixed columns — avoids overflow:hidden clipping absolute arrows */
+.art-gallery-chrome-grid {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(3.25rem, auto) minmax(0, 1fr) minmax(3.25rem, auto);
+    grid-template-rows: 1fr;
+    align-items: center;
+    justify-items: center;
+    column-gap: clamp(0.25rem, 2vw, 0.75rem);
+    padding: 0 clamp(0.5rem, 2vw, 1rem);
+}
+
+.art-gallery-chrome-arrow-spacer {
+    width: 3.25rem;
+    min-width: 3.25rem;
+    align-self: center;
+}
+
+.art-gallery-chrome-arrow-spacer--start {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.art-gallery-chrome-arrow-spacer--end {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.art-gallery-chrome-body {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.art-gallery-chrome-title {
+    margin: 0;
+    padding: 0 0.75rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(1.5rem, 4vw, 1.8rem);
+    font-weight: normal;
+    line-height: 1.2;
+    color: #324b4b;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.art-gallery-chrome-preview {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+/* Shared with home — Instrument Serif, same size and color as bottom “home” */
+.art-gallery-chrome-control {
+    border: none;
+    background: none;
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: #324b4b;
+    cursor: pointer;
+}
+
+.art-gallery-chrome-control:hover {
+    color: rgb(67, 155, 223);
+}
+
+.art-gallery-chrome-control.art-gallery-chrome-arrow {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.art-gallery-chrome-arrow {
+    padding: 0.5rem 0.65rem;
+    align-self: center;
+    justify-self: center;
+}
+
+.art-gallery-chrome-arrow--prev {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.art-gallery-chrome-arrow--next {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.art-gallery-chrome-home {
+    padding: 0.75rem 1.5rem;
+    margin-top: auto;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+/* Beat App.css `.page { height: max-content; min-height: 100vh }` */
+.page.art-gallery-chrome {
+    min-height: 0;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+}

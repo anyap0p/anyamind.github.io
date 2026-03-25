@@ -13,11 +13,11 @@ function LabyrinthPreview ({opacityEffect}) {
             header=""
             skillsUsed=""
             delayAppearance='5s'
-            underDevelopment={true}
+            underDevelopment={false}
             opacityEffect={opacityEffect}
             imageHeight='40vh'
             aspectRatio='70 / 55'
-            link='/art/labyrinth'
+            link="/art/piece/labyrinth"
         />
     )
 }

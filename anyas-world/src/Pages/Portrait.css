@@ -1,0 +1,36 @@
+/* Live Portrait /bio experience inside the art gallery (embedded mode) */
+.portrait-embedded {
+    /*
+     * Don’t use min(50vw, 100%) here: parent .art-work-piece-media-frame is inline-block
+     * and shrink-wraps. The h1 is position:absolute (App.css), so it adds no width →
+     * parent width 0 → 100% = 0 → min(50vw, 0) = 0. Use vw then cap with max-width.
+     */
+    width: 50vw;
+    max-width: 100%;
+    height: min(50vh, 90vw);
+    max-height: 50vh;
+    min-height: 8rem;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.portrait-embedded-page.page {
+    min-height: 100% !important;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Undo full-page absolute centering so the block participates in layout */
+.portrait-embedded-background.background {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+}

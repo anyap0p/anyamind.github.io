@@ -16,7 +16,8 @@ function TetrafoldPreview ({opacityEffect}) {
             aspectRatio='1 / 1'
             delayAppearance='1s'
             opacityEffect={opacityEffect}
-            underDevelopment={true}
+            underDevelopment={false}
+            link="/art/piece/scenes-from-home"
         />
     )
 }

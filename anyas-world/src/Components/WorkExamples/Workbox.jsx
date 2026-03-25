@@ -50,10 +50,10 @@ const WorkBox = ({ title, body, image, hoverImage, aspectRatio, opacityEffect, l
     };
 
     const toggleZoom = () => {
-        // if (opacityEffect === false) {
-        //     setIsZoomed(!isZoomed);
-        //     isZoomed ? enableScroll() : disableScroll();
-        // }
+        if (opacityEffect === false) {
+            setIsZoomed(!isZoomed);
+            isZoomed ? enableScroll() : disableScroll();
+        }
     };
 
     useEffect(() => {
@@ -73,15 +73,27 @@ const WorkBox = ({ title, body, image, hoverImage, aspectRatio, opacityEffect, l
     return (
         <div ref={workBoxRef} className='work-box' style={{ opacity: opacity }}>
             {isZoomed && <div className="scrollbar-overlay"></div>}
-            <div className='work-box-content-container'
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                        onClick={() => 
-                            { if (link) {
-                                    navigate(link);
-                                }
-                            }
-                        }>
+            <div
+                className='work-box-content-container'
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                onClick={() => {
+                    if (link) navigate(link);
+                }}
+                style={{ cursor: link ? 'pointer' : undefined }}
+                role={link ? 'link' : undefined}
+                tabIndex={link ? 0 : undefined}
+                onKeyDown={
+                    link
+                        ? (e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  navigate(link);
+                              }
+                          }
+                        : undefined
+                }
+            >
                 <div className='work-title'>
                     <h1 className='work-header'>{" "}</h1>
                     <h1 className='work-header'>{" "}</h1>

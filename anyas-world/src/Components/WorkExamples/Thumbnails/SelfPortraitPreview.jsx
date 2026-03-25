@@ -16,7 +16,8 @@ function SelfPortraitPreview ({opacityEffect}) {
             aspectRatio='5 / 3'
             delayAppearance='1s'
             opacityEffect={opacityEffect}
-            underDevelopment={true}
+            underDevelopment={false}
+            link="/art/piece/self-portrait"
         />
     )
 }

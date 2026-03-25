@@ -16,6 +16,7 @@ function SoapBraceletPreview ({opacityEffect}) {
             opacityEffect={opacityEffect}
             imageHeight='40vh'
             aspectRatio='1 / 1'
+            link="/art/piece/soap-bracelet"
         />
     )
 }

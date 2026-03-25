@@ -17,7 +17,8 @@ function KikisLobbyPreview ({opacityEffect}) {
             aspectRatio='4 / 5 '
             delayAppearance='1s'
             opacityEffect={opacityEffect}
-            underDevelopment={true}
+            underDevelopment={false}
+            link="/art/piece/kikis-lobby"
         />
     )
 }

@@ -12,10 +12,11 @@ function LawAndRagePreview ({opacityEffect}) {
             header=""
             skillsUsed=""
             delayAppearance='5s'
-            underDevelopment={true}
+            underDevelopment={false}
             opacityEffect={opacityEffect}
             imageHeight='40vh'
             aspectRatio='17 / 22'
+            link="/art/piece/law-and-rage"
         />
     )
 }

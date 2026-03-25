@@ -16,7 +16,8 @@ function ThroughTheBlindsPreview ({opacityEffect}) {
             aspectRatio='1 / 1'
             delayAppearance='1s'
             opacityEffect={opacityEffect}
-            underDevelopment={true}
+            underDevelopment={false}
+            link="/art/piece/through-the-blinds"
         />
     )
 }

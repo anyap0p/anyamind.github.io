@@ -16,7 +16,8 @@ function ShadowPlayPreview ({opacityEffect}) {
             aspectRatio='3 / 1'
             delayAppearance='1s'
             opacityEffect={opacityEffect}
-            underDevelopment={true}
+            underDevelopment={false}
+            link="/art/piece/shadow-play"
         />
     )
 }

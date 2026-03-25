@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import './Portrait.css';
 
-function Portrait() {
+function Portrait({ embedded = false }) {
     const asciiArts = [
 `**************************************************************************+*+++++++++++++++++=====--------==+###
 *************************************************************************+++++++++++++++++++=====---------===###
@@ -984,42 +985,60 @@ function Portrait() {
       +##+   .:.                            .::               =*++   :::.                    .      :--         `
     ];
     const [currentAsciiIndex, setCurrentAsciiIndex] = useState(0);
+    const bgRef = useRef(null);
+    const containerRef = useRef(null);
+    const indexRef = useRef(currentAsciiIndex);
+    indexRef.current = currentAsciiIndex;
 
-    useEffect(() => {
-        function adjustFontSize(maxCharsPerLine, maxLines) {
-            const backgroundElement = document.querySelector('.background');
-            if (!backgroundElement) return;
+    function applyFontSizeForIndex(index) {
+        const backgroundElement = bgRef.current;
+        if (!backgroundElement) return;
 
-            // Get the viewport dimensions
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-
-            if (vw > vh) {
-                const lineHeight = 100 / maxLines;
-                backgroundElement.style.fontSize = `${lineHeight}vh`;
-            } else {
-                const charWidth = 100 / maxCharsPerLine;
-                backgroundElement.style.fontSize = `${charWidth}vw`;
-                console.log('dbg hare sidht', charWidth)
-            }
-        }
-
-        const asciiArt = asciiArts[currentAsciiIndex];
-
-        const lines = asciiArt.split('\n').filter(line => line.trim() !== '');
-        const maxCharsPerLine = Math.max(...lines.map(line => line.length));
+        const asciiArt = asciiArts[index];
+        const lines = asciiArt.split('\n').filter((line) => line.trim() !== '');
+        const maxCharsPerLine = Math.max(...lines.map((line) => line.length));
         const maxLines = lines.length;
 
-        console.log("DBG lines are", lines, maxCharsPerLine, maxLines)
-        adjustFontSize( maxCharsPerLine, maxLines);
+        if (embedded && containerRef.current) {
+            const w = containerRef.current.clientWidth;
+            const h = containerRef.current.clientHeight;
+            if (!w || !h) return;
+            if (w > h) {
+                backgroundElement.style.fontSize = `${h / maxLines}px`;
+            } else {
+                backgroundElement.style.fontSize = `${w / maxCharsPerLine}px`;
+            }
+            return;
+        }
 
-        const handleResize = () => adjustFontSize(maxCharsPerLine, maxLines);
-        window.addEventListener('resize', handleResize);
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        if (vw > vh) {
+            backgroundElement.style.fontSize = `${100 / maxLines}vh`;
+        } else {
+            backgroundElement.style.fontSize = `${100 / maxCharsPerLine}vw`;
+        }
+    }
+
+    useEffect(() => {
+        applyFontSizeForIndex(currentAsciiIndex);
+    }, [currentAsciiIndex, embedded]);
+
+    useEffect(() => {
+        const onResize = () => applyFontSizeForIndex(indexRef.current);
+        window.addEventListener('resize', onResize);
+
+        let ro;
+        if (embedded && containerRef.current && typeof ResizeObserver !== 'undefined') {
+            ro = new ResizeObserver(onResize);
+            ro.observe(containerRef.current);
+        }
 
         return () => {
-            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('resize', onResize);
+            if (ro) ro.disconnect();
         };
-    }, []);
+    }, [embedded]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -1029,9 +1048,21 @@ function Portrait() {
         return () => clearInterval(interval);
     }, []);
 
+    if (embedded) {
+        return (
+            <div ref={containerRef} className="portrait-embedded">
+                <div className="page portrait-embedded-page">
+                    <h1 ref={bgRef} className="background portrait-embedded-background">
+                        {asciiArts[currentAsciiIndex]}
+                    </h1>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="page">
-            <h1 className="background">
+            <h1 ref={bgRef} className="background">
                 {asciiArts[currentAsciiIndex]}
             </h1>
         </div>
