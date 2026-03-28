@@ -9,6 +9,7 @@ const ArtWorkPiece = lazy(() => import('./Pages/ArtWorkPiece'));
 const MermaidMotel = lazy(() => import('./Pages/MermaidMotel'));
 const Portrait = lazy(() => import('./Pages/Portrait'));
 const Tunnel = lazy(() => import('./Pages/Tunnel'));
+const GameOfLife = lazy(() => import('./Pages/GameOfLife'));
 
 class App extends Component{
   render() {
@@ -29,6 +30,7 @@ class App extends Component{
               <Route path="/work" element={<Art />} />
               <Route path="/bio" element={<Portrait />} />
               <Route path="/tunnel" element={<Tunnel />} />
+              <Route path="/game-of-life" element={<GameOfLife />} />
               <Route path="/welcome" element={<Welcome />} />
             </Routes>
           </HashRouter>
