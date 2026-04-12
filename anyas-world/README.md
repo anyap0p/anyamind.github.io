@@ -1,70 +1,47 @@
-# Getting Started with Create React App
+# Anya's World
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Portfolio built with [React](https://react.dev/) and [Vite](https://vite.dev/).
 
-## Available Scripts
+## Prerequisites
 
-In the project directory, you can run:
+- [Node.js](https://nodejs.org/) (LTS recommended) and npm
 
-### `npm start`
+## Setup
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Scripts
 
-### `npm test`
+In this directory:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Command | Description |
+| -------- | ----------- |
+| `npm run dev` or `npm start` | Start the Vite dev server with hot reload. Default URL: [http://localhost:5173](http://localhost:5173). |
+| `npm run build` | Production build to the `dist` folder. |
+| `npm run preview` | Serve the `dist` build locally to verify production output. |
+| `npm test` | Run [Vitest](https://vitest.dev/) in watch mode. Use `npx vitest run` for a single non-interactive run. |
+| `npm run deploy` | Runs `predeploy` (`npm run build`), writes `dist/CNAME` for the custom domain, then publishes `dist` to the `gh-pages` branch via [gh-pages](https://github.com/tschaub/gh-pages). |
 
-### `npm run build`
+## Deployment (GitHub Pages)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The app is configured for static hosting. Production assets live in **`dist`** after `npm run build`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **`npm run deploy`** pushes the contents of `dist` to the `gh-pages` branch. Ensure your GitHub repository Pages source is set to that branch (or your usual workflow).
+- The deploy script adds **`CNAME`** with `anya.observer` so GitHub Pages serves the custom domain. Adjust `scripts/write-cname.mjs` if the domain changes.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Routing uses **`HashRouter`**, so client-side routes work without special server rewrite rules.
 
-### `npm run eject`
+If the site were ever served from a **subpath** (for example `https://username.github.io/repository-name/`), set Vite’s `base` in `vite.config.js` to that path (e.g. `'/repository-name/'`).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Project layout
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **`index.html`** — HTML shell at the project root (Vite entry).
+- **`src/main.jsx`** — Application entry; mounts `<App />`.
+- **`public/`** — Static files copied to `dist` as-is (favicon, `manifest.json`, etc.).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Learn more
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [Vite documentation](https://vite.dev/guide/)
+- [React documentation](https://react.dev/)
