@@ -1,22 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { BuildKaleidoscopeView } from './BuildKaleidoscopeView';
 import { CustomizeBeadsPanel } from './CustomizeBeadsPanel';
-import { KaleidoscopeMakerCanvas } from './KaleidoscopeMakerCanvas';
-import { STORAGE_COMPLETED } from './constants';
+import { KaleidoscopeHexView } from './KaleidoscopeHexView';
+import { SavedKaleidoscopesGallery } from './SavedKaleidoscopesGallery';
+import { loadSavedKaleidoscopeList } from './buildKaleidoscopeStorage';
 import './KaleidoscopeMaker.css';
 
 function KaleidoscopeMaker() {
     const [screen, setScreen] = useState('home');
-    const [showCompleteGallery, setShowCompleteGallery] = useState(false);
+    const [savedList, setSavedList] = useState(() => loadSavedKaleidoscopeList());
+    /** When set, hex view uses this snapshot; when null, it loads the latest from localStorage. */
+    const [activeKaleidoscope, setActiveKaleidoscope] = useState(null);
     const hubCustomize = screen === 'customize';
     const hubHome = screen === 'home' || screen === 'customize';
 
-    useEffect(() => {
-        try {
-            setShowCompleteGallery(localStorage.getItem(STORAGE_COMPLETED) === 'true');
-        } catch {
-            setShowCompleteGallery(false);
-        }
+    const refreshSavedList = useCallback(() => {
+        setSavedList(loadSavedKaleidoscopeList());
     }, []);
+
+    useEffect(() => {
+        if (screen === 'home' || screen === 'gallery' || screen === 'build') {
+            refreshSavedList();
+        }
+    }, [screen, refreshSavedList]);
 
     if (hubHome) {
         return (
@@ -30,7 +36,7 @@ function KaleidoscopeMaker() {
                     <button type="button" onClick={() => setScreen('build')} disabled={hubCustomize}>
                         build your kaleidoscope
                     </button>
-                    {showCompleteGallery ? (
+                    {savedList.length > 0 ? (
                         <button type="button" onClick={() => setScreen('gallery')} disabled={hubCustomize}>
                             view complete kaleidoscopes
                         </button>
@@ -43,20 +49,41 @@ function KaleidoscopeMaker() {
 
     if (screen === 'gallery') {
         return (
-            <div className="kaleidoscope-maker kaleidoscope-maker--home">
-                <button type="button" onClick={() => setScreen('home')}>
-                    back
-                </button>
+            <SavedKaleidoscopesGallery
+                items={savedList}
+                onBack={() => setScreen('home')}
+                onOpen={(item) => {
+                    setActiveKaleidoscope(item);
+                    setScreen('kaleidoscope');
+                }}
+            />
+        );
+    }
+
+    if (screen === 'kaleidoscope') {
+        return (
+            <div className="kaleidoscope-maker kaleidoscope-maker--hub kaleidoscope-maker--kaleidoscope-layout">
+                <KaleidoscopeHexView
+                    activeSnapshot={activeKaleidoscope}
+                    onBack={() => {
+                        setActiveKaleidoscope(null);
+                        setScreen('home');
+                    }}
+                />
             </div>
         );
     }
 
     return (
-        <div className="kaleidoscope-maker kaleidoscope-maker--stage-wrap">
-            <button type="button" onClick={() => setScreen('home')}>
-                back
-            </button>
-            <KaleidoscopeMakerCanvas />
+        <div className="kaleidoscope-maker kaleidoscope-maker--hub kaleidoscope-maker--build-layout">
+            <BuildKaleidoscopeView
+                onBack={() => setScreen('home')}
+                onDone={(saved) => {
+                    refreshSavedList();
+                    setActiveKaleidoscope(saved);
+                    setScreen('kaleidoscope');
+                }}
+            />
         </div>
     );
 }

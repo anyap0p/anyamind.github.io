@@ -8,6 +8,7 @@ const Art = lazy(() => import('./Pages/Art'));
 const ArtWorkPiece = lazy(() => import('./Pages/ArtWorkPiece'));
 const MermaidMotel = lazy(() => import('./Pages/MermaidMotel'));
 const KaleidoscopeMakerArt = lazy(() => import('./Pages/KaleidoscopeMakerArt'));
+const KaleidoscopeMakerArtFullscreen = lazy(() => import('./Pages/KaleidoscopeMakerArtFullscreen'));
 const Portrait = lazy(() => import('./Pages/Portrait'));
 const Tunnel = lazy(() => import('./Pages/Tunnel'));
 const GameOfLife = lazy(() => import('./Pages/GameOfLife'));
@@ -28,6 +29,7 @@ class App extends Component{
               <Route path="/art/self-portrait" element={<Navigate to="/art/piece/self-portrait" replace />} />
               <Route path="/art/mermaid-motel" element={<MermaidMotel />} />
               <Route path="/art/kaleidoscope-maker" element={<KaleidoscopeMakerArt />} />
+              <Route path="/art/kaleidoscope-maker/full" element={<KaleidoscopeMakerArtFullscreen />} />
               <Route path="/wip" element={<Art />} />
               <Route path="/work" element={<Art />} />
               <Route path="/bio" element={<Portrait />} />

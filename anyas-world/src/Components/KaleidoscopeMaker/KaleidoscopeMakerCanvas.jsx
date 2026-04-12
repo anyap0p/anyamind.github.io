@@ -3,7 +3,7 @@ import beadboxImg from '../../Icons/beadbox.png';
 import { BUFFER, SEGMENTS } from './constants';
 import { drawWedgeSource } from './drawWedgeSource';
 
-export function KaleidoscopeMakerCanvas() {
+export function KaleidoscopeMakerCanvas({ showBeadboxDecor = true }) {
     const wrapRef = useRef(null);
     const canvasRef = useRef(null);
     const bufferRef = useRef(null);
@@ -101,7 +101,9 @@ export function KaleidoscopeMakerCanvas() {
     return (
         <div ref={wrapRef} className="kaleidoscope-maker__stage">
             <canvas ref={canvasRef} className="kaleidoscope-maker__canvas" aria-label="Kaleidoscope" />
-            <img src={beadboxImg} alt="" className="kaleidoscope-maker__beadbox" draggable={false} />
+            {showBeadboxDecor ? (
+                <img src={beadboxImg} alt="" className="kaleidoscope-maker__beadbox" draggable={false} />
+            ) : null}
         </div>
     );
 }

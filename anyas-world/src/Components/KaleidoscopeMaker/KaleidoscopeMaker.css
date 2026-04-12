@@ -2,6 +2,8 @@
     --km-max-px: 640px;
     --km-max-vw: 62vw;
     --km-max-vh: 58vh;
+    /* Petri dish: stay inset from viewport (build screen). */
+    --km-petri-screen-gutter: 36px;
 
     width: min(var(--km-max-px), var(--km-max-vw));
     max-width: 100%;
@@ -52,6 +54,13 @@
     position: absolute;
     top: 0.35rem;
     left: 0.35rem;
+    z-index: 10;
+}
+
+.kaleidoscope-maker__build-done {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
     z-index: 10;
 }
 
@@ -343,6 +352,7 @@
     box-shadow: none;
     background: none;
     overflow: visible;
+    border-radius: 0;
     filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
 }
 
@@ -529,4 +539,441 @@
     height: auto;
     pointer-events: none;
     z-index: 1;
+}
+
+/* —— Build kaleidoscope: petri dish + bead box —— */
+.kaleidoscope-maker--build-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    overflow: visible;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.kaleidoscope-maker__build-body {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    padding: 1.45rem 0.35rem 0.2rem;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.kaleidoscope-maker__build-main-row {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+}
+
+.kaleidoscope-maker__build-beadbox-col {
+    flex: 0 1 42%;
+    max-width: 46%;
+    min-width: 0;
+    min-height: min(52vh, 320px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+.kaleidoscope-maker__build-dish-col {
+    flex: 1 1 58%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.kaleidoscope-maker__petri-wrap {
+    flex: 0 0 auto;
+    /* As wide as the dish column allows, but never wider than viewport minus 36px each side. */
+    width: 100%;
+    max-width: min(
+        100%,
+        calc(100vw - 2 * var(--km-petri-screen-gutter)),
+        calc(100dvh - 2 * var(--km-petri-screen-gutter))
+    );
+
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    touch-action: none;
+    user-select: none;
+}
+
+.kaleidoscope-maker__petri-sizer {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    height: auto;
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
+.kaleidoscope-maker__petri-rotate {
+    position: absolute;
+    inset: 0;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+.kaleidoscope-maker__petri-rim {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid #000;
+    box-shadow: none;
+    background: transparent;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__petri-inner {
+    position: absolute;
+    inset: 4%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+}
+
+.kaleidoscope-maker__petri-bead {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    overflow: visible;
+    border-radius: 0;
+    box-sizing: border-box;
+    border: none;
+    box-shadow: none;
+}
+
+/* Round physics bead: clip gradient to a disk (div beads). */
+.kaleidoscope-maker__petri-bead[data-shape='circle'] {
+    border-radius: 50%;
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+
+.kaleidoscope-maker__petri-bead[data-shape='circle'] .kaleidoscope-maker__bead-visual--circle {
+    flex-shrink: 0;
+    aspect-ratio: 1;
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    box-sizing: border-box;
+}
+
+.kaleidoscope-maker__petri-bead .kaleidoscope-maker__bead-visual {
+    border: none;
+    box-shadow: none;
+    transition: none;
+}
+
+.kaleidoscope-maker__petri-bead .kaleidoscope-maker__bead-visual--svg {
+    filter: none;
+    transition: none;
+}
+
+.kaleidoscope-maker__petri-hint {
+    margin: 0.15rem 0 0;
+    font-size: clamp(0.62rem, 1.9vmin, 0.72rem);
+    color: rgba(255, 255, 255, 0.48);
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Build screen: no helper copy under the dish */
+.kaleidoscope-maker__build-dish-col .kaleidoscope-maker__petri-hint {
+    display: none;
+}
+
+.kaleidoscope-maker__build-beadbox-stack {
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    width: min(118%, 72vmin);
+    max-width: none;
+}
+
+.kaleidoscope-maker__build-beadbox-fly {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-108%);
+    opacity: 0.45;
+    transition:
+        transform 0.78s cubic-bezier(0.22, 1, 0.32, 1),
+        opacity 0.45s ease;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__build-beadbox-fly--settled {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__build-picker-grid {
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__build-picker-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 2px;
+    background: transparent;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+}
+
+.kaleidoscope-maker__build-picker-cell:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+
+.kaleidoscope-maker__build-picker-cell:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.kaleidoscope-maker__build-picker-cell:not(:disabled):focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 1px;
+}
+
+.kaleidoscope-maker__build-picker-cell--empty {
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__build-picker-bead {
+    width: 54%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* —— Kaleidoscope hex view (after build done) —— */
+.kaleidoscope-maker--kaleidoscope-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.kaleidoscope-maker__hex-root {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.35rem 0.2rem 0.25rem;
+    box-sizing: border-box;
+}
+
+.kaleidoscope-maker__hex-row {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.2rem;
+}
+
+.kaleidoscope-maker__hex-tilt {
+    flex: 0 0 clamp(2rem, 7vmin, 2.65rem);
+    align-self: stretch;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 4px;
+    background: rgba(28, 32, 48, 0.75);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(0.95rem, 3.5vmin, 1.25rem);
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.kaleidoscope-maker__hex-tilt:hover {
+    background: rgba(42, 48, 68, 0.88);
+}
+
+.kaleidoscope-maker__hex-tilt:active {
+    background: rgba(18, 20, 32, 0.95);
+}
+
+.kaleidoscope-maker__hex-tilt:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.45);
+    outline-offset: 1px;
+}
+
+.kaleidoscope-maker__hex-stage {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 120px;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.kaleidoscope-maker__hex-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+}
+
+/* —— Saved kaleidoscopes gallery —— */
+.kaleidoscope-maker--gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.35rem;
+    padding: 0.75rem 0.5rem 1.25rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    min-height: 0;
+}
+
+.kaleidoscope-maker__gallery-title {
+    margin: 0.25rem 0 0;
+    font-size: clamp(1rem, 3.2vmin, 1.2rem);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+    text-align: center;
+}
+
+.kaleidoscope-maker__gallery-hint {
+    margin: 0 0 0.5rem;
+    font-size: clamp(0.65rem, 2vmin, 0.78rem);
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.kaleidoscope-maker__gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+    gap: 0.65rem 0.85rem;
+    width: 100%;
+    justify-items: center;
+    padding: 0.25rem 0;
+}
+
+.kaleidoscope-maker__saved-thumb {
+    display: block;
+    margin: 0;
+    padding: 0.2rem;
+    border: none;
+    background: transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.kaleidoscope-maker__saved-thumb:hover {
+    transform: scale(1.04);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.kaleidoscope-maker__saved-thumb:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.55);
+    outline-offset: 3px;
+}
+
+.kaleidoscope-maker__petri-wrap--thumb {
+    width: 118px;
+    max-width: 118px;
+    pointer-events: none;
+    touch-action: auto;
+}
+
+/* —— Fullscreen subpage (/art/kaleidoscope-maker/full): maker only, no gallery chrome —— */
+.km-art-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    padding-top: 2.5rem;
+    background: #f6f4ef;
+    overflow: auto;
+}
+
+.km-art-fullscreen__back {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 60;
+    font-family: system-ui, sans-serif;
+    font-size: 0.9rem;
+    color: #324b4b;
+    text-decoration: none;
+    padding: 0.4rem 0.55rem;
+    border-radius: 4px;
+}
+
+.km-art-fullscreen__back:hover {
+    text-decoration: underline;
+}
+
+.km-art-fullscreen__back:focus-visible {
+    outline: 2px solid rgba(50, 75, 75, 0.45);
+    outline-offset: 2px;
+}
+
+.km-art-fullscreen__body {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.km-art-fullscreen .kaleidoscope-maker {
+    --km-max-vh: min(94dvh, 94vw);
+    --km-max-vw: min(96vw, 96vmin);
+    --km-max-px: 920px;
+    max-height: min(94dvh, 96vw);
 }

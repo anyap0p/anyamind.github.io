@@ -22,24 +22,10 @@ function GemSubtree({ node, primary, accent, lightDeg }) {
     );
 }
 
-export function HeartBeadDesigned({ fill, accent, lightDeg, className = '' }) {
+/** Heart paths only — parent supplies `<svg viewBox={…}>` so layout matches gem bounds. */
+export function HeartBeadDesigned({ fill, accent, lightDeg }) {
     const a = accent || fill;
-    const { viewBox, root } = HEART_FINAL_GEM;
-
-    if (!root) {
-        return null;
-    }
-
-    return (
-        <svg
-            className={className}
-            viewBox={viewBox}
-            width="100%"
-            height="100%"
-            preserveAspectRatio="xMidYMid meet"
-            aria-hidden
-        >
-            <GemSubtree node={root} primary={fill} accent={a} lightDeg={lightDeg} />
-        </svg>
-    );
+    const { root } = HEART_FINAL_GEM;
+    if (!root) return null;
+    return <GemSubtree node={root} primary={fill} accent={a} lightDeg={lightDeg} />;
 }

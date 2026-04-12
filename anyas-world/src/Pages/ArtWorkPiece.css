@@ -44,6 +44,33 @@
     pointer-events: none;
 }
 
+.art-work-piece-title--link {
+    pointer-events: auto;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.art-work-piece-title--link:hover {
+    text-decoration: underline;
+    color: #1f3838;
+}
+
+.art-work-piece-title--link:focus-visible {
+    outline: 2px solid rgba(50, 75, 75, 0.45);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+.art-work-piece-title__inner {
+    margin: 0;
+    font: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
 .art-work-piece-media {
     display: block;
     max-width: min(50vw, 100%);
