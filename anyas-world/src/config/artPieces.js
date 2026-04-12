@@ -44,6 +44,7 @@ export const ART_PIECE_BY_SLUG = {
  */
 export const ART_GALLERY_ROUTES = [
     '/art/mermaid-motel',
+    '/art/kaleidoscope-maker',
     '/art/piece/anya-tv',
     '/art/piece/soap-bracelet',
     '/art/piece/beast',

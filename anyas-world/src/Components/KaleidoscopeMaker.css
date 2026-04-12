@@ -1,0 +1,17 @@
+.kaleidoscope-maker {
+    --km-max-px: 640px;
+    --km-max-vw: 62vw;
+    --km-max-vh: 58vh;
+
+    width: min(var(--km-max-px), var(--km-max-vw));
+    max-width: 100%;
+    aspect-ratio: 1;
+    max-height: var(--km-max-vh);
+}
+
+.kaleidoscope-maker__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+}
