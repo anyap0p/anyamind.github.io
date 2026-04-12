@@ -1,0 +1,532 @@
+.kaleidoscope-maker {
+    --km-max-px: 640px;
+    --km-max-vw: 62vw;
+    --km-max-vh: 58vh;
+
+    width: min(var(--km-max-px), var(--km-max-vw));
+    max-width: 100%;
+    aspect-ratio: 1;
+    max-height: var(--km-max-vh);
+}
+
+/* Home: centered column of actions (per spec). */
+.kaleidoscope-maker--home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kaleidoscope-maker__home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hub: home menu + optional customize overlay */
+.kaleidoscope-maker--hub {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.kaleidoscope-maker__home-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: opacity 0.55s ease;
+}
+
+.kaleidoscope-maker__home-actions--fading {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__customize-back {
+    position: absolute;
+    top: 0.35rem;
+    left: 0.35rem;
+    z-index: 10;
+}
+
+.kaleidoscope-maker__customize-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    overflow: visible;
+}
+
+/* Behind the tray; shown when the tray slides up */
+.kaleidoscope-maker__bead-factory {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 1.75rem 0.35rem 0.35rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.kaleidoscope-maker__bead-factory--visible {
+    z-index: 4;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Full-bleed preview with settings overlaid on the left */
+.kaleidoscope-maker__bead-factory-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+}
+
+.kaleidoscope-maker__bead-factory-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__bead-factory-settings {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    max-width: min(46%, 11.5rem);
+    width: auto;
+    min-width: 0;
+    padding: 0.15rem 0.5rem 0.35rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    z-index: 2;
+    pointer-events: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: linear-gradient(
+        90deg,
+        rgba(6, 6, 14, 0.94) 0%,
+        rgba(6, 6, 14, 0.78) 72%,
+        rgba(6, 6, 14, 0) 100%
+    );
+    -webkit-overflow-scrolling: touch;
+}
+
+.kaleidoscope-maker__bead-factory-heading {
+    margin: 0;
+    max-width: 100%;
+    font: inherit;
+    font-size: 1em;
+    font-weight: normal;
+    line-height: 1.25;
+}
+
+.kaleidoscope-maker__bead-factory-settings label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 100%;
+    font-size: 0.85em;
+}
+
+.kaleidoscope-maker__bead-factory-settings button {
+    max-width: 100%;
+    text-align: left;
+}
+
+.kaleidoscope-maker__bead-factory-preview {
+    width: min(60vmin, 13.5rem);
+    height: min(60vmin, 13.5rem);
+    max-width: 72%;
+    max-height: 88%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.kaleidoscope-maker__bead-factory-preview-scaler {
+    width: 72%;
+    height: 72%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+}
+
+.kaleidoscope-maker__bead-factory-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    width: 100%;
+}
+
+.kaleidoscope-maker__bead-editor-preview {
+    width: 3.25rem;
+    height: 3.25rem;
+    margin: 0 auto 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kaleidoscope-maker__bead-editor-factory-controls {
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.kaleidoscope-maker__beadbox-fly {
+    pointer-events: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 3;
+    width: 80%;
+    max-width: 100%;
+    /* Start below center; slide up into place */
+    transform: translate(-50%, calc(-50% + min(72vh, 200%)));
+    transition: transform 0.78s cubic-bezier(0.22, 1, 0.32, 1);
+}
+
+.kaleidoscope-maker__beadbox-fly--settled {
+    transform: translate(-50%, -50%);
+}
+
+/* Tray moves up off-screen; back reverses to settled */
+.kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--factory-out {
+    transform: translate(-50%, calc(-50% - min(130vh, 240%)));
+    transition: transform 0.65s ease;
+}
+
+.kaleidoscope-maker__beadbox-stack {
+    position: relative;
+    width: 100%;
+}
+
+.kaleidoscope-maker__beadbox-img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Inner compartment area — edge-aligned to tray wells (8×4: 4 + spine + 4) */
+.kaleidoscope-maker__bead-slot-grid {
+    position: absolute;
+    /* Tight to inner rim of the asset so the grid spans full compartment width/height */
+    top: 4%;
+    right: 2%;
+    bottom: 5%;
+    left: 2%;
+    display: flex;
+    flex-direction: column;
+    row-gap: clamp(0px, 1vmin, 10px);
+    opacity: 0;
+    box-sizing: border-box;
+    overflow: visible;
+    /* Beads show before fly animation; clicks wait for --interactive */
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__bead-slot-row {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+    /* One gap between left/right halves = center spine (matches tray rib) */
+    gap: clamp(3px, 1.75%, 14px);
+    overflow: visible;
+}
+
+.kaleidoscope-maker__bead-slot-half {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: clamp(0px,3vmin, 3px);
+    overflow: visible;
+}
+
+.kaleidoscope-maker__bead-slot-grid--visible {
+    opacity: 1;
+}
+
+.kaleidoscope-maker__bead-slot-grid--interactive {
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__slot-cell {
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 2px;
+}
+
+.kaleidoscope-maker__slot-filled {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 2px;
+    cursor: default;
+    outline: none;
+    overflow: hidden;
+}
+
+.kaleidoscope-maker__slot-filled:focus-visible {
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+}
+
+.kaleidoscope-maker__slot-pile {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__slot-bead {
+    position: absolute;
+    width: 30%;
+    aspect-ratio: 1;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+}
+
+.kaleidoscope-maker__bead-visual {
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow:
+        inset -2px -3px 5px rgba(0, 0, 0, 0.28),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.22);
+    background: radial-gradient(
+        circle at 32% 28%,
+        color-mix(in srgb, var(--bead-fill) 78%, white) 0%,
+        var(--bead-fill) 45%,
+        var(--bead-accent) 100%
+    );
+}
+
+.kaleidoscope-maker__bead-visual--svg {
+    border: none;
+    box-shadow: none;
+    background: none;
+    overflow: visible;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
+}
+
+.kaleidoscope-maker__bead-visual--oval {
+    border-radius: 50%;
+}
+
+.kaleidoscope-maker__slot-actions {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.2rem;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    background: rgba(4, 4, 12, 0.5);
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__slot-filled:hover .kaleidoscope-maker__slot-actions,
+.kaleidoscope-maker__slot-filled:focus-within .kaleidoscope-maker__slot-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__slot-action {
+    margin: 0;
+    padding: 0.2rem 0.45rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 3px;
+    background: rgba(20, 20, 32, 0.92);
+    color: rgba(255, 255, 255, 0.92);
+    font: inherit;
+    font-size: clamp(0.65rem, 2.2vmin, 0.8rem);
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+.kaleidoscope-maker__slot-action:hover {
+    background: rgba(40, 40, 58, 0.95);
+}
+
+.kaleidoscope-maker__slot-action:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.55);
+    outline-offset: 1px;
+}
+
+.kaleidoscope-maker__bead-editor-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(2, 2, 8, 0.62);
+}
+
+.kaleidoscope-maker__bead-editor {
+    width: min(100%, 18rem);
+    padding: 1rem 1.1rem;
+    border-radius: 6px;
+    background: #12121c;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.kaleidoscope-maker__bead-editor-title {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.kaleidoscope-maker__bead-editor-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.55rem;
+    font-size: 0.85rem;
+}
+
+.kaleidoscope-maker__bead-editor-field input[type='color'] {
+    width: 2.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.kaleidoscope-maker__bead-editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+}
+
+.kaleidoscope-maker__bead-editor-actions button {
+    margin: 0;
+    padding: 0.35rem 0.65rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__bead-editor-actions button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.kaleidoscope-maker__bead-editor-remove {
+    border-color: rgba(255, 120, 140, 0.45) !important;
+    color: rgba(255, 180, 190, 0.95) !important;
+}
+
+.kaleidoscope-maker__bead-editor-remove:hover {
+    background: rgba(120, 40, 55, 0.45) !important;
+}
+
+.kaleidoscope-maker__slot-plus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: inherit;
+    background: transparent;
+    color: rgba(255, 0, 149, 0.92);
+    font-size: clamp(0.8rem, 2.9vmin, 1.1rem);
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.kaleidoscope-maker__slot-plus:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.kaleidoscope-maker__slot-plus:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.55);
+    outline-offset: 1px;
+}
+
+.kaleidoscope-maker--stage-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.kaleidoscope-maker__stage {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+}
+
+.kaleidoscope-maker__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.kaleidoscope-maker__beadbox {
+    position: absolute;
+    left: 50%;
+    bottom: 25%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: auto;
+    pointer-events: none;
+    z-index: 1;
+}
