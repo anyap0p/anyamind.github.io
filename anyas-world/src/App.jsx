@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import React, { Component, lazy } from 'react'
 import './App.css';
 import Loading from './Components/Loading'
@@ -18,7 +18,7 @@ class App extends Component{
     return (
       <div className="App">
         <React.Suspense fallback={<Loading />}>
-          <HashRouter>
+          <BrowserRouter>
             <Routes>
               <Route path="/" element={<Welcome />} />
               <Route path="/home" element={<Welcome />} />
@@ -37,7 +37,7 @@ class App extends Component{
               <Route path="/game-of-life" element={<GameOfLife />} />
               <Route path="/welcome" element={<Welcome />} />
             </Routes>
-          </HashRouter>
+          </BrowserRouter>
         </React.Suspense>
       </div>
     );

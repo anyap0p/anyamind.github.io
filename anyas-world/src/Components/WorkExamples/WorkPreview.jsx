@@ -1,5 +1,6 @@
 import React , { useState } from 'react';
-import { HashLink as Link } from 'react-router-hash-link';
+import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import Arrow from '../Arrow'
 import './Work.css';
 
@@ -18,7 +19,7 @@ function WorkExamples () {
 
     return (
         <div style={{width: '100%', height: 'fit-content', backgroundColor: '#CCE8E8ff'}}>
-            <Link to="#work-examples" className='see-my-work' style={{'animationDuration': '0.5s'}}> view my work </Link>
+            <HashLink to="#work-examples" className='see-my-work' style={{'animationDuration': '0.5s'}}> view my work </HashLink>
             <Arrow></Arrow>
             <sticky-grid>
                 <div id='work-examples' className='work-column-left'>
@@ -27,9 +28,9 @@ function WorkExamples () {
                 </div>
                 <div className='work-column-right'>
                     <SoapBraceletPreview opacityEffect={true}/>
-                    <a href='/#/work' className='see-more-work'>
+                    <Link to='/work' className='see-more-work'>
                         see more work
-                    </a>
+                    </Link>
                 </div>
             </sticky-grid>
         </div>

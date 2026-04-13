@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './NavigationBar.css';
 import sparkles from '../Icons/pink-sparkles.png';
 
@@ -19,20 +20,20 @@ function NavigationBar ({jumpAnimation, moveInAnimation}) {
     return (
         <div className={`left-nav-container${moveInAnimation ? 'animate' : ''}`}>
             <div className='top-nav-box'>
-                <a href='#/welcome' className='head-text'>
+                <Link to='/' className='head-text'>
                     {createLetterSpans("anyamind", 2.5)}
-                </a>
+                </Link>
                 <img src={sparkles} className='glitter-on-hover' alt=''></img>
             </div>
             <div className='nav-box'>
-                <a href='/#/about' style={{ animationDelay: '5s' }} className='nav-text'>
+                <Link to='/about' style={{ animationDelay: '5s' }} className='nav-text'>
                     {createLetterSpans("about", 3)}
-                </a>
+                </Link>
             </div>
             <div className='nav-box'>
-                <a href='/#/art' style={{ animationDelay: '8s' }} className='nav-text'>
+                <Link to='/art' style={{ animationDelay: '8s' }} className='nav-text'>
                     {createLetterSpans("art", 3.5)}
-                </a>
+                </Link>
             </div>
         </div>
     )

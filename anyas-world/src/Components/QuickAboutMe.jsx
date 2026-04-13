@@ -1,4 +1,5 @@
 import React, { useState, } from 'react';
+import { Link } from 'react-router-dom';
 import './QuickAboutMe.css';
 import './NavigationBar.css';
 import glitterEye from '../Icons/allseeingi.gif';
@@ -94,22 +95,22 @@ function QuickAboutMe () {
                     ))} */}
                 </div>
                 <div className={`left-nav-container2${moveInAnimation ? 'animate' : ''}`}>
-                    <a href='/#/work' style={{ animationDelay: '8s', '--diamond-width': '2rem', '--diamond-height': '2rem' }} className='nav-text'>
+                    <Link to='/art' style={{ animationDelay: '8s', '--diamond-width': '2rem', '--diamond-height': '2rem' }} className='nav-text'>
                         {createLetterSpans("art", 3.5)}
-                    </a>
-                    <a href='/#/about' style={{ animationDelay: '5s', '--diamond-width': '3rem', '--diamond-height': '3rem' }} className='nav-text'>
+                    </Link>
+                    <Link to='/about' style={{ animationDelay: '5s', '--diamond-width': '3rem', '--diamond-height': '3rem' }} className='nav-text'>
                         {createLetterSpans("about", 3)}
-                    </a>
-                    <a href='#/welcome' style={{'--diamond-width': '4rem', '--diamond-height': '4rem' }} className='nav-text'>
+                    </Link>
+                    <Link to='/' style={{'--diamond-width': '4rem', '--diamond-height': '4rem' }} className='nav-text'>
                         {createLetterSpans("anyamind", 2.5)}
-                    </a>
+                    </Link>
                     <img src={sparkles} className='glitter-on-hover' alt=''></img>
-                    <a href='/#/about' style={{ animationDelay: '5s', '--diamond-width': '3rem', '--diamond-height': '3rem' }} className='nav-text'>
+                    <Link to='/about' style={{ animationDelay: '5s', '--diamond-width': '3rem', '--diamond-height': '3rem' }} className='nav-text'>
                         {createLetterSpans("about", 3)}
-                    </a>
-                    <a href='/#/work' style={{ animationDelay: '8s', '--diamond-width': '2rem', '--diamond-height': '2rem' }} className='nav-text'>
+                    </Link>
+                    <Link to='/art' style={{ animationDelay: '8s', '--diamond-width': '2rem', '--diamond-height': '2rem' }} className='nav-text'>
                         {createLetterSpans("art", 3.5)}
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

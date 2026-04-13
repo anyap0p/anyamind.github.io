@@ -31,7 +31,7 @@ The app is configured for static hosting. Production assets live in **`dist`** a
 - **`npm run deploy`** pushes the contents of `dist` to the `gh-pages` branch. Ensure your GitHub repository Pages source is set to that branch (or your usual workflow).
 - The deploy script adds **`CNAME`** with `anya.observer` so GitHub Pages serves the custom domain. Adjust `scripts/write-cname.mjs` if the domain changes.
 
-Routing uses **`HashRouter`**, so client-side routes work without special server rewrite rules.
+Routing uses **`BrowserRouter`**. Production builds copy **`index.html`** to **`404.html`** so GitHub Pages serves the SPA shell on deep links and refresh.
 
 If the site were ever served from a **subpath** (for example `https://username.github.io/repository-name/`), set Vite’s `base` in `vite.config.js` to that path (e.g. `'/repository-name/'`).
 
