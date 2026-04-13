@@ -71,6 +71,45 @@
     color: inherit;
 }
 
+/* Kaleidoscope maker (art chrome): title + WIP stacked above the widget */
+.art-work-piece-km-heading {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 0 16px;
+    padding: 0 0.75rem;
+    width: max-content;
+    max-width: min(90vw, 36rem);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+}
+
+.art-work-piece-km-heading .art-work-piece-title {
+    position: static;
+    margin: 0;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: auto;
+    max-width: 100%;
+}
+
+.art-work-piece-km-wip {
+    margin: 0;
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(0.72rem, 2.1vw, 0.88rem);
+    font-weight: normal;
+    font-style: italic;
+    letter-spacing: 0.04em;
+    color: rgba(50, 75, 75, 0.58);
+    line-height: 1.3;
+}
+
 .art-work-piece-media {
     display: block;
     max-width: min(50vw, 100%);

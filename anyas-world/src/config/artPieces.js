@@ -41,10 +41,10 @@ export const ART_PIECE_BY_SLUG = {
 
 /**
  * Carousel order — matches Art.jsx `workExamples` with filter “all” (column order).
+ * `/art/kaleidoscope-maker` is omitted here so it does not appear on /art or in prev/next.
  */
 export const ART_GALLERY_ROUTES = [
     '/art/mermaid-motel',
-    '/art/kaleidoscope-maker',
     '/art/piece/anya-tv',
     '/art/piece/soap-bracelet',
     '/art/piece/beast',

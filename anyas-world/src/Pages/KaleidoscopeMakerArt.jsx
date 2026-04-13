@@ -9,12 +9,15 @@ function KaleidoscopeMakerArt() {
         <ArtGalleryChrome>
             <div className="art-work-piece-media-wrap">
                 <div className="art-work-piece-media-frame">
-                    <Link
-                        to="/art/kaleidoscope-maker/full"
-                        className="art-work-piece-title art-work-piece-title--link"
-                    >
-                        <h1 className="art-work-piece-title__inner">kaleidoscope maker</h1>
-                    </Link>
+                    <div className="art-work-piece-km-heading">
+                        <Link
+                            to="/art/kaleidoscope-maker/full"
+                            className="art-work-piece-title art-work-piece-title--link"
+                        >
+                            <h1 className="art-work-piece-title__inner">kaleidoscope maker</h1>
+                        </Link>
+                        <p className="art-work-piece-km-wip">work in progress</p>
+                    </div>
                     <KaleidoscopeMaker />
                 </div>
             </div>

@@ -9,10 +9,12 @@ export function SavedKaleidoscopesGallery({ items, onBack, onOpen }) {
             </button>
             <h2 className="kaleidoscope-maker__gallery-title">saved kaleidoscopes</h2>
             <p className="kaleidoscope-maker__gallery-hint">tap a dish to open the live kaleidoscope</p>
-            <div className="kaleidoscope-maker__gallery-grid">
-                {items.map((item) => (
-                    <SavedKaleidoscopeThumbnail key={item.id} item={item} onOpen={() => onOpen(item)} />
-                ))}
+            <div className="kaleidoscope-maker__gallery-scroll">
+                <div className="kaleidoscope-maker__gallery-grid">
+                    {items.map((item) => (
+                        <SavedKaleidoscopeThumbnail key={item.id} item={item} onOpen={() => onOpen(item)} />
+                    ))}
+                </div>
             </div>
         </div>
     );
