@@ -1,4 +1,4 @@
-import{j as m,r as h}from"./index-DbMmE7Q6.js";const B0="/assets/beadbox-moJTyach.png",P0="kaleidoscopeMaker_customBeads",n0="kaleidoscopeMaker_buildKaleidoscope",a0="kaleidoscopeMaker_savedKaleidoscopes",X=8,i0=4,q=4,U=X*i0,F0=28,l3=`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+import{j as m,r as h}from"./index-DEB-xll9.js";const B0="/assets/beadbox-moJTyach.png",P0="kaleidoscopeMaker_customBeads",n0="kaleidoscopeMaker_buildKaleidoscope",a0="kaleidoscopeMaker_savedKaleidoscopes",X=8,i0=4,q=4,U=X*i0,F0=28,l3=`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
