@@ -223,8 +223,9 @@
     transform: translate(-50%, -50%);
 }
 
-/* Tray moves up off-screen; back reverses to settled */
-.kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--factory-out {
+/* Tray moves up off-screen (factory or bead editor closing); then reverses to settled */
+.kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--factory-out,
+.kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--editor-out {
     transform: translate(-50%, calc(-50% - min(130vh, 240%)));
     transition: transform 0.65s ease;
 }
@@ -327,6 +328,8 @@
     align-items: center;
     justify-content: center;
     transform-origin: center center;
+    /* Tray rattle only mutates transform; hint compositor and avoid repainting SVG subtree when BeadVisual is memoized. */
+    will-change: transform;
 }
 
 .kaleidoscope-maker__bead-visual {

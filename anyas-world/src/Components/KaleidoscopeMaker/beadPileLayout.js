@@ -1,5 +1,5 @@
 /** Rest positions inside the pile inset (room for width × scale × rotation + rattle). */
-const MAX_TRAY_ORBS = 44;
+const MAX_TRAY_ORBS = 16;
 
 const BASES = [
     [22, 22],

@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { loadBuildKaleidoscopeSnapshot } from './buildKaleidoscopeStorage';
+import { playTrayWallClicks } from './beadTrayWallClick';
+import { resumeKaleidoscopeAudio } from './kaleidoscopeAudioContext';
 import { addPetriBody, stepPetriWorld } from './petriDishPhysics';
 import { drawPetriSource } from './petriSourceCanvas';
 
@@ -174,6 +176,7 @@ export function KaleidoscopeHexView({ onBack, activeSnapshot = null }) {
     const sourceCanvasRef = useRef(null);
 
     const worldRef = useRef(null);
+    const petriPairHitBufferRef = useRef([]);
     const tiltRef = useRef(0);
     const lastTRef = useRef(performance.now());
     const tilesRef = useRef([]);
@@ -262,7 +265,9 @@ export function KaleidoscopeHexView({ onBack, activeSnapshot = null }) {
             if (world && world.bodies.length > 0) {
                 const dt = Math.min(0.045, Math.max(0.001, (now - lastTRef.current) / 1000));
                 lastTRef.current = now;
-                stepPetriWorld(world, dt, gravityFromTilt(tiltRef.current));
+                const pairHits = petriPairHitBufferRef.current;
+                stepPetriWorld(world, dt, gravityFromTilt(tiltRef.current), 3, pairHits);
+                playTrayWallClicks(pairHits);
             } else {
                 lastTRef.current = now;
             }
@@ -332,6 +337,7 @@ export function KaleidoscopeHexView({ onBack, activeSnapshot = null }) {
     const onTiltButtonDown = useCallback(
         (delta) => (e) => {
             if (e.pointerType === 'mouse' && e.button !== 0) return;
+            resumeKaleidoscopeAudio();
             e.preventDefault();
             e.currentTarget.setPointerCapture?.(e.pointerId);
             startTiltRepeat(delta);
@@ -339,9 +345,14 @@ export function KaleidoscopeHexView({ onBack, activeSnapshot = null }) {
         [startTiltRepeat],
     );
 
+    const handleBack = useCallback(() => {
+        resumeKaleidoscopeAudio();
+        onBack?.();
+    }, [onBack]);
+
     return (
         <>
-            <button type="button" className="kaleidoscope-maker__customize-back" onClick={onBack}>
+            <button type="button" className="kaleidoscope-maker__customize-back" onClick={handleBack}>
                 back
             </button>
             <div className="kaleidoscope-maker__hex-root">

@@ -5,6 +5,12 @@ const RESTITUTION = 0.07;
 const DAMPING = 0.957;
 const PAIR_ITERS = 4;
 
+/** Min normal closing speed (px/s) to register a bead–bead clack for optional SFX. */
+export const PETRI_PAIR_SOUND_MIN_CLOSING = 10;
+
+/** Min outward radial speed (px/s) at dish rim for wall clack SFX. */
+const PETRI_WALL_SOUND_MIN = 6;
+
 function wrapAngle(rad) {
     let a = rad;
     while (a > Math.PI) a -= Math.PI * 2;
@@ -111,12 +117,16 @@ export function addPetriBody(world, bead, id, g) {
     });
 }
 
+/**
+ * Keeps bead inside circular rim; applies low restitution on outward radial motion.
+ * @returns {number} radial impact speed (px/s) when a bounce was applied, else 0
+ */
 function resolveWall(cx, cy, R, b) {
     let dx = b.x - cx;
     let dy = b.y - cy;
     const dist = Math.hypot(dx, dy) || 1e-8;
     const maxD = R - b.r;
-    if (dist <= maxD) return;
+    if (dist <= maxD) return 0;
     dx /= dist;
     dy /= dist;
     b.x = cx + dx * maxD;
@@ -125,15 +135,21 @@ function resolveWall(cx, cy, R, b) {
     if (vn > 0) {
         b.vx -= (1 + RESTITUTION) * vn * dx;
         b.vy -= (1 + RESTITUTION) * vn * dy;
+        return vn;
     }
+    return 0;
 }
 
+/**
+ * Separates overlapping beads; applies impulse if approaching along normal.
+ * @returns {number} closing speed along normal (px/s) when an impulse was applied, else 0
+ */
 function resolvePair(a, b) {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const dist = Math.hypot(dx, dy) || 1e-8;
     const minD = a.r + b.r;
-    if (dist >= minD) return;
+    if (dist >= minD) return 0;
     const nx = dx / dist;
     const ny = dy / dist;
     const overlap = minD - dist;
@@ -151,7 +167,9 @@ function resolvePair(a, b) {
         a.vy -= jy;
         b.vx += jx;
         b.vy += jy;
+        return -vreln;
     }
+    return 0;
 }
 
 /**
@@ -159,11 +177,15 @@ function resolvePair(a, b) {
  * @param {number} dt seconds
  * @param {{ gx: number, gy: number }} g
  * @param {number} [substeps=3]
+ * @param {{ v: number }[] | null} [outPairHits]  reuse array; wall + bead–bead hits on last substep only (SFX)
  */
-export function stepPetriWorld(world, dt, g, substeps = 3) {
+export function stepPetriWorld(world, dt, g, substeps = 3, outPairHits = null) {
     const { cx, cy, R, bodies } = world;
     const n = bodies.length;
     if (n === 0) return;
+    if (outPairHits) {
+        outPairHits.length = 0;
+    }
     for (let i = 0; i < n; i += 1) {
         const b = bodies[i];
         if (typeof b.spin !== 'number' || Number.isNaN(b.spin)) {
@@ -171,6 +193,9 @@ export function stepPetriWorld(world, dt, g, substeps = 3) {
         }
     }
     const h = dt / substeps;
+    const lastS = substeps - 1;
+    /** Pair overlaps are cleared by earlier iterations; sample bead–bead clacks on k===0 only. */
+    const PAIR_HIT_RECORD_K = 0;
     for (let s = 0; s < substeps; s += 1) {
         for (let i = 0; i < n; i += 1) {
             const b = bodies[i];
@@ -185,12 +210,24 @@ export function stepPetriWorld(world, dt, g, substeps = 3) {
             b.vy *= DAMPING * visc;
         }
         for (let i = 0; i < n; i += 1) {
-            resolveWall(cx, cy, R, bodies[i]);
+            const wallImpact = resolveWall(cx, cy, R, bodies[i]);
+            if (
+                outPairHits &&
+                s === lastS &&
+                wallImpact >= PETRI_WALL_SOUND_MIN
+            ) {
+                outPairHits.push({ v: Math.min(160, wallImpact * 1.45) });
+            }
         }
         for (let k = 0; k < PAIR_ITERS; k += 1) {
+            const recordPairHits = outPairHits && s === lastS && k === PAIR_HIT_RECORD_K;
             for (let i = 0; i < n; i += 1) {
                 for (let j = i + 1; j < n; j += 1) {
-                    resolvePair(bodies[i], bodies[j]);
+                    const closing = resolvePair(bodies[i], bodies[j]);
+                    if (recordPairHits && closing >= PETRI_PAIR_SOUND_MIN_CLOSING) {
+                        /* Scale into same ballpark as tray wall hits for playTrayWallClicks */
+                        outPairHits.push({ v: Math.min(160, closing * 2.1) });
+                    }
                 }
             }
         }

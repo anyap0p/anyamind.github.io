@@ -1,11 +1,15 @@
-import React, { useId } from 'react';
+import React, { memo } from 'react';
 import { HeartBeadDesigned } from './HeartBeadDesigned';
+import { FlowerBeadDesigned } from './FlowerBeadDesigned';
 import { HEART_FINAL_GEM } from './heartFinalGemData';
+import { FLOWER_FINAL_GEM } from './flowerGemData';
 
-export function BeadVisual({ shape, fill, accent, lightDeg, className = '' }) {
-    const gid = useId().replace(/\W/g, '');
+/**
+ * Memoized: parent often moves this via CSS (tray physics) while shape/fill/accent/lightDeg stay the same.
+ * Skips re-rendering hundreds of SVG paths every animation frame.
+ */
+function BeadVisualInner({ shape, fill, accent, lightDeg, className = '' }) {
     const a = accent || fill;
-    const gradId = `km-bead-grad-${gid}`;
 
     if (shape === 'heart') {
         const vb = HEART_FINAL_GEM.viewBox || '0 0 12.61533 12.530643';
@@ -25,35 +29,18 @@ export function BeadVisual({ shape, fill, accent, lightDeg, className = '' }) {
     }
 
     if (shape === 'flower') {
-        const spin = Number.isFinite(lightDeg) ? lightDeg : 0;
+        const vb = FLOWER_FINAL_GEM.viewBox || '0 0 106.89167 104.06944';
+        const spinDeg = Number.isFinite(lightDeg) ? lightDeg : 0;
         return (
             <svg
                 className={`kaleidoscope-maker__bead-visual kaleidoscope-maker__bead-visual--svg kaleidoscope-maker__bead-visual--flower ${className}`}
-                viewBox="0 0 100 100"
+                viewBox={vb}
                 preserveAspectRatio="xMidYMid meet"
+                style={{ transform: `rotate(${spinDeg}deg)`, transformOrigin: 'center center' }}
                 aria-hidden
             >
-                <defs>
-                    <linearGradient id={gradId} x1="15%" y1="10%" x2="85%" y2="90%">
-                        <stop offset="0%" stopColor={fill} />
-                        <stop offset="55%" stopColor={fill} />
-                        <stop offset="100%" stopColor={a} />
-                    </linearGradient>
-                </defs>
-                <g transform={`translate(50,50) rotate(${spin})`}>
-                    {[0, 72, 144, 216, 288].map((deg) => (
-                        <ellipse
-                            key={deg}
-                            cx="0"
-                            cy="-24"
-                            rx="13"
-                            ry="24"
-                            fill={`url(#${gradId})`}
-                            transform={`rotate(${deg})`}
-                        />
-                    ))}
-                    <circle r="11" fill={a} opacity="0.95" />
-                </g>
+                {/* Fixed lighting on facets; rotation from SVG transform (same pattern as heart). */}
+                <FlowerBeadDesigned fill={fill} accent={a} lightDeg={38} />
             </svg>
         );
     }
@@ -81,3 +68,6 @@ export function BeadVisual({ shape, fill, accent, lightDeg, className = '' }) {
         />
     );
 }
+
+export const BeadVisual = memo(BeadVisualInner);
+BeadVisual.displayName = 'BeadVisual';

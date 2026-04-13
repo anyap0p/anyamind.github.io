@@ -4,6 +4,7 @@ import { CustomizeBeadsPanel } from './CustomizeBeadsPanel';
 import { KaleidoscopeHexView } from './KaleidoscopeHexView';
 import { SavedKaleidoscopesGallery } from './SavedKaleidoscopesGallery';
 import { loadSavedKaleidoscopeList } from './buildKaleidoscopeStorage';
+import { resumeKaleidoscopeAudio } from './kaleidoscopeAudioContext';
 import './KaleidoscopeMaker.css';
 
 function KaleidoscopeMaker() {
@@ -53,6 +54,7 @@ function KaleidoscopeMaker() {
                 items={savedList}
                 onBack={() => setScreen('home')}
                 onOpen={(item) => {
+                    resumeKaleidoscopeAudio();
                     setActiveKaleidoscope(item);
                     setScreen('kaleidoscope');
                 }}
@@ -80,6 +82,7 @@ function KaleidoscopeMaker() {
                 onBack={() => setScreen('home')}
                 onDone={(saved) => {
                     refreshSavedList();
+                    resumeKaleidoscopeAudio();
                     setActiveKaleidoscope(saved);
                     setScreen('kaleidoscope');
                 }}

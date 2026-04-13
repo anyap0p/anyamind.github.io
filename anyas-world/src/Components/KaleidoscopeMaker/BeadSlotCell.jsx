@@ -60,7 +60,7 @@ export function BeadSlotCell({ slotIndex, bead, onAdd, onEdit, onDelete, rattleK
             if (settleFrom === null && now - t0 < RATTLE_MS) {
                 const dt = Math.min(0.032, (now - last) / 1000);
                 last = now;
-                const wallHits = [...stepRattleState(state, dt), ...stepRattleState(state, dt)];
+                const wallHits = stepRattleState(state, dt);
                 playTrayWallClicks(wallHits);
                 forceRender();
                 rafRef.current = requestAnimationFrame(frame);

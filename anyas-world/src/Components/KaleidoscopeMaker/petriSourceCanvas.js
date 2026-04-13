@@ -1,11 +1,12 @@
 import { HEART_FINAL_GEM } from './heartFinalGemData';
+import { FLOWER_FINAL_GEM } from './flowerGemData';
 import { adjustBrightnessT, mixPrimaryAccent } from './heartGrayscaleMix';
 
 /**
 
  * Renders the petri dish and beads to a canvas using the same coordinate space as physics.
 
- * Beads match build shapes: circle, oval, flower, heart (heart gem paths from HEART_FINAL_GEM).
+ * Beads match build shapes: circle, oval, flower, heart (SVG gem paths from HEART_FINAL_GEM / FLOWER_FINAL_GEM).
 
  * @param {CanvasRenderingContext2D} ctx
 
@@ -159,7 +160,7 @@ function applySvgTransform(ctx, transformStr) {
 
 
 
-function walkHeartGemCanvas(ctx, node, primary, accent, lightDeg) {
+function walkGrayscaleGemCanvas(ctx, node, primary, accent, lightDeg) {
 
     if (node.kind === 'path') {
 
@@ -189,7 +190,7 @@ function walkHeartGemCanvas(ctx, node, primary, accent, lightDeg) {
 
     for (const ch of node.children) {
 
-        walkHeartGemCanvas(ctx, ch, primary, accent, lightDeg);
+        walkGrayscaleGemCanvas(ctx, ch, primary, accent, lightDeg);
 
     }
 
@@ -241,7 +242,7 @@ function drawHeartBeadCanvas(ctx, x, y, r, fill, accent, lightDeg, spinRad = 0) 
 
     ctx.translate(-(vx + vw / 2), -(vy + vh / 2));
 
-    walkHeartGemCanvas(ctx, root, fill, accent || fill, lightDeg);
+    walkGrayscaleGemCanvas(ctx, root, fill, accent || fill, lightDeg);
 
     ctx.restore();
 
@@ -249,11 +250,35 @@ function drawHeartBeadCanvas(ctx, x, y, r, fill, accent, lightDeg, spinRad = 0) 
 
 
 
-function drawFlowerBeadCanvas(ctx, x, y, r, fill, accent, spinRad = 0) {
+function drawFlowerBeadCanvas(ctx, x, y, r, fill, accent, lightDeg, spinRad = 0) {
 
-    const a = accent || fill;
+    const { viewBox, root } = FLOWER_FINAL_GEM;
 
-    const scale = (r * 1.08) / 37;
+    if (!root) {
+
+        drawCircleBeadCanvas(ctx, x, y, r, fill, accent, spinRad);
+
+        return;
+
+    }
+
+    const parts = String(viewBox)
+
+        .trim()
+
+        .split(/[\s,]+/)
+
+        .map(Number);
+
+    const vx = parts[0] || 0;
+
+    const vy = parts[1] || 0;
+
+    const vw = parts[2] || 1;
+
+    const vh = parts[3] || 1;
+
+    const s = (2 * r) / Math.max(vw, vh, 1e-6);
 
     ctx.save();
 
@@ -261,43 +286,11 @@ function drawFlowerBeadCanvas(ctx, x, y, r, fill, accent, spinRad = 0) {
 
     ctx.rotate(spinRad);
 
-    ctx.scale(scale, scale);
+    ctx.scale(s, s);
 
-    for (let i = 0; i < 5; i += 1) {
+    ctx.translate(-(vx + vw / 2), -(vy + vh / 2));
 
-        ctx.save();
-
-        ctx.rotate((i * 72 * Math.PI) / 180);
-
-        ctx.translate(0, -24);
-
-        const g = ctx.createLinearGradient(-13, -24, 13, 24);
-
-        g.addColorStop(0, fill);
-
-        g.addColorStop(0.55, fill);
-
-        g.addColorStop(1, a);
-
-        ctx.fillStyle = g;
-
-        ctx.beginPath();
-
-        ctx.ellipse(0, 0, 13, 24, 0, 0, Math.PI * 2);
-
-        ctx.fill();
-
-        ctx.restore();
-
-    }
-
-    ctx.fillStyle = a;
-
-    ctx.beginPath();
-
-    ctx.arc(0, 0, 11, 0, Math.PI * 2);
-
-    ctx.fill();
+    walkGrayscaleGemCanvas(ctx, root, fill, accent || fill, lightDeg);
 
     ctx.restore();
 
@@ -404,7 +397,9 @@ function drawBeadShape(ctx, b) {
 
         case 'flower':
 
-            drawFlowerBeadCanvas(ctx, x, y, r, fill, accent, spinRad);
+            /* Same fixed facet lighting as DOM flower bead (matches BeadVisual). */
+
+            drawFlowerBeadCanvas(ctx, x, y, r, fill, accent, 38, spinRad);
 
             break;
 

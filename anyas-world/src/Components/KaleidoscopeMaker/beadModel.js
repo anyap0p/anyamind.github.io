@@ -45,11 +45,11 @@ export function beadSizeToScale(size) {
     return 0.52 + (t / 100) * 1.02;
 }
 
-/** Tray pile: smaller beads → more orbs (large beads still show a dense pile). */
+/** Tray pile: smaller beads → slightly more orbs (capped low for performance vs full SVG per orb). */
 export function beadTrayOrbCount(size) {
     const s = Number(size);
     const t = Number.isFinite(s) ? Math.min(100, Math.max(0, s)) : 50;
-    return Math.round(20 + ((100 - t) / 100) * 24);
+    return Math.round(6 + ((100 - t) / 100) * 10);
 }
 
 /** Scale for the bead factory preview (same 0–100 range, larger min/max than before). */

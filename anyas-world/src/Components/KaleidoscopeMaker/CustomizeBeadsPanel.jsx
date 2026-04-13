@@ -35,7 +35,9 @@ export function CustomizeBeadsPanel({ onBack }) {
     const [factorySlot, setFactorySlot] = useState(null);
     const [factoryNonce, setFactoryNonce] = useState(0);
     const [trayRattle, setTrayRattle] = useState({ key: 0, ix: 0, iy: 0 });
+    const [trayEditorOut, setTrayEditorOut] = useState(false);
     const pendingRattleRef = useRef({ ix: 0, iy: 0 });
+    const editorExitAwaitingReturnRef = useRef(false);
     const flyRef = useRef(null);
 
     const updateBeads = useCallback((updater) => {
@@ -71,9 +73,31 @@ export function CustomizeBeadsPanel({ onBack }) {
                 }));
             }
         };
+        const onTrayMoveEnd = (e) => {
+            if (e.target !== el || e.propertyName !== 'transform') return;
+            if (!editorExitAwaitingReturnRef.current) return;
+            editorExitAwaitingReturnRef.current = false;
+            pendingRattleRef.current = makeTrayImpulse(0, -1);
+            setTrayEditorOut(false);
+        };
         el.addEventListener('transitionstart', onTrayMoveStart);
-        return () => el.removeEventListener('transitionstart', onTrayMoveStart);
+        el.addEventListener('transitionend', onTrayMoveEnd);
+        return () => {
+            el.removeEventListener('transitionstart', onTrayMoveStart);
+            el.removeEventListener('transitionend', onTrayMoveEnd);
+        };
     }, []);
+
+    useEffect(() => {
+        if (!trayEditorOut) return undefined;
+        const t = window.setTimeout(() => {
+            if (!editorExitAwaitingReturnRef.current) return;
+            editorExitAwaitingReturnRef.current = false;
+            pendingRattleRef.current = makeTrayImpulse(0, -1);
+            setTrayEditorOut(false);
+        }, 900);
+        return () => window.clearTimeout(t);
+    }, [trayEditorOut]);
 
     useEffect(() => {
         if (!flySettled) return undefined;
@@ -124,13 +148,24 @@ export function CustomizeBeadsPanel({ onBack }) {
         [factorySlot, updateBeads, closeFactory],
     );
 
+    const closeEditorWithTrayExit = useCallback(() => {
+        pendingRattleRef.current = makeTrayImpulse(0, 1);
+        editorExitAwaitingReturnRef.current = true;
+        setEditorSlot(null);
+        setTrayEditorOut(true);
+    }, []);
+
     const handleCustomizeBack = useCallback(() => {
         if (factoryMode) {
             closeFactory();
             return;
         }
+        if (editorSlot) {
+            closeEditorWithTrayExit();
+            return;
+        }
         onBack();
-    }, [factoryMode, closeFactory, onBack]);
+    }, [factoryMode, closeFactory, editorSlot, closeEditorWithTrayExit, onBack]);
 
     useEffect(() => {
         if (!factoryMode) return undefined;
@@ -147,8 +182,6 @@ export function CustomizeBeadsPanel({ onBack }) {
         setEditorSlot({ index: slotIndex, initial: { ...b } });
     }, [beads]);
 
-    const closeEditor = useCallback(() => setEditorSlot(null), []);
-
     const saveEditor = useCallback(
         (payload) => {
             if (editorSlot === null) return;
@@ -160,9 +193,9 @@ export function CustomizeBeadsPanel({ onBack }) {
                 next[index] = saved;
                 return next;
             });
-            setEditorSlot(null);
+            closeEditorWithTrayExit();
         },
-        [editorSlot, updateBeads],
+        [editorSlot, updateBeads, closeEditorWithTrayExit],
     );
 
     const deleteSlot = useCallback(
@@ -180,6 +213,7 @@ export function CustomizeBeadsPanel({ onBack }) {
         'kaleidoscope-maker__beadbox-fly',
         flySettled ? 'kaleidoscope-maker__beadbox-fly--settled' : '',
         factoryMode && flySettled ? 'kaleidoscope-maker__beadbox-fly--factory-out' : '',
+        trayEditorOut && flySettled && !factoryMode ? 'kaleidoscope-maker__beadbox-fly--editor-out' : '',
     ]
         .filter(Boolean)
         .join(' ');
@@ -208,7 +242,7 @@ export function CustomizeBeadsPanel({ onBack }) {
                         <BeadTrayGrid
                             beads={beads}
                             visible
-                            interactive={showSlotButtons}
+                            interactive={showSlotButtons && !trayEditorOut}
                             onAdd={openNew}
                             onEdit={openEdit}
                             onDelete={deleteSlot}
@@ -225,10 +259,10 @@ export function CustomizeBeadsPanel({ onBack }) {
                     initial={editorSlot.initial}
                     title="edit bead"
                     onSave={saveEditor}
-                    onCancel={closeEditor}
+                    onCancel={closeEditorWithTrayExit}
                     onRemove={() => {
                         deleteSlot(editorSlot.index);
-                        closeEditor();
+                        closeEditorWithTrayExit();
                     }}
                 />
             ) : null}

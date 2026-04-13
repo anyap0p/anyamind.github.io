@@ -9,6 +9,7 @@ import React, {
     useState,
 } from 'react';
 import { BeadVisual } from './BeadVisual';
+import { playBeadAddSparkleSound } from './beadAddSparkleSound';
 import { PETRI_MAX_BEADS } from './constants';
 import { addPetriBody, stepPetriWorld } from './petriDishPhysics';
 
@@ -86,6 +87,7 @@ export const PetriDishView = forwardRef(function PetriDishView({ onCountChange, 
                 addPetriBody(world, bead, idRef.current, gravityFromTilt(tiltRef.current));
                 onCountChange?.(world.bodies.length);
                 renderTick();
+                playBeadAddSparkleSound();
                 return true;
             },
             getCount() {

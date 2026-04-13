@@ -1,16 +1,6 @@
 /** Short plastic/wood tray wall click — Web Audio, no asset file. */
 
-let ctxRef = null;
-
-function getAudioContext() {
-    if (typeof window === 'undefined') return null;
-    if (!ctxRef) {
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) return null;
-        ctxRef = new Ctx();
-    }
-    return ctxRef;
-}
+import { getKaleidoscopeAudioContext } from './kaleidoscopeAudioContext';
 
 function playOneClick(ctx, gainPeak, delaySec) {
     const t0 = ctx.currentTime + delaySec;
@@ -38,7 +28,7 @@ function playOneClick(ctx, gainPeak, delaySec) {
  */
 export function playTrayWallClicks(hits) {
     if (!hits.length) return;
-    const ctx = getAudioContext();
+    const ctx = getKaleidoscopeAudioContext();
     if (!ctx) return;
     if (ctx.state === 'suspended') {
         void ctx.resume();
