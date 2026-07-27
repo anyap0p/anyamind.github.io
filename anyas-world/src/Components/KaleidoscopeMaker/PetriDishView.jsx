@@ -10,8 +10,10 @@ import React, {
 } from 'react';
 import { BeadVisual } from './BeadVisual';
 import { playBeadAddSparkleSound } from './beadAddSparkleSound';
-import { PETRI_MAX_BEADS } from './constants';
+import { makeGlitterBead } from './beadModel';
+import { GLITTER_PER_SPRINKLE, PETRI_MAX_BEADS, PETRI_MAX_GLITTER } from './constants';
 import { addPetriBody, stepPetriWorld } from './petriDishPhysics';
+import { drawGlitterSpeck } from './petriSourceCanvas';
 
 const G = 195;
 
@@ -19,9 +21,45 @@ function gravityFromTilt(tiltRad) {
     return { gx: G * Math.sin(tiltRad), gy: G * Math.cos(tiltRad) };
 }
 
+/** Beads and glitter specks share the world but have separate caps. */
+function countByKind(world) {
+    let beads = 0;
+    let glitter = 0;
+    for (const b of world.bodies) {
+        if (b.bead?.shape === 'glitter') glitter += 1;
+        else beads += 1;
+    }
+    return { beads, glitter };
+}
+
+/** Redraws one glitter plane (behind or in front of the beads) onto its overlay canvas. */
+function drawGlitterLayer(canvas, world, front, tiltRad) {
+    if (!canvas) return;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (w < 2 || h < 2) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const bw = Math.max(1, Math.round(w * dpr));
+    const bh = Math.max(1, Math.round(h * dpr));
+    if (canvas.width !== bw || canvas.height !== bh) {
+        canvas.width = bw;
+        canvas.height = bh;
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    if (!world) return;
+    for (const b of world.bodies) {
+        if (b.bead?.shape !== 'glitter' || Boolean(b.bead.zFront) !== front) continue;
+        drawGlitterSpeck(ctx, b.x, b.y, b.r, b.bead, b.id, tiltRad);
+    }
+}
+
 export const PetriDishView = forwardRef(function PetriDishView({ onCountChange, className = '' }, ref) {
     const rootRef = useRef(null);
     const wrapRef = useRef(null);
+    const glitterBackRef = useRef(null);
+    const glitterFrontRef = useRef(null);
     const worldRef = useRef(null);
     const tiltRef = useRef(0);
     const idRef = useRef(0);
@@ -82,16 +120,34 @@ export const PetriDishView = forwardRef(function PetriDishView({ onCountChange, 
                 syncWorldToSize();
                 const world = worldRef.current;
                 if (!world || !bead) return false;
-                if (world.bodies.length >= PETRI_MAX_BEADS) return false;
+                if (countByKind(world).beads >= PETRI_MAX_BEADS) return false;
                 idRef.current += 1;
                 addPetriBody(world, bead, idRef.current, gravityFromTilt(tiltRef.current));
-                onCountChange?.(world.bodies.length);
+                onCountChange?.(countByKind(world).beads);
+                renderTick();
+                playBeadAddSparkleSound();
+                return true;
+            },
+            /** Adds a pinch of glitter dots (colored, or holo rainbow-cycling). */
+            sprinkleGlitter({ fill, holo = false } = {}) {
+                syncWorldToSize();
+                const world = worldRef.current;
+                if (!world) return false;
+                const room = PETRI_MAX_GLITTER - countByKind(world).glitter;
+                const n = Math.min(GLITTER_PER_SPRINKLE, Math.max(0, room));
+                if (n === 0) return false;
+                const g = gravityFromTilt(tiltRef.current);
+                for (let i = 0; i < n; i += 1) {
+                    idRef.current += 1;
+                    addPetriBody(world, makeGlitterBead({ fill, holo }), idRef.current, g);
+                }
                 renderTick();
                 playBeadAddSparkleSound();
                 return true;
             },
             getCount() {
-                return worldRef.current?.bodies.length ?? 0;
+                const world = worldRef.current;
+                return world ? countByKind(world).beads : 0;
             },
             /** Physics bodies in dish order (for saving build configuration). */
             getBodies() {
@@ -114,6 +170,9 @@ export const PetriDishView = forwardRef(function PetriDishView({ onCountChange, 
             } else {
                 lastTRef.current = now;
             }
+            /* Glitter renders on canvas planes (a DOM node per speck would crush React at high counts). */
+            drawGlitterLayer(glitterBackRef.current, world, false, tiltRef.current);
+            drawGlitterLayer(glitterFrontRef.current, world, true, tiltRef.current);
             raf = requestAnimationFrame(loop);
         };
         raf = requestAnimationFrame(loop);
@@ -169,7 +228,15 @@ export const PetriDishView = forwardRef(function PetriDishView({ onCountChange, 
                 >
                     <div className="kaleidoscope-maker__petri-rim" aria-hidden />
                     <div ref={wrapRef} className="kaleidoscope-maker__petri-inner">
+                        {/* Glitter planes: canvas behind the beads, DOM beads, canvas in front. */}
+                        <canvas
+                            ref={glitterBackRef}
+                            className="kaleidoscope-maker__petri-glitter-canvas"
+                            style={{ zIndex: 1 }}
+                            aria-hidden
+                        />
                         {bodies.map((b) => {
+                            if (b.bead.shape === 'glitter') return null;
                             const spinRad =
                                 typeof b.spin === 'number' && Number.isFinite(b.spin)
                                     ? b.spin
@@ -185,17 +252,26 @@ export const PetriDishView = forwardRef(function PetriDishView({ onCountChange, 
                                         top: `${b.y - b.r}px`,
                                         width: `${b.r * 2}px`,
                                         height: `${b.r * 2}px`,
+                                        zIndex: 2,
                                     }}
                                 >
                                     <BeadVisual
                                         shape={b.bead.shape}
                                         fill={b.bead.fill}
                                         accent={b.bead.accent}
+                                        image={b.bead.image}
+                                        seed={b.id}
                                         lightDeg={spin}
                                     />
                                 </div>
                             );
                         })}
+                        <canvas
+                            ref={glitterFrontRef}
+                            className="kaleidoscope-maker__petri-glitter-canvas"
+                            style={{ zIndex: 3 }}
+                            aria-hidden
+                        />
                     </div>
                 </div>
             </div>

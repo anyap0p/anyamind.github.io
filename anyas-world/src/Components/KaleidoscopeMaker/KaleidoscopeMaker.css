@@ -1,14 +1,32 @@
+@import './kmLayoutTokens.css';
+
 .kaleidoscope-maker {
+    --km-font-scale: 1.5;
+    --km-space-scale: var(--km-font-scale);
+    --km-title-top: calc(0.5rem * var(--km-space-scale));
+    --km-title-plaque-h: calc(6.85rem * var(--km-space-scale));
+    --km-title-body-gap: calc(0.75rem * var(--km-space-scale));
+    --km-chrome-top-reserve: calc(var(--km-title-top) + var(--km-title-plaque-h) + var(--km-title-body-gap));
     --km-max-px: 640px;
     --km-max-vw: 62vw;
     --km-max-vh: 58vh;
     /* Petri dish: stay inset from viewport (build screen). */
     --km-petri-screen-gutter: 36px;
+    /* Dark muted aqua — readable on the cream art page (avoid white text). */
+    --km-ink: #324b4b;
+    --km-ink-muted: rgba(50, 75, 75, 0.62);
+    --km-ink-faint: rgba(50, 75, 75, 0.45);
 
     width: min(var(--km-max-px), var(--km-max-vw));
     max-width: 100%;
     aspect-ratio: 1;
     max-height: var(--km-max-vh);
+    color: var(--km-ink);
+    font-size: calc(1rem * var(--km-font-scale));
+}
+
+.kaleidoscope-maker button {
+    color: inherit;
 }
 
 /* Home: centered column of actions (per spec). */
@@ -32,17 +50,235 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    transition: width 0.45s ease, height 0.45s ease, max-height 0.45s ease;
+}
+
+/* Kaleidoscope view: snap to final size and fade in — no width/height slide. */
+.kaleidoscope-maker--hub.kaleidoscope-maker--kaleidoscope-layout {
+    transition: none;
+}
+
+.kaleidoscope-maker--hub.kaleidoscope-maker--home-screen {
+    overflow: visible;
+    /* Menu width — change this one variable to resize the home menu. */
+    --km-home-menu-width: 34rem;
+    --km-home-menu-font-scale: 0.75;
+    width: min(var(--km-home-menu-width), 94vw);
+    max-width: 94vw;
+    aspect-ratio: unset;
+    max-height: none;
+    height: auto;
+}
+
+/* Bead stash / factory: as large as possible below the title chrome. */
+.kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen {
+    --km-beadbox-aspect: 1.531;
+    --km-pager-extra: calc(2.25rem * var(--km-space-scale));
+    --km-chrome-top-reserve: 0px;
+    --km-chrome-bottom-reserve: calc(1rem * var(--km-space-scale));
+    --km-customize-max-w: min(98vw, 100%);
+    --km-customize-max-h: calc(100dvh - var(--km-chrome-top-reserve) - var(--km-chrome-bottom-reserve));
+    width: min(
+        var(--km-customize-max-w),
+        calc((var(--km-customize-max-h) - var(--km-pager-extra)) * var(--km-beadbox-aspect))
+    );
+    height: min(
+        var(--km-customize-max-h),
+        calc(var(--km-customize-max-w) / var(--km-beadbox-aspect) + var(--km-pager-extra))
+    );
+    max-width: var(--km-customize-max-w);
+    max-height: var(--km-customize-max-h);
+    aspect-ratio: unset;
+    overflow: visible;
+}
+
+.kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+    container-type: size;
+    container-name: km-customize;
+}
+
+.kaleidoscope-maker--customize-screen .kaleidoscope-maker__beadbox-fly {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Stash tray: never wider than the available height allows (tray height =
+   width / aspect, plus the pager). Without this the fly is sized by width
+   alone and overflows vertically — up under the title and down past the
+   pager. 100cqh resolves against the km-customize container (the maker). */
+.kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-fly {
+    width: min(
+        100%,
+        calc(
+            (
+                100cqh
+                - var(--km-pager-extra, calc(2.25rem * var(--km-space-scale)))
+                - calc(2 * var(--km-scallop, calc(9px * var(--km-space-scale))))
+            )
+            * var(--km-beadbox-aspect, 1.531)
+        )
+    );
+}
+
+/* Bead factory open: fill available height instead of bead-box aspect + pager. */
+.kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen:has(.kaleidoscope-maker__bead-factory--visible) {
+    --km-pager-extra: 0px;
+    --km-chrome-top-reserve: 0px;
+    --km-chrome-bottom-reserve: 0px;
+    --km-customize-max-w: 100%;
+    --km-customize-max-h: 100%;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    overflow: visible;
 }
 
 .kaleidoscope-maker__home-actions {
+    --km-home-cream: #f6f4ef;
+    --km-home-line: #4a6365;
+    --km-scallop: calc(9px * var(--km-space-scale));
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    padding: calc(calc(0.7rem * var(--km-space-scale)) + var(--km-scallop)) calc(calc(0.85rem * var(--km-space-scale)) + var(--km-scallop));
+    box-sizing: border-box;
+    background-color: var(--km-home-cream);
+    filter: drop-shadow(0 6px 22px rgba(50, 75, 75, 0.12));
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+.kaleidoscope-maker__home-actions--hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker--hub.kaleidoscope-maker--home-screen > .kaleidoscope-maker__scalloped-plaque-wrap {
+    width: 100%;
+}
+
+/* First visit home: hold at opacity 0 until fonts + backdrop canvas are ready. */
+.kaleidoscope-maker--hub.kaleidoscope-maker--home-screen.kaleidoscope-maker--home-intro-pending {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker--hub.kaleidoscope-maker--home-screen.kaleidoscope-maker--home-intro-ready {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.7s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kaleidoscope-maker--hub.kaleidoscope-maker--home-screen.kaleidoscope-maker--home-intro-ready {
+        transition: none;
+    }
+}
+
+.kaleidoscope-maker__scalloped-plaque-wrap {
+    overflow: visible;
+}
+
+/* Factory settings: scallop the background only — hovers/tooltips must not be clip-path clipped. */
+.kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible {
+    overflow: visible;
+}
+
+.kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible .kaleidoscope-maker__factory-plaque {
+    position: relative;
+    overflow: visible;
+    background-color: transparent;
+    filter: none;
+}
+
+.kaleidoscope-maker__bead-factory-tools .kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible {
+    filter: drop-shadow(0 6px 20px rgba(50, 75, 75, 0.12));
+}
+
+.kaleidoscope-maker__scalloped-plaque-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: var(--km-home-cream, #f6f4ef);
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__scalloped-plaque-content {
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: opacity 0.55s ease;
+    align-items: stretch;
+    gap: calc(0.55rem * var(--km-space-scale));
+    overflow: visible;
+}
+
+.kaleidoscope-maker__home-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.72;
+    overflow: hidden;
+    background: #f6f4ef;
+}
+
+.km-art-fullscreen .kaleidoscope-maker__home-backdrop {
+    z-index: 1;
+}
+
+.km-art-fullscreen .kaleidoscope-maker--hub.kaleidoscope-maker--home-screen {
+    --km-max-px: none;
+    --km-max-vw: 100%;
+    --km-max-vh: 100%;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    aspect-ratio: unset;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+.km-art-fullscreen .kaleidoscope-maker--home-screen .kaleidoscope-maker__home-actions {
+    z-index: 2;
+}
+
+.km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive) .kaleidoscope-maker--home-screen > .kaleidoscope-maker__scalloped-plaque-wrap {
+    width: 100%;
+    margin-inline: auto;
+}
+
+.kaleidoscope-maker__scallop-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__home-backdrop .kaleidoscope-maker__hex-root--ambient {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+.kaleidoscope-maker__home-backdrop .kaleidoscope-maker__hex-stage--ambient {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.kaleidoscope-maker__home-backdrop .kaleidoscope-maker__hex-canvas {
+    width: 100%;
+    height: 100%;
 }
 
 .kaleidoscope-maker__home-actions--fading {
@@ -50,11 +286,561 @@
     pointer-events: none;
 }
 
+/* Customize/build/gallery: faded home menu must not reserve vertical space. */
+.kaleidoscope-maker--customize-screen > .kaleidoscope-maker__scalloped-plaque-wrap,
+.kaleidoscope-maker--build-layout > .kaleidoscope-maker__scalloped-plaque-wrap,
+.kaleidoscope-maker--gallery > .kaleidoscope-maker__scalloped-plaque-wrap {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.kaleidoscope-maker__home-option {
+    position: relative;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: calc(0.6rem * var(--km-space-scale)) calc(0.35rem * var(--km-space-scale));
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    appearance: none;
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(
+        calc(0.78rem * var(--km-font-scale) * var(--km-home-menu-font-scale, 1)),
+        calc(2.1vw * var(--km-font-scale) * var(--km-home-menu-font-scale, 1)),
+        calc(0.95rem * var(--km-font-scale) * var(--km-home-menu-font-scale, 1))
+    );
+    letter-spacing: 0.03em;
+    line-height: 1.35;
+    text-align: center;
+    color: var(--km-ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__home-option + .kaleidoscope-maker__home-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    right: auto;
+    width: min(5rem, 30%);
+    height: 0;
+    border-top: 1px solid var(--km-home-line);
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__home-option:hover:not(:disabled),
+.kaleidoscope-maker__home-option:focus-visible:not(:disabled) {
+    color: #77a28e;
+}
+
+.kaleidoscope-maker__home-letter {
+    display: inline-block;
+}
+
+.kaleidoscope-maker__home-option:hover:not(:disabled) .kaleidoscope-maker__home-letter,
+.kaleidoscope-maker__home-option:focus-visible:not(:disabled) .kaleidoscope-maker__home-letter {
+    animation: km-home-letter-jump 0.55s ease-in-out;
+    animation-delay: calc(var(--letter-i, 0) * 0.045s);
+}
+
+@keyframes km-home-letter-jump {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(calc(-8px * var(--km-space-scale)));
+    }
+}
+
 .kaleidoscope-maker__customize-back {
     position: absolute;
     top: 0.35rem;
     left: 0.35rem;
     z-index: 10;
+}
+
+.kaleidoscope-maker__back-arrow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: calc(0.1rem * var(--km-space-scale)) calc(0.35rem * var(--km-space-scale));
+    border: none;
+    border-radius: calc(4px * var(--km-space-scale));
+    background: transparent;
+    font-family: 'Instrument Serif', serif;
+    font-size: calc(1.85rem * var(--km-font-scale));
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1;
+    color: var(--km-ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__back-arrow:hover,
+.kaleidoscope-maker__back-arrow:focus-visible {
+    color: #77a28e;
+}
+
+.kaleidoscope-maker__back-arrow-tip,
+.kaleidoscope-maker__forward-arrow-tip,
+.kaleidoscope-maker__chrome-tip {
+    padding: calc(0.22rem * var(--km-space-scale)) calc(0.5rem * var(--km-space-scale));
+    border-radius: calc(4px * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.18);
+    background: rgba(246, 244, 239, 0.98);
+    box-shadow: 0 2px 10px rgba(50, 75, 75, 0.14);
+    color: var(--km-ink, #324b4b);
+    font-family: 'Instrument Serif', serif;
+    font-size: calc(0.72rem * var(--km-font-scale));
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__back-arrow-tip,
+.kaleidoscope-maker__forward-arrow-tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.35rem);
+    z-index: 30;
+    opacity: 0;
+    transform: translateX(-50%) translateY(calc(0.2rem * var(--km-space-scale)));
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.kaleidoscope-maker__chrome-tip {
+    width: max-content;
+    max-width: min(16rem, calc(100vw - 1.25rem));
+    white-space: normal;
+    animation: km-chrome-tip-in 0.16s ease;
+}
+
+@keyframes km-chrome-tip-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(calc(-0.2rem * var(--km-space-scale)));
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.kaleidoscope-maker__back-arrow:hover .kaleidoscope-maker__back-arrow-tip,
+.kaleidoscope-maker__back-arrow:focus-visible .kaleidoscope-maker__back-arrow-tip,
+.kaleidoscope-maker__forward-arrow:hover .kaleidoscope-maker__forward-arrow-tip,
+.kaleidoscope-maker__forward-arrow:focus-visible .kaleidoscope-maker__forward-arrow-tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.kaleidoscope-maker__back-arrow--in-title {
+    /* Containing block for the tip; title-row rules may further position this. */
+    position: relative;
+    flex-shrink: 0;
+    z-index: auto;
+    padding: 0 calc(0.2rem * var(--km-space-scale)) 0 0;
+    font-size: calc(1.75rem * var(--km-font-scale));
+}
+
+.kaleidoscope-maker__forward-arrow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: calc(0.1rem * var(--km-space-scale)) calc(0.35rem * var(--km-space-scale));
+    border: none;
+    border-radius: calc(4px * var(--km-space-scale));
+    background: transparent;
+    font-family: 'Instrument Serif', serif;
+    font-size: calc(1.85rem * var(--km-font-scale));
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1;
+    color: var(--km-ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__forward-arrow:hover,
+.kaleidoscope-maker__forward-arrow:focus-visible {
+    color: #77a28e;
+}
+
+.kaleidoscope-maker__forward-arrow--in-title {
+    position: relative;
+    flex-shrink: 0;
+    z-index: auto;
+    padding: 0;
+    font-size: calc(1.75rem * var(--km-font-scale));
+}
+
+/* Hex view groups "back" + "shake it" + zoom in one top-left row. */
+.kaleidoscope-maker__hex-topleft {
+    position: absolute;
+    top: 0.35rem;
+    left: 0.35rem;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.4rem * var(--km-space-scale));
+    max-width: calc(100% - 0.7rem);
+}
+
+.kaleidoscope-maker__hex-topleft .kaleidoscope-maker__customize-back {
+    position: static;
+}
+
+.kaleidoscope-maker__hex-slider {
+    display: flex;
+    align-items: center;
+    gap: calc(0.35rem * var(--km-space-scale));
+    margin: 0;
+    padding: calc(0.2rem * var(--km-space-scale)) calc(0.45rem * var(--km-space-scale));
+    border-radius: calc(4px * var(--km-space-scale));
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(50, 75, 75, 0.22);
+    color: var(--km-ink);
+    font-size: calc(0.72rem * var(--km-font-scale));
+    line-height: 1;
+    cursor: default;
+    user-select: none;
+}
+
+.kaleidoscope-maker__hex-slider-label {
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+}
+
+.kaleidoscope-maker__hex-slider-input {
+    width: clamp(4.5rem, 14vw, 7.5rem);
+    margin: 0;
+    accent-color: var(--km-ink);
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__hex-slider--check {
+    cursor: pointer;
+    gap: calc(0.3rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker__hex-slider--check input {
+    margin: 0;
+    accent-color: var(--km-ink);
+    cursor: pointer;
+}
+
+/* —— Kaleidoscope view chrome: shortcuts left, title center, settings right —— */
+
+.kaleidoscope-maker__view-chrome-heading {
+    --km-view-chrome-gap: 16px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+    column-gap: var(--km-view-chrome-gap);
+    row-gap: var(--km-view-chrome-gap);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: calc(var(--km-title-plaque-h) + calc(0.5rem * var(--km-space-scale)));
+}
+
+.kaleidoscope-maker__view-chrome-heading > .kaleidoscope-maker__scalloped-plaque-wrap {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    justify-self: center;
+    z-index: 2;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__view-chrome-heading > .kaleidoscope-maker__scalloped-plaque-wrap .kaleidoscope-maker__chrome-title-plaque,
+.kaleidoscope-maker__view-chrome-heading > .kaleidoscope-maker__scalloped-plaque-wrap .km-art-fullscreen__title-plaque,
+.kaleidoscope-maker__view-chrome-heading > .kaleidoscope-maker__scalloped-plaque-wrap .kaleidoscope-maker-art__title-plaque {
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__view-chrome-heading .kaleidoscope-maker__chrome-title-plaque {
+    --km-view-chrome-title-pad-x: calc(1.2rem * var(--km-space-scale));
+    padding-inline: calc(var(--km-view-chrome-title-pad-x) + var(--km-scallop));
+}
+
+.kaleidoscope-maker__view-chrome-heading .km-art-fullscreen__title-row,
+.kaleidoscope-maker__view-chrome-heading .kaleidoscope-maker-art__title-row {
+    grid-template-columns: 2.55rem minmax(0, max-content) 2.55rem;
+    column-gap: calc(0.75rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker__view-chrome-side {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: max-content;
+    max-width: min(14rem, calc(50vw - 12rem));
+    min-width: 0;
+}
+
+.kaleidoscope-maker__view-chrome-side--left {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: start;
+}
+
+.kaleidoscope-maker__view-chrome-side--right {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    align-self: start;
+    margin-left: 0;
+}
+
+.kaleidoscope-maker__view-chrome-side .kaleidoscope-maker__scalloped-plaque-wrap {
+    width: 100%;
+}
+
+.kaleidoscope-maker__view-chrome-side .kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible {
+    filter: drop-shadow(0 6px 20px rgba(50, 75, 75, 0.12));
+    overflow: visible;
+}
+
+.kaleidoscope-maker__view-chrome-side .kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible .kaleidoscope-maker__view-plaque {
+    position: relative;
+    overflow: visible;
+    background-color: transparent;
+    filter: none;
+}
+
+.kaleidoscope-maker__view-chrome-side .kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible .kaleidoscope-maker__scalloped-plaque-bg {
+    background-color: var(--km-home-cream, #f6f4ef);
+}
+
+.kaleidoscope-maker__view-plaque {
+    --km-home-cream: #f6f4ef;
+    --km-home-line: #4a6365;
+    --km-scallop: calc(9px * var(--km-space-scale));
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.35rem * var(--km-space-scale));
+    box-sizing: border-box;
+    background-color: var(--km-home-cream);
+    filter: drop-shadow(0 6px 20px rgba(50, 75, 75, 0.12));
+    color: var(--km-ink);
+    width: 100%;
+}
+
+.kaleidoscope-maker__view-plaque--shortcuts {
+    padding: calc(calc(0.5rem * var(--km-space-scale)) + var(--km-scallop)) calc(calc(0.55rem * var(--km-space-scale)) + var(--km-scallop));
+}
+
+.kaleidoscope-maker__view-plaque--settings {
+    padding: calc(calc(0.5rem * var(--km-space-scale)) + var(--km-scallop)) calc(calc(0.55rem * var(--km-space-scale)) + var(--km-scallop));
+}
+
+.kaleidoscope-maker__view-plaque-title {
+    margin: 0;
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(calc(0.68rem * var(--km-font-scale)), calc(2vw * var(--km-font-scale)), calc(0.82rem * var(--km-font-scale)));
+    font-weight: normal;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--km-ink);
+}
+
+.kaleidoscope-maker__view-setting {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.22rem * var(--km-space-scale));
+    margin: 0;
+    cursor: default;
+}
+
+.kaleidoscope-maker__view-setting-label {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(calc(0.68rem * var(--km-font-scale)), calc(1.9vw * var(--km-font-scale)), calc(0.78rem * var(--km-font-scale)));
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.03em;
+    color: rgba(50, 75, 75, 0.72);
+    line-height: 1.2;
+    text-align: left;
+}
+
+.kaleidoscope-maker__view-setting-range {
+    width: 100%;
+    margin: 0;
+    accent-color: var(--km-ink);
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__view-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(0.3rem * var(--km-space-scale));
+    margin: 0;
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__view-toggle input {
+    margin: 0;
+    accent-color: var(--km-ink);
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__view-action {
+    margin: 0;
+    padding: calc(0.28rem * var(--km-space-scale)) calc(0.45rem * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.22);
+    border-radius: calc(4px * var(--km-space-scale));
+    background: transparent;
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(calc(0.62rem * var(--km-font-scale)), calc(1.8vw * var(--km-font-scale)), calc(0.74rem * var(--km-font-scale)));
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    color: var(--km-ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+}
+
+.kaleidoscope-maker__view-action:hover,
+.kaleidoscope-maker__view-action:focus-visible {
+    color: #77a28e;
+    border-color: rgba(50, 75, 75, 0.35);
+}
+
+.kaleidoscope-maker__view-action--stacked {
+    align-self: stretch;
+    text-align: center;
+}
+
+.kaleidoscope-maker__view-shortcuts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: calc(0.28rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker__view-shortcut {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: calc(0.45rem * var(--km-space-scale));
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.kaleidoscope-maker__view-shortcut-keys {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(calc(0.68rem * var(--km-font-scale)), calc(2vw * var(--km-font-scale)), calc(0.82rem * var(--km-font-scale)));
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    color: var(--km-ink);
+    flex-shrink: 0;
+}
+
+.kaleidoscope-maker__view-shortcut-label {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(calc(0.68rem * var(--km-font-scale)), calc(1.9vw * var(--km-font-scale)), calc(0.78rem * var(--km-font-scale)));
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.02em;
+    color: rgba(50, 75, 75, 0.62);
+    line-height: 1.25;
+    text-align: right;
+}
+
+@media (max-width: 680px) {
+    .kaleidoscope-maker__view-chrome-heading {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+        gap: var(--km-view-chrome-gap, 16px);
+        min-height: 0;
+    }
+
+    .kaleidoscope-maker__view-chrome-heading > .kaleidoscope-maker__scalloped-plaque-wrap {
+        grid-column: 1 / -1;
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        justify-self: center;
+        width: max-content;
+        max-width: 100%;
+        pointer-events: auto;
+    }
+
+    .kaleidoscope-maker__view-chrome-side {
+        flex: none;
+        width: 100%;
+        max-width: none;
+    }
+
+    .kaleidoscope-maker__view-chrome-side--left {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .kaleidoscope-maker__view-chrome-side--right {
+        grid-column: 2;
+        grid-row: 2;
+        margin-left: 0;
+    }
+
+    .kaleidoscope-maker__view-chrome-side .kaleidoscope-maker__scalloped-plaque-wrap {
+        flex: none;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .kaleidoscope-maker__view-action {
+        white-space: normal;
+    }
+
+    .kaleidoscope-maker__view-shortcut {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: calc(0.08rem * var(--km-space-scale));
+        white-space: normal;
+    }
+
+    .kaleidoscope-maker__view-shortcut-label {
+        text-align: left;
+    }
 }
 
 .kaleidoscope-maker__build-done {
@@ -80,130 +866,791 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-    padding: 1.75rem 0.35rem 0.35rem;
+    padding: calc(0.35rem * var(--km-space-scale)) calc(0.25rem * var(--km-space-scale));
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
     box-sizing: border-box;
     overflow: hidden;
+    background: #f6f4ef;
 }
 
 .kaleidoscope-maker__bead-factory--visible {
     z-index: 4;
     opacity: 1;
     pointer-events: auto;
+    overflow: visible;
+    padding: calc(calc(0.45rem * var(--km-space-scale)) + var(--km-scallop, calc(9px * var(--km-space-scale))))
+        calc(calc(0.35rem * var(--km-space-scale)) + var(--km-scallop, calc(9px * var(--km-space-scale))));
+    box-sizing: border-box;
 }
 
-/* Full-bleed preview with settings overlaid on the left */
+/* Bead factory: settings left, preview right — always side by side; preview shrinks if needed. */
 .kaleidoscope-maker__bead-factory-content {
-    position: relative;
+    --km-factory-preview-size: 6.5em;
+    --km-factory-stack-gap: clamp(0.35em, 1vw, 0.65em);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
     min-height: 0;
+    max-height: 100%;
+    padding: 0.5em;
     box-sizing: border-box;
+    overflow: visible;
+    gap: 1em;
+    container-type: size;
+    container-name: km-factory;
 }
 
-.kaleidoscope-maker__bead-factory-stage {
-    position: absolute;
-    inset: 0;
+.kaleidoscope-maker__bead-factory-stack {
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
-}
-
-.kaleidoscope-maker__bead-factory-settings {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    max-width: min(46%, 11.5rem);
-    width: auto;
+    gap: var(--km-factory-stack-gap, clamp(0.55em, 2.5vw, 1.5em));
+    flex: 1 1 auto;
+    flex-shrink: 1;
+    width: fit-content;
+    max-width: 100%;
     min-width: 0;
-    padding: 0.15rem 0.5rem 0.35rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
-    z-index: 2;
-    pointer-events: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-    box-sizing: border-box;
-    background: linear-gradient(
-        90deg,
-        rgba(6, 6, 14, 0.94) 0%,
-        rgba(6, 6, 14, 0.78) 72%,
-        rgba(6, 6, 14, 0) 100%
-    );
-    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+    max-height: 100%;
+    margin-inline: auto;
+    overflow: visible;
 }
 
-.kaleidoscope-maker__bead-factory-heading {
-    margin: 0;
-    max-width: 100%;
-    font: inherit;
-    font-size: 1em;
-    font-weight: normal;
-    line-height: 1.25;
-}
-
-.kaleidoscope-maker__bead-factory-settings label {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem;
-    max-width: 100%;
-    font-size: 0.85em;
-}
-
-.kaleidoscope-maker__bead-factory-settings button {
-    max-width: 100%;
-    text-align: left;
-}
-
-.kaleidoscope-maker__bead-factory-preview {
-    width: min(60vmin, 13.5rem);
-    height: min(60vmin, 13.5rem);
-    max-width: 72%;
-    max-height: 88%;
+.kaleidoscope-maker__bead-factory-header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-sizing: border-box;
+    width: 100%;
+    max-width: min(100%, 36rem);
+    margin: 0;
+    padding: 0 0.35em;
+    overflow: visible;
 }
 
-.kaleidoscope-maker__bead-factory-preview-scaler {
-    width: 72%;
-    height: 72%;
+.kaleidoscope-maker__bead-factory-heading {
+    margin: 0;
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(calc(0.95rem * var(--km-font-scale)), calc(2.8vw * var(--km-font-scale)), calc(1.2rem * var(--km-font-scale)));
+    font-weight: normal;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    color: var(--km-ink);
+    text-align: center;
+}
+
+.kaleidoscope-maker__bead-factory-nav {
+    position: absolute;
+    top: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: calc(0.1rem * var(--km-space-scale)) calc(0.25rem * var(--km-space-scale));
+    border: none;
+    border-radius: calc(4px * var(--km-space-scale));
+    background: transparent;
+    font-family: 'Instrument Serif', serif;
+    font-size: calc(1.55rem * var(--km-font-scale));
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1;
+    color: var(--km-ink);
+    cursor: pointer;
+    transform: translateY(-50%);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__bead-factory-nav--cancel {
+    left: 0;
+}
+
+.kaleidoscope-maker__bead-factory-nav--save {
+    right: 0;
+}
+
+.kaleidoscope-maker__bead-factory-nav:hover,
+.kaleidoscope-maker__bead-factory-nav:focus-visible {
+    color: #77a28e;
+}
+
+.kaleidoscope-maker__bead-factory-nav-tip {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 0.3rem);
+    z-index: 30;
+    width: max-content;
+    max-width: min(11rem, 46vw);
+    padding: calc(0.18rem * var(--km-space-scale)) calc(0.4rem * var(--km-space-scale));
+    border-radius: calc(4px * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.18);
+    background: rgba(246, 244, 239, 0.98);
+    box-shadow: 0 2px 8px rgba(50, 75, 75, 0.12);
+    color: var(--km-ink, #324b4b);
+    font-family: 'Instrument Serif', serif;
+    font-size: calc(0.68rem * var(--km-font-scale));
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+    text-align: center;
+    white-space: normal;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(-50%) translateY(calc(-0.15rem * var(--km-space-scale)));
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.kaleidoscope-maker__bead-factory-nav--cancel .kaleidoscope-maker__bead-factory-nav-tip {
+    left: 0;
+    transform: translateX(0) translateY(calc(-0.15rem * var(--km-space-scale)));
+}
+
+.kaleidoscope-maker__bead-factory-nav--cancel:hover .kaleidoscope-maker__bead-factory-nav-tip,
+.kaleidoscope-maker__bead-factory-nav--cancel:focus-visible .kaleidoscope-maker__bead-factory-nav-tip {
+    transform: translateX(0) translateY(0);
+}
+
+.kaleidoscope-maker__bead-factory-nav:hover .kaleidoscope-maker__bead-factory-nav-tip,
+.kaleidoscope-maker__bead-factory-nav:focus-visible .kaleidoscope-maker__bead-factory-nav-tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.kaleidoscope-maker__bead-factory-stage {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    transform-origin: center center;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__bead-factory-preview {
+    width: var(--km-factory-preview-size);
+    height: var(--km-factory-preview-size);
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.kaleidoscope-maker__bead-factory-preview-scaler {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1;
+}
+
+.kaleidoscope-maker__bead-factory-preview-scaler > .kaleidoscope-maker__bead-visual {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.kaleidoscope-maker__bead-factory-preview-scaler > .kaleidoscope-maker__bead-visual--oval {
+    width: 72%;
+    height: 100%;
+}
+
+.kaleidoscope-maker__bead-factory-tools {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    min-width: 0;
+    max-width: calc(
+        100% - var(--km-factory-preview-size) - var(--km-factory-stack-gap, clamp(0.55em, 2.5vw, 1.5em))
+    );
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.kaleidoscope-maker__bead-factory-tools .kaleidoscope-maker__scalloped-plaque-wrap {
+    width: fit-content;
+    max-width: 100%;
+    overflow: visible;
+}
+
+.kaleidoscope-maker__factory-plaque {
+    --km-home-cream: #f6f4ef;
+    --km-scallop: calc(9px * var(--km-space-scale));
+    --km-factory-plaque-max: 23.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.55rem * var(--km-space-scale));
+    width: fit-content;
+    max-width: min(var(--km-factory-plaque-max), 100%);
+    margin: 0 auto;
+    padding: calc(calc(0.65rem * var(--km-space-scale)) + var(--km-scallop)) calc(calc(0.55rem * var(--km-space-scale)) + var(--km-scallop))
+        calc(calc(0.75rem * var(--km-space-scale)) + var(--km-scallop));
+    box-sizing: border-box;
+    background-color: var(--km-home-cream);
+    filter: drop-shadow(0 6px 20px rgba(50, 75, 75, 0.12));
+    color: var(--km-ink);
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__bead-size-slider {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    cursor: pointer;
+    padding-top: calc(0.55rem * var(--km-space-scale));
+    border-top: 1px solid rgba(74, 99, 101, 0.14);
+}
+
+.kaleidoscope-maker__factory-setting-value {
+    font-weight: 700;
+    color: var(--km-ink-muted);
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__bead-color-controls {
+    gap: calc(0.35rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-picker {
+    gap: calc(0.35rem * var(--km-space-scale));
+    padding-top: calc(0.55rem * var(--km-space-scale));
+    border-top: 1px solid rgba(74, 99, 101, 0.14);
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__bead-color-controls-title,
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-picker-title {
+    margin: 0 0 calc(0.1rem * var(--km-space-scale));
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(calc(0.68rem * var(--km-font-scale)), calc(2vw * var(--km-font-scale)), calc(0.82rem * var(--km-font-scale)));
+    font-weight: normal;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--km-ink);
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__bead-color-swatch-label,
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__bead-color-dice-label {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(calc(0.62rem * var(--km-font-scale)), calc(1.8vw * var(--km-font-scale)), calc(0.72rem * var(--km-font-scale)));
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.03em;
+    color: rgba(50, 75, 75, 0.72);
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__bead-color-row,
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-picker-row {
+    justify-content: center;
+    gap: calc(0.45rem * var(--km-space-scale)) calc(0.65rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-picker-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: auto;
+    max-width: 100%;
+    margin-inline: auto;
+    padding-top: calc(0.45rem * var(--km-space-scale));
+    overflow: visible;
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-picker {
+    overflow: visible;
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-option-upload-wrap {
+    z-index: 12;
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-option {
+    min-width: clamp(2.5rem, 7.5vmin, 3.1rem);
+    min-height: clamp(3.35rem, 9.5vmin, 4rem);
+    padding: calc(1rem * var(--km-space-scale)) calc(0.45rem * var(--km-space-scale)) calc(0.25rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-option-bead {
+    width: clamp(2rem, 6.5vmin, 2.65rem);
+    height: clamp(2rem, 6.5vmin, 2.65rem);
+}
+
+.kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-option-badge {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 700;
+    font-style: normal;
 }
 
 .kaleidoscope-maker__bead-factory-controls {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.3rem;
-    margin-top: 0.35rem;
+    gap: calc(0.3rem * var(--km-space-scale));
+    margin-top: calc(0.35rem * var(--km-space-scale));
     width: 100%;
 }
 
-.kaleidoscope-maker__bead-editor-preview {
-    width: 3.25rem;
-    height: 3.25rem;
-    margin: 0 auto 0.6rem;
+.kaleidoscope-maker__bead-size-slider {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.12rem * var(--km-space-scale));
+    width: 100%;
+    margin: 0;
+    font-size: 0.85em;
+    color: var(--km-ink, #324b4b);
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__bead-size-slider-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: calc(0.5rem * var(--km-space-scale));
+    letter-spacing: 0.02em;
+}
+
+.kaleidoscope-maker__bead-size-slider input[type='range'] {
+    width: 100%;
+    margin: 0;
+    accent-color: var(--km-ink, #324b4b);
+    cursor: pointer;
+}
+
+/* —— Shape picker (factory + full editor) —— */
+.kaleidoscope-maker__shape-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.12rem * var(--km-space-scale));
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.kaleidoscope-maker__shape-picker-title {
+    margin: 0;
+    font-size: calc(0.85rem * var(--km-font-scale));
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--km-ink, #324b4b);
+}
+
+.kaleidoscope-maker__shape-picker-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: calc(0.55rem * var(--km-space-scale)) calc(0.65rem * var(--km-space-scale));
+    padding: calc(0.35rem * var(--km-space-scale)) 0 0;
+    /* Room for hover lift + selected badge lives on each option */
+    overflow: visible;
+}
+
+.kaleidoscope-maker__shape-option {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(0.2rem * var(--km-space-scale));
+    margin: 0;
+    /* Tall hit target: badge row + hover lift headroom; bead animates inside this box. */
+    min-width: clamp(2.85rem, 8.5vmin, 3.45rem);
+    min-height: clamp(3.75rem, 11vmin, 4.5rem);
+    padding: calc(1.15rem * var(--km-space-scale)) calc(0.55rem * var(--km-space-scale)) calc(0.3rem * var(--km-space-scale));
+    border: none;
+    border-radius: calc(8px * var(--km-space-scale));
+    background: transparent;
+    color: var(--km-ink, #324b4b);
+    cursor: pointer;
+    font: inherit;
+    line-height: 1.15;
+    transition:
+        filter 0.28s ease,
+        background-color 0.28s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__shape-option-bead {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: clamp(2.1rem, 7vmin, 2.75rem);
+    height: clamp(2.1rem, 7vmin, 2.75rem);
+    pointer-events: none;
+    transform: translateY(0) scale(1) rotate(0deg);
+    transform-origin: center bottom;
+    transition:
+        transform 0.32s cubic-bezier(0.22, 1, 0.32, 1),
+        filter 0.28s ease;
 }
 
-.kaleidoscope-maker__bead-editor-factory-controls {
-    margin-top: 0.5rem;
-    margin-bottom: 0.25rem;
+.kaleidoscope-maker__shape-option-bead .kaleidoscope-maker__bead-visual {
+    width: 100%;
+    height: 100%;
+}
+
+.kaleidoscope-maker__shape-option-bead .kaleidoscope-maker__bead-visual--oval {
+    width: 76%;
+    height: 100%;
+    margin-inline: auto;
+}
+
+.kaleidoscope-maker__shape-option:hover,
+.kaleidoscope-maker__shape-option:focus-visible {
+    z-index: 2;
+    outline: none;
+}
+
+.kaleidoscope-maker__shape-option:hover .kaleidoscope-maker__shape-option-bead,
+.kaleidoscope-maker__shape-option:focus-visible .kaleidoscope-maker__shape-option-bead {
+    transform: translateY(calc(-0.75rem * var(--km-space-scale))) scale(1.18) rotate(var(--shape-tilt, -6deg));
+}
+
+.kaleidoscope-maker__shape-option--selected {
+    filter: brightness(1.18) saturate(1.05);
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.kaleidoscope-maker__shape-option--selected:hover,
+.kaleidoscope-maker__shape-option--selected:focus-visible {
+    filter: brightness(1.24) saturate(1.08);
+    background: rgba(255, 255, 255, 0.48);
+}
+
+.kaleidoscope-maker__shape-option-badge {
+    position: absolute;
+    top: 0.1rem;
+    left: 50%;
+    z-index: 3;
+    transform: translateX(-50%);
+    padding: calc(0.12rem * var(--km-space-scale)) calc(0.4rem * var(--km-space-scale));
+    border-radius: calc(4px * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.28);
+    background: rgba(246, 244, 239, 0.96);
+    color: var(--km-ink, #324b4b);
+    font-size: calc(0.58rem * var(--km-font-scale));
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(50, 75, 75, 0.12);
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__shape-option-upload-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.kaleidoscope-maker__shape-option-upload-placeholder img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+}
+
+.kaleidoscope-maker__shape-option-upload-tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.28rem);
+    z-index: 30;
+    width: max-content;
+    max-width: min(11rem, 52vw);
+    padding: calc(0.18rem * var(--km-space-scale)) calc(0.4rem * var(--km-space-scale));
+    border-radius: calc(4px * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.18);
+    background: rgba(246, 244, 239, 0.98);
+    box-shadow: 0 2px 8px rgba(50, 75, 75, 0.12);
+    color: var(--km-ink, #324b4b);
+    font-family: 'Instrument Serif', serif;
+    font-size: calc(0.68rem * var(--km-font-scale));
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+    text-align: center;
+    white-space: normal;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(-50%) translateY(calc(0.12rem * var(--km-space-scale)));
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.kaleidoscope-maker__shape-option--upload:hover .kaleidoscope-maker__shape-option-upload-tip,
+.kaleidoscope-maker__shape-option--upload:focus-visible .kaleidoscope-maker__shape-option-upload-tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.kaleidoscope-maker__shape-option-upload-wrap:has(.kaleidoscope-maker__upload-privacy-tip)
+    .kaleidoscope-maker__shape-option-upload-tip {
+    opacity: 0;
+}
+
+.kaleidoscope-maker__shape-option-upload-wrap {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    flex-shrink: 0;
+    overflow: visible;
+    z-index: 6;
+}
+
+.kaleidoscope-maker__upload-privacy-tip {
+    /* Sit above the upload control so it isn’t clipped by the frame’s right edge. */
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.45rem);
+    z-index: 20;
+    display: flex;
+    align-items: flex-start;
+    gap: calc(0.35rem * var(--km-space-scale));
+    width: max-content;
+    max-width: min(13.5rem, 70vw);
+    padding: calc(0.45rem * var(--km-space-scale)) calc(0.5rem * var(--km-space-scale)) calc(0.45rem * var(--km-space-scale)) calc(0.55rem * var(--km-space-scale));
+    border-radius: calc(10px * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.2);
+    background: rgba(246, 244, 239, 0.98);
+    box-shadow: 0 4px 14px rgba(50, 75, 75, 0.14);
+    color: var(--km-ink, #324b4b);
+    transform: translateX(-50%);
+    animation: km-privacy-tip-in 0.28s cubic-bezier(0.22, 1, 0.32, 1);
+}
+
+.kaleidoscope-maker__upload-privacy-tip::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid rgba(50, 75, 75, 0.2);
+    border-bottom: 1px solid rgba(50, 75, 75, 0.2);
+    background: rgba(246, 244, 239, 0.98);
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.kaleidoscope-maker__upload-privacy-tip-text {
+    margin: 0;
+    font-size: calc(0.68rem * var(--km-font-scale));
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+    text-align: left;
+}
+
+.kaleidoscope-maker__upload-privacy-tip-close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(50, 75, 75, 0.08);
+    color: var(--km-ink, #324b4b);
+    font: inherit;
+    font-size: calc(0.95rem * var(--km-font-scale));
+    line-height: 1;
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__upload-privacy-tip-close:hover,
+.kaleidoscope-maker__upload-privacy-tip-close:focus-visible {
+    background: rgba(50, 75, 75, 0.16);
+    outline: none;
+}
+
+@keyframes km-privacy-tip-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(calc(0.35rem * var(--km-space-scale))) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+.kaleidoscope-maker__shape-picker-file {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: calc(-1px * var(--km-space-scale));
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.kaleidoscope-maker__bead-color-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.12rem * var(--km-space-scale));
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.kaleidoscope-maker__bead-color-controls-title {
+    margin: 0;
+    font-size: calc(0.85rem * var(--km-font-scale));
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--km-ink, #324b4b);
+    text-align: center;
+}
+
+.kaleidoscope-maker__bead-color-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    gap: calc(0.85rem * var(--km-space-scale));
+    flex-wrap: wrap;
+}
+
+.kaleidoscope-maker__bead-color-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(0.15rem * var(--km-space-scale));
+    margin: 0;
+    font-size: calc(0.72rem * var(--km-font-scale));
+    color: var(--km-ink-muted, rgba(50, 75, 75, 0.62));
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__bead-color-swatch-label {
+    letter-spacing: 0.02em;
+}
+
+.kaleidoscope-maker__bead-color-swatch input[type='color'] {
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    border: 1.5px solid rgba(50, 75, 75, 0.28);
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.kaleidoscope-maker__bead-color-swatch input[type='color']::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.kaleidoscope-maker__bead-color-swatch input[type='color']::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.kaleidoscope-maker__bead-color-dice-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(0.15rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker__bead-color-dice-label {
+    font-size: calc(0.72rem * var(--km-font-scale));
+    letter-spacing: 0.02em;
+    color: var(--km-ink-muted, rgba(50, 75, 75, 0.62));
+    line-height: 1.15;
+}
+
+.kaleidoscope-maker__bead-color-dice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
+    transform-origin: center center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__bead-color-dice img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__bead-color-dice:hover {
+    filter: brightness(1.06);
+}
+
+.kaleidoscope-maker__bead-color-dice--shake {
+    animation: km-dice-shake 0.55s ease;
+}
+
+@keyframes km-dice-shake {
+    0% {
+        transform: rotate(0deg) translate(0, 0);
+    }
+    14% {
+        transform: rotate(-14deg) translate(calc(-2px * var(--km-space-scale)), calc(1px * var(--km-space-scale)));
+    }
+    28% {
+        transform: rotate(12deg) translate(calc(3px * var(--km-space-scale)), calc(-2px * var(--km-space-scale)));
+    }
+    42% {
+        transform: rotate(-10deg) translate(calc(-3px * var(--km-space-scale)), calc(-1px * var(--km-space-scale)));
+    }
+    56% {
+        transform: rotate(16deg) translate(calc(2px * var(--km-space-scale)), calc(2px * var(--km-space-scale)));
+    }
+    70% {
+        transform: rotate(-8deg) translate(calc(-1px * var(--km-space-scale)), calc(1px * var(--km-space-scale)));
+    }
+    84% {
+        transform: rotate(6deg) translate(calc(1px * var(--km-space-scale)), calc(-1px * var(--km-space-scale)));
+    }
+    100% {
+        transform: rotate(0deg) translate(0, 0);
+    }
+}
+
+.kaleidoscope-maker__bead-editor .kaleidoscope-maker__shape-picker-row {
+    justify-content: center;
+}
+
+@media (max-height: 520px) {
+    .kaleidoscope-maker__bead-editor-content {
+        --km-factory-preview-size: clamp(2.65rem, 16vh, 4rem);
+        --km-bead-editor-ui-scale: 0.84;
+    }
 }
 
 .kaleidoscope-maker__beadbox-fly {
@@ -214,13 +1661,17 @@
     z-index: 3;
     width: 80%;
     max-width: 100%;
-    /* Start below center; slide up into place */
-    transform: translate(-50%, calc(-50% + min(72vh, 200%)));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Start below the viewport; slide up into the centered rest position. */
+    transform: translate(-50%, 100vh);
     transition: transform 0.78s cubic-bezier(0.22, 1, 0.32, 1);
 }
 
 .kaleidoscope-maker__beadbox-fly--settled {
-    transform: translate(-50%, -50%);
+    /* Nudge up so the box pager below the tray stays inside the frame */
+    transform: translate(-50%, calc(-50% - calc(1.15rem * var(--km-space-scale))));
 }
 
 /* Tray moves up off-screen (factory or bead editor closing); then reverses to settled */
@@ -228,6 +1679,10 @@
 .kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--editor-out {
     transform: translate(-50%, calc(-50% - min(130vh, 240%)));
     transition: transform 0.65s ease;
+}
+
+.kaleidoscope-maker__beadbox-stack-rotator {
+    display: contents;
 }
 
 .kaleidoscope-maker__beadbox-stack {
@@ -241,6 +1696,59 @@
     height: auto;
 }
 
+.kaleidoscope-maker__beadbox-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(0.55rem * var(--km-space-scale));
+    flex-shrink: 0;
+    width: 100%;
+    margin-top: calc(0.55rem * var(--km-space-scale));
+    color: var(--km-ink, #324b4b);
+    font-size: clamp(calc(0.72rem * var(--km-font-scale)), calc(2.2vmin * var(--km-font-scale)), calc(0.85rem * var(--km-font-scale)));
+    letter-spacing: 0.02em;
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__beadbox-pager-label {
+    min-width: 5.5rem;
+    text-align: center;
+    color: var(--km-ink-muted, rgba(50, 75, 75, 0.62));
+}
+
+.kaleidoscope-maker__beadbox-pager-btn {
+    margin: 0;
+    padding: calc(0.15rem * var(--km-space-scale)) calc(0.45rem * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.28);
+    border-radius: calc(4px * var(--km-space-scale));
+    background: rgba(246, 244, 239, 0.88);
+    color: var(--km-ink, #324b4b);
+    font: inherit;
+    font-size: 0.85em;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.kaleidoscope-maker__beadbox-pager-btn:hover:not(:disabled) {
+    background: rgba(232, 236, 232, 0.98);
+}
+
+.kaleidoscope-maker__beadbox-pager-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.kaleidoscope-maker__build-beadbox-fly .kaleidoscope-maker__beadbox-pager {
+    margin-top: calc(0.55rem * var(--km-space-scale));
+    position: relative;
+    z-index: 2;
+}
+
+/* Build tray: pager sits under the box image in the vertical stack. */
+.kaleidoscope-maker__build-beadbox-stack + .kaleidoscope-maker__beadbox-pager {
+    margin-top: calc(0.65rem * var(--km-space-scale));
+}
+
 /* Inner compartment area — edge-aligned to tray wells (8×4: 4 + spine + 4) */
 .kaleidoscope-maker__bead-slot-grid {
     position: absolute;
@@ -251,7 +1759,7 @@
     left: 2%;
     display: flex;
     flex-direction: column;
-    row-gap: clamp(0px, 1vmin, 10px);
+    row-gap: clamp(0px, calc(1vmin * var(--km-space-scale)), calc(10px * var(--km-space-scale)));
     opacity: 0;
     box-sizing: border-box;
     overflow: visible;
@@ -265,7 +1773,7 @@
     min-height: 0;
     align-items: stretch;
     /* One gap between left/right halves = center spine (matches tray rib) */
-    gap: clamp(3px, 1.75%, 14px);
+    gap: clamp(calc(3px * var(--km-space-scale)), 1.75%, calc(14px * var(--km-space-scale)));
     overflow: visible;
 }
 
@@ -274,7 +1782,7 @@
     min-width: 0;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: clamp(0px,3vmin, 3px);
+    column-gap: clamp(0px,calc(3vmin * var(--km-space-scale)), calc(3px * var(--km-space-scale)));
     overflow: visible;
 }
 
@@ -293,7 +1801,7 @@
     height: 100%;
     overflow: hidden;
     isolation: isolate;
-    border-radius: 2px;
+    border-radius: calc(2px * var(--km-space-scale));
 }
 
 .kaleidoscope-maker__slot-filled {
@@ -302,7 +1810,7 @@
     height: 100%;
     min-width: 0;
     min-height: 0;
-    border-radius: 2px;
+    border-radius: calc(2px * var(--km-space-scale));
     cursor: default;
     outline: none;
     overflow: hidden;
@@ -315,8 +1823,17 @@
 .kaleidoscope-maker__slot-pile {
     position: absolute;
     inset: 0;
+    z-index: 1;
     overflow: visible;
     pointer-events: none;
+    transition: transform 0.15s ease;
+}
+
+.kaleidoscope-maker__slot-filled:hover .kaleidoscope-maker__slot-pile,
+.kaleidoscope-maker__slot-filled:focus-within .kaleidoscope-maker__slot-pile,
+.kaleidoscope-maker__slot-filled:hover .kaleidoscope-maker__slot-actions,
+.kaleidoscope-maker__slot-filled:focus-within .kaleidoscope-maker__slot-actions {
+    transform: scale(1.03);
 }
 
 .kaleidoscope-maker__slot-bead {
@@ -350,6 +1867,18 @@
     );
 }
 
+.kaleidoscope-maker__bead-visual--circle {
+    aspect-ratio: 1;
+    border-radius: 50%;
+}
+
+.kaleidoscope-maker__bead-visual--oval {
+    width: 76%;
+    height: 100%;
+    margin-inline: auto;
+    border-radius: 50%;
+}
+
 .kaleidoscope-maker__bead-visual--svg {
     border: none;
     box-shadow: none;
@@ -359,23 +1888,281 @@
     filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
 }
 
-.kaleidoscope-maker__bead-visual--oval {
+.kaleidoscope-maker__bead-visual--image {
+    border: none;
+    box-shadow: none;
+    background: none;
+    border-radius: 0;
+    object-fit: contain;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
+}
+
+.kaleidoscope-maker__petri-bead .kaleidoscope-maker__bead-visual--image {
+    filter: none;
+}
+
+/* Thumbnails render specks inside petri-bead wrappers (which normally strip shadows); keep the glow. */
+.kaleidoscope-maker__petri-bead .kaleidoscope-maker__bead-visual--glitter {
+    box-shadow: 0 0 3px 1px color-mix(in srgb, var(--bead-fill, #ffffff) 55%, transparent);
+}
+
+/* ---- Glitter specks ---- */
+
+.kaleidoscope-maker__bead-visual--glitter {
+    display: block;
+    border: none;
     border-radius: 50%;
+    background: radial-gradient(
+        circle at 34% 30%,
+        color-mix(in srgb, var(--bead-fill) 45%, white) 0%,
+        var(--bead-fill) 58%,
+        color-mix(in srgb, var(--bead-fill) 78%, black) 100%
+    );
+    /* Soft glow so static specks (thumbnails) share the canvas glitter's ethereal halo. */
+    box-shadow: 0 0 3px 1px color-mix(in srgb, var(--bead-fill, #ffffff) 55%, transparent);
+}
+
+/* Holo speck: silvery grain that throws sharp spectral flashes (real holo glitter
+   sparkles in discrete glints, not a smooth rainbow fade). Duration/delay and a
+   hue-rotate offset are randomized inline per speck so no two twinkle alike. */
+.kaleidoscope-maker__bead-visual--glitter-holo {
+    background: #ced1d8;
+    animation-name: km-glitter-holo-sparkle;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes km-glitter-holo-sparkle {
+    0%,
+    13% {
+        background-color: #ced1d8;
+    }
+    13.01%,
+    18% {
+        background-color: hsl(0, 96%, 58%);
+    }
+    18.01%,
+    33% {
+        background-color: #dadce2;
+    }
+    33.01%,
+    38% {
+        background-color: hsl(205, 96%, 60%);
+    }
+    38.01%,
+    52% {
+        background-color: #c4c8d0;
+    }
+    52.01%,
+    56% {
+        background-color: #ffffff;
+    }
+    56.01%,
+    70% {
+        background-color: #d4d7dd;
+    }
+    70.01%,
+    75% {
+        background-color: hsl(130, 90%, 55%);
+    }
+    75.01%,
+    88% {
+        background-color: #cbced6;
+    }
+    88.01%,
+    93% {
+        background-color: hsl(290, 95%, 62%);
+    }
+    93.01%,
+    100% {
+        background-color: #ced1d8;
+    }
+}
+
+/* Glitter overlay planes inside the dish (behind and in front of the DOM beads). */
+.kaleidoscope-maker__petri-glitter-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Glitter bottle + popover (build screen) — default: bottom-right of the dish. */
+
+.kaleidoscope-maker__glitter-corner {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 12;
+}
+
+.kaleidoscope-maker__glitter-bottle {
+    position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__glitter-bottle img {
+    display: block;
+    width: clamp(3rem, 9vmin, 4.6rem);
+    height: auto;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+    transition: transform 0.22s ease;
+    transform-origin: bottom center;
+}
+
+.kaleidoscope-maker__glitter-bottle:hover img,
+.kaleidoscope-maker__glitter-bottle:focus-visible img {
+    transform: scale(1.18);
+}
+
+.kaleidoscope-maker__glitter-hint {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(0.25rem * var(--km-space-scale)));
+    white-space: nowrap;
+    padding: calc(0.28rem * var(--km-space-scale)) calc(0.55rem * var(--km-space-scale));
+    border-radius: calc(6px * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.18);
+    background: rgba(246, 244, 239, 0.96);
+    box-shadow: 0 2px 10px rgba(50, 75, 75, 0.12);
+    font-size: calc(0.85rem * var(--km-font-scale));
+    color: var(--km-ink);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+}
+
+.kaleidoscope-maker__glitter-bottle:hover .kaleidoscope-maker__glitter-hint,
+.kaleidoscope-maker__glitter-bottle:focus-visible .kaleidoscope-maker__glitter-hint {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Popover replaces the hint spot; keep the hint out of the way while open. */
+.kaleidoscope-maker__glitter-bottle[aria-expanded='true'] .kaleidoscope-maker__glitter-hint {
+    display: none;
+}
+
+.kaleidoscope-maker__glitter-popover {
+    position: absolute;
+    bottom: calc(100% + 0.55rem);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.45rem * var(--km-space-scale));
+    padding: calc(0.6rem * var(--km-space-scale));
+    background: rgba(246, 244, 239, 0.96);
+    border: 1px solid rgba(50, 75, 75, 0.22);
+    border-radius: calc(0.65rem * var(--km-space-scale));
+    box-shadow: 0 6px 22px rgba(50, 75, 75, 0.12);
+    color: var(--km-ink);
+    z-index: 13;
+}
+
+.kaleidoscope-maker__glitter-color {
+    display: flex;
+    justify-content: center;
+}
+
+.kaleidoscope-maker__glitter-color input[type='color'] {
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.kaleidoscope-maker__glitter-color input[type='color']::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.kaleidoscope-maker__glitter-color input[type='color']::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+/* Rainbow-silver gradient that drifts around + a fine grid of white specks = holographic. */
+.kaleidoscope-maker__glitter-holo-btn {
+    position: relative;
+    color: rgba(18, 16, 28, 0.92);
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: calc(0.45rem * var(--km-space-scale));
+    padding: calc(0.32rem * var(--km-space-scale)) calc(0.6rem * var(--km-space-scale));
+    cursor: pointer;
+    background-image:
+        radial-gradient(rgba(255, 255, 255, 0.75) 14%, transparent 15%),
+        linear-gradient(
+            115deg,
+            #e8e8ee,
+            #ffb3b3,
+            #ffe0a3,
+            #fdffb0,
+            #b0ffcf,
+            #aadcff,
+            #d4b3ff,
+            #ffb3ec,
+            #e8e8ee
+        );
+    background-size:
+        7px 7px,
+        320% 320%;
+    animation: km-holo-drift 3.4s ease-in-out infinite alternate;
+}
+
+@keyframes km-holo-drift {
+    0% {
+        background-position:
+            0 0,
+            0% 35%;
+    }
+    50% {
+        background-position:
+            2px 3px,
+            55% 70%;
+    }
+    100% {
+        background-position:
+            5px 1px,
+            100% 30%;
+    }
 }
 
 .kaleidoscope-maker__slot-actions {
     position: absolute;
     inset: 0;
+    z-index: 2;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 0.3rem;
-    padding: 0.2rem;
+    gap: calc(0.45rem * var(--km-space-scale));
+    overflow: visible;
     opacity: 0;
-    transition: opacity 0.18s ease;
-    background: rgba(4, 4, 12, 0.5);
+    transition: opacity 0.18s ease, transform 0.15s ease;
     pointer-events: none;
+}
+
+.kaleidoscope-maker__slot-actions::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(246, 244, 239, 0.82);
 }
 
 .kaleidoscope-maker__slot-filled:hover .kaleidoscope-maker__slot-actions,
@@ -384,26 +2171,47 @@
     pointer-events: auto;
 }
 
-.kaleidoscope-maker__slot-action {
+.kaleidoscope-maker__slot-edit,
+.kaleidoscope-maker__slot-delete {
     margin: 0;
-    padding: 0.2rem 0.45rem;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 3px;
-    background: rgba(20, 20, 32, 0.92);
-    color: rgba(255, 255, 255, 0.92);
-    font: inherit;
-    font-size: clamp(0.65rem, 2.2vmin, 0.8rem);
+    padding: calc(0.3rem * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.28);
+    border-radius: calc(4px * var(--km-space-scale));
+    background: rgba(246, 244, 239, 0.95);
+    color: var(--km-ink);
+    line-height: 0;
     cursor: pointer;
-    line-height: 1.2;
+    -webkit-tap-highlight-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.kaleidoscope-maker__slot-action:hover {
-    background: rgba(40, 40, 58, 0.95);
+.kaleidoscope-maker__slot-action-icon {
+    display: block;
+    width: clamp(calc(0.72rem * var(--km-font-scale)), calc(2.4vmin * var(--km-font-scale)), calc(0.95rem * var(--km-font-scale)));
+    height: clamp(calc(0.72rem * var(--km-font-scale)), calc(2.4vmin * var(--km-font-scale)), calc(0.95rem * var(--km-font-scale)));
 }
 
-.kaleidoscope-maker__slot-action:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.55);
-    outline-offset: 1px;
+.kaleidoscope-maker__slot-edit:hover,
+.kaleidoscope-maker__slot-edit:focus-visible {
+    color: #77a28e;
+    border-color: rgba(50, 75, 75, 0.4);
+    outline: none;
+}
+
+.kaleidoscope-maker__slot-delete {
+    border-color: rgba(50, 75, 75, 0.22);
+    color: var(--km-ink-muted);
+}
+
+.kaleidoscope-maker__slot-delete:hover,
+.kaleidoscope-maker__slot-delete:focus-visible {
+    color: rgba(140, 55, 65, 0.95);
+    border-color: rgba(140, 55, 65, 0.35);
+    background: rgba(246, 244, 239, 0.98);
+    outline: none;
 }
 
 .kaleidoscope-maker__bead-editor-backdrop {
@@ -413,74 +2221,322 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
-    background: rgba(2, 2, 8, 0.62);
+    padding: calc(1rem * var(--km-space-scale));
+    background: rgba(50, 75, 75, 0.28);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.kaleidoscope-maker__bead-editor-backdrop .kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible {
+    /* Definite width — the editor content is an inline-size query container,
+       so its width must not depend on its own children (fit-content here
+       collapses the whole modal to 0×0). */
+    width: min(96vw, 36rem);
+    max-width: min(96vw, 36rem);
+    max-height: min(92dvh, 100%);
+    filter: drop-shadow(0 12px 40px rgba(50, 75, 75, 0.16));
+}
+
+.kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible .kaleidoscope-maker__bead-editor-plaque {
+    --km-home-cream: #f6f4ef;
+    --km-scallop: calc(9px * var(--km-space-scale));
+    position: relative;
+    overflow: visible;
+    background-color: transparent;
+    filter: none;
+    width: 100%;
+}
+
+.kaleidoscope-maker__bead-editor-plaque.kaleidoscope-maker__factory-plaque,
+.kaleidoscope-maker__bead-editor-plaque .kaleidoscope-maker__factory-plaque {
+    --km-factory-plaque-max: 23.5rem;
 }
 
 .kaleidoscope-maker__bead-editor {
-    width: min(100%, 18rem);
-    padding: 1rem 1.1rem;
-    border-radius: 6px;
-    background: #12121c;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-}
-
-.kaleidoscope-maker__bead-editor-title {
-    margin: 0 0 0.75rem;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.kaleidoscope-maker__bead-editor-field {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 0.55rem;
-    font-size: 0.85rem;
-}
-
-.kaleidoscope-maker__bead-editor-field input[type='color'] {
-    width: 2.75rem;
-    height: 1.75rem;
-    padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    cursor: pointer;
+    position: relative;
+    width: 100%;
+    padding: calc(calc(0.75rem * var(--km-space-scale)) + var(--km-scallop, calc(9px * var(--km-space-scale))))
+        calc(calc(0.65rem * var(--km-space-scale)) + var(--km-scallop, calc(9px * var(--km-space-scale))))
+        calc(calc(0.85rem * var(--km-space-scale)) + var(--km-scallop, calc(9px * var(--km-space-scale))));
+    box-sizing: border-box;
     background: transparent;
+    border: none;
+    color: var(--km-ink);
+    overflow: visible;
 }
 
-.kaleidoscope-maker__bead-editor-actions {
+.kaleidoscope-maker__bead-editor-content {
+    --km-factory-preview-size: clamp(3.25rem, 24cqw, 5.75rem);
+    --km-factory-stack-gap: clamp(0.35em, 1.8vw, 0.65em);
+    --km-factory-plaque-max: 100%;
+    --km-bead-editor-ui-scale: 1;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin-top: 0.85rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.45rem * var(--km-space-scale));
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: visible;
+    /* inline-size only: height must stay content-driven (size containment
+       would zero it out because nothing else sizes this element). */
+    container-type: inline-size;
+    container-name: km-bead-editor;
 }
 
-.kaleidoscope-maker__bead-editor-actions button {
+.kaleidoscope-maker__bead-editor-header {
+    max-width: 100%;
+    align-self: center;
+    width: 100%;
+}
+
+.kaleidoscope-maker__bead-editor-header-actions {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: calc(0.1rem * var(--km-space-scale));
+    transform: translateY(-50%);
+}
+
+.kaleidoscope-maker__bead-editor-header-actions .kaleidoscope-maker__bead-factory-nav--save {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
+}
+
+.kaleidoscope-maker__bead-editor-header .kaleidoscope-maker__bead-factory-heading {
+    font-size: clamp(
+        calc(0.72rem * var(--km-font-scale)),
+        calc(2.4cqw * var(--km-font-scale)),
+        calc(0.95rem * var(--km-font-scale))
+    );
+}
+
+.kaleidoscope-maker__bead-editor-delete {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin: 0;
-    padding: 0.35rem 0.65rem;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.08);
-    color: inherit;
-    font: inherit;
+    padding: calc(0.1rem * var(--km-space-scale)) calc(0.2rem * var(--km-space-scale));
+    border: none;
+    border-radius: calc(4px * var(--km-space-scale));
+    background: transparent;
+    color: rgba(140, 55, 65, 0.92);
+    line-height: 1;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.18s ease, background-color 0.18s ease;
 }
 
-.kaleidoscope-maker__bead-editor-actions button:hover {
-    background: rgba(255, 255, 255, 0.14);
+.kaleidoscope-maker__bead-editor-delete:hover,
+.kaleidoscope-maker__bead-editor-delete:focus-visible {
+    color: rgba(180, 40, 52, 0.98);
+    background: rgba(224, 18, 32, 0.06);
+    outline: none;
 }
 
-.kaleidoscope-maker__bead-editor-remove {
-    border-color: rgba(255, 120, 140, 0.45) !important;
-    color: rgba(255, 180, 190, 0.95) !important;
+.kaleidoscope-maker__bead-editor-delete:hover .kaleidoscope-maker__bead-factory-nav-tip,
+.kaleidoscope-maker__bead-editor-delete:focus-visible .kaleidoscope-maker__bead-factory-nav-tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
-.kaleidoscope-maker__bead-editor-remove:hover {
-    background: rgba(120, 40, 55, 0.45) !important;
+.kaleidoscope-maker__bead-editor-delete .kaleidoscope-maker__bead-factory-nav-tip {
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(-0.15rem * var(--km-space-scale)));
+    white-space: nowrap;
+}
+
+.kaleidoscope-maker__bead-editor-delete-icon {
+    display: block;
+    flex-shrink: 0;
+}
+
+.kaleidoscope-maker__bead-editor-stack {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--km-factory-stack-gap, clamp(0.35em, 1.8vw, 0.65em));
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: 0;
+}
+
+.kaleidoscope-maker__bead-editor-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.35rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1));
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-size-slider {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    cursor: pointer;
+    padding-top: calc(0.4rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1));
+    border-top: 1px solid rgba(74, 99, 101, 0.14);
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-color-controls {
+    gap: calc(0.28rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1));
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__shape-picker {
+    gap: calc(0.28rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1));
+    padding-top: calc(0.4rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1));
+    border-top: 1px solid rgba(74, 99, 101, 0.14);
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-color-controls-title,
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__shape-picker-title {
+    margin: 0;
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(
+        calc(0.52rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(2.1cqw * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(0.68rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1))
+    );
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    color: var(--km-ink);
+    text-align: center;
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-color-swatch-label,
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-color-dice-label {
+    font-size: clamp(
+        calc(0.48rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(1.8cqw * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(0.58rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1))
+    );
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__shape-picker-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: max-content;
+    max-width: 100%;
+    margin-inline: auto;
+    gap: calc(0.32rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1))
+        calc(0.38rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1));
+    padding-top: calc(0.28rem * var(--km-space-scale) * var(--km-bead-editor-ui-scale, 1));
+    overflow: visible;
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__shape-option {
+    min-width: clamp(1.55rem, 6.5cqw, 2.1rem);
+    min-height: clamp(2rem, 8.5cqw, 2.65rem);
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__shape-option-bead {
+    width: clamp(1.15rem, 4.8cqw, 1.65rem);
+    height: clamp(1.15rem, 4.8cqw, 1.65rem);
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__shape-option-badge {
+    font-size: clamp(
+        calc(0.34rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(1.35cqw * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(0.44rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1))
+    );
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__view-setting-label {
+    font-size: clamp(
+        calc(0.5rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(1.9cqw * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1)),
+        calc(0.62rem * var(--km-font-scale) * var(--km-bead-editor-ui-scale, 1))
+    );
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-color-swatch input[type='color'] {
+    width: clamp(1.35rem, 5.5cqw, 1.85rem);
+    height: clamp(1.35rem, 5.5cqw, 1.85rem);
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-color-dice {
+    width: clamp(1.35rem, 5.5cqw, 1.85rem);
+    height: clamp(1.35rem, 5.5cqw, 1.85rem);
+}
+
+.kaleidoscope-maker__bead-editor-settings .kaleidoscope-maker__bead-color-dice img {
+    width: clamp(0.95rem, 3.8cqw, 1.25rem);
+    height: clamp(0.95rem, 3.8cqw, 1.25rem);
+}
+
+.kaleidoscope-maker__bead-editor-stack .kaleidoscope-maker__bead-factory-tools {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    max-width: calc(
+        100% - var(--km-factory-preview-size) - var(--km-factory-stack-gap, clamp(0.35em, 1.8vw, 0.65em))
+    );
+}
+
+.kaleidoscope-maker__bead-editor-stack .kaleidoscope-maker__bead-factory-stage {
+    flex: 0 0 auto;
+    width: var(--km-factory-preview-size);
+    min-width: 0;
+    max-width: var(--km-factory-preview-size);
+    overflow: hidden;
+}
+
+.kaleidoscope-maker__bead-editor-stack .kaleidoscope-maker__bead-factory-preview {
+    width: var(--km-factory-preview-size);
+    height: var(--km-factory-preview-size);
+    max-width: 100%;
+    margin-inline: auto;
+}
+
+.kaleidoscope-maker__bead-editor-stack .kaleidoscope-maker__bead-factory-preview-scaler > .kaleidoscope-maker__bead-visual--oval {
+    width: 72%;
+    height: 100%;
+    margin-inline: auto;
+}
+
+.kaleidoscope-maker__bead-editor .kaleidoscope-maker__bead-color-controls,
+.kaleidoscope-maker__bead-editor .kaleidoscope-maker__shape-picker {
+    margin: 0;
+}
+
+.kaleidoscope-maker__bead-editor .kaleidoscope-maker__shape-picker-row {
+    justify-content: center;
+}
+
+@container km-bead-editor (max-width: 520px) {
+    .kaleidoscope-maker__bead-editor-content {
+        --km-factory-preview-size: clamp(2.75rem, 20cqw, 4.25rem);
+        --km-bead-editor-ui-scale: 0.88;
+    }
+}
+
+/* Height thresholds must be media queries: the editor is an inline-size
+   container, so height-based container queries would never match. */
+@media (max-height: 480px) {
+    .kaleidoscope-maker__bead-editor-content {
+        --km-factory-preview-size: clamp(2.5rem, 15vh, 3.75rem);
+        --km-bead-editor-ui-scale: 0.82;
+        gap: calc(0.3rem * var(--km-space-scale));
+    }
+}
+
+@media (max-height: 400px) {
+    .kaleidoscope-maker__bead-editor-content {
+        --km-factory-preview-size: clamp(2.15rem, 13vh, 3.25rem);
+        --km-bead-editor-ui-scale: 0.74;
+    }
 }
 
 .kaleidoscope-maker__slot-plus {
@@ -497,7 +2553,7 @@
     border-radius: inherit;
     background: transparent;
     color: rgba(255, 0, 149, 0.92);
-    font-size: clamp(0.8rem, 2.9vmin, 1.1rem);
+    font-size: clamp(calc(0.8rem * var(--km-font-scale)), calc(2.9vmin * var(--km-font-scale)), calc(1.1rem * var(--km-font-scale)));
     font-weight: 300;
     line-height: 1;
     cursor: pointer;
@@ -510,7 +2566,7 @@
 
 .kaleidoscope-maker__slot-plus:focus-visible {
     outline: 2px solid rgba(255, 255, 255, 0.55);
-    outline-offset: 1px;
+    outline-offset: calc(1px * var(--km-space-scale));
 }
 
 .kaleidoscope-maker--stage-wrap {
@@ -530,7 +2586,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    border-radius: 2px;
+    border-radius: calc(2px * var(--km-space-scale));
 }
 
 .kaleidoscope-maker__beadbox {
@@ -544,60 +2600,135 @@
     z-index: 1;
 }
 
-/* —— Build kaleidoscope: petri dish + bead box —— */
+/* —— Build kaleidoscope: bead tray + petri dish side by side —— */
 .kaleidoscope-maker--build-layout {
+    --km-beadbox-aspect: 1.531;
+    --km-build-available-w: var(--km-build-assembly-max-w);
+    --km-build-available-h-raw: calc(100cqh - var(--km-build-body-pad-block));
+    --km-build-available-h: var(--km-build-available-h-raw);
+    container-type: size;
+    container-name: km-build;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    overflow: visible;
+    overflow: hidden;
     min-height: 0;
     width: 100%;
     height: 100%;
+    max-height: 100%;
+    flex: 1 1 auto;
 }
 
 .kaleidoscope-maker__build-body {
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     min-height: 0;
+    max-height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 0.35rem;
-    padding: 1.45rem 0.35rem 0.2rem;
+    align-items: center;
+    justify-content: center;
+    gap: calc(0.35rem * var(--km-space-scale));
+    padding: var(--km-build-body-pad-block) calc(0.35rem * var(--km-space-scale));
     box-sizing: border-box;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .kaleidoscope-maker__build-main-row {
     flex: 0 1 auto;
     min-height: 0;
+    min-width: 0;
+    max-height: var(--km-build-available-h);
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.35rem;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--km-build-gap, calc(0.75rem * var(--km-space-scale)));
+    overflow: visible;
 }
 
 .kaleidoscope-maker__build-beadbox-col {
-    flex: 0 1 42%;
-    max-width: 46%;
+    flex: 0 0 auto;
+    order: 1;
+    width: min(
+        100%,
+        calc(var(--km-build-assembly-max-w) * var(--km-build-beadbox-width-share)),
+        calc(98dvw * var(--km-build-beadbox-width-share))
+    );
+    max-width: min(
+        100%,
+        calc(var(--km-build-assembly-max-w) * var(--km-build-beadbox-width-share)),
+        calc(98dvw * var(--km-build-beadbox-width-share))
+    );
     min-width: 0;
-    min-height: min(52vh, 320px);
+    min-height: 0;
+    max-height: none;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow: visible;
 }
 
 .kaleidoscope-maker__build-dish-col {
-    flex: 1 1 58%;
+    position: relative;
+    flex: 0 0 auto;
+    order: 2;
+    width: min(
+        100%,
+        var(--km-build-dish-cap),
+        calc(var(--km-build-assembly-max-w) * var(--km-build-dish-width-share)),
+        calc(98dvw * var(--km-build-dish-width-share)),
+        calc(var(--km-build-available-h-raw) * var(--km-build-dish-height-share))
+    );
+    max-width: min(
+        100%,
+        var(--km-build-dish-cap),
+        calc(var(--km-build-assembly-max-w) * var(--km-build-dish-width-share)),
+        calc(98dvw * var(--km-build-dish-width-share)),
+        calc(var(--km-build-available-h-raw) * var(--km-build-dish-height-share))
+    );
+    max-height: min(
+        var(--km-build-dish-cap),
+        calc(var(--km-build-assembly-max-w) * var(--km-build-dish-width-share)),
+        calc(98dvw * var(--km-build-dish-width-share)),
+        calc(var(--km-build-available-h-raw) * var(--km-build-dish-height-share))
+    );
     min-width: 0;
+    align-self: flex-start;
+    margin-top: max(
+        0px,
+        calc(
+            (
+                min(
+                    calc(var(--km-build-available-h-raw) * 0.94),
+                    calc(var(--km-build-assembly-max-w) * var(--km-build-beadbox-width-share) / var(--km-beadbox-aspect)),
+                    calc(98dvw * var(--km-build-beadbox-width-share) / var(--km-beadbox-aspect))
+                )
+                - min(
+                    var(--km-build-dish-cap),
+                    calc(var(--km-build-assembly-max-w) * var(--km-build-dish-width-share)),
+                    calc(98dvw * var(--km-build-dish-width-share)),
+                    calc(var(--km-build-available-h-raw) * var(--km-build-dish-height-share))
+                )
+            ) / 2
+        )
+    );
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    gap: 0.2rem;
+    gap: calc(0.2rem * var(--km-space-scale));
+}
+
+.kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col .kaleidoscope-maker__petri-wrap {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .kaleidoscope-maker__petri-wrap {
@@ -695,9 +2826,9 @@
 }
 
 .kaleidoscope-maker__petri-hint {
-    margin: 0.15rem 0 0;
-    font-size: clamp(0.62rem, 1.9vmin, 0.72rem);
-    color: rgba(255, 255, 255, 0.48);
+    margin: calc(0.15rem * var(--km-space-scale)) 0 0;
+    font-size: clamp(calc(0.62rem * var(--km-font-scale)), calc(1.9vmin * var(--km-font-scale)), calc(0.72rem * var(--km-font-scale)));
+    color: var(--km-ink-muted);
     text-align: center;
     flex-shrink: 0;
 }
@@ -708,30 +2839,58 @@
 }
 
 .kaleidoscope-maker__build-beadbox-stack {
-    transform: rotate(-90deg);
-    transform-origin: center center;
-    width: min(118%, 72vmin);
-    max-width: none;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+}
+
+.kaleidoscope-maker__build-beadbox-stack .kaleidoscope-maker__beadbox-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: min(
+        calc(var(--km-build-available-h-raw) * 0.94),
+        calc(1040px * var(--km-build-beadbox-width-share) / var(--km-beadbox-aspect)),
+        calc(98dvw * var(--km-build-beadbox-width-share) / var(--km-beadbox-aspect))
+    );
+    object-fit: contain;
+}
+
+.kaleidoscope-maker__build-beadbox-stack .kaleidoscope-maker__build-picker-grid {
+    transform: none;
+}
+
+.kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly {
+    transform: translateX(-108%);
+}
+
+.kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly--settled {
+    transform: translateX(0);
 }
 
 .kaleidoscope-maker__build-beadbox-fly {
     width: 100%;
     max-width: 100%;
+    max-height: none;
     margin: 0;
     flex-shrink: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    transform: translateX(-108%);
+    justify-content: flex-start;
+    gap: 0;
+    transform: translateY(-108%);
     opacity: 0.45;
     transition:
         transform 0.78s cubic-bezier(0.22, 1, 0.32, 1),
         opacity 0.45s ease;
     pointer-events: none;
+    overflow: visible;
 }
 
 .kaleidoscope-maker__build-beadbox-fly--settled {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
 }
@@ -749,7 +2908,7 @@
     margin: 0;
     padding: 0;
     border: none;
-    border-radius: 2px;
+    border-radius: calc(2px * var(--km-space-scale));
     background: transparent;
     cursor: pointer;
     color: inherit;
@@ -767,7 +2926,7 @@
 
 .kaleidoscope-maker__build-picker-cell:not(:disabled):focus-visible {
     outline: 2px solid rgba(255, 255, 255, 0.5);
-    outline-offset: 1px;
+    outline-offset: calc(1px * var(--km-space-scale));
 }
 
 .kaleidoscope-maker__build-picker-cell--empty {
@@ -785,24 +2944,77 @@
 /* —— Kaleidoscope hex view (after build done) —— */
 .kaleidoscope-maker--kaleidoscope-layout {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
+    display: grid;
+    grid-template: 1fr / 1fr;
+    place-items: center;
     overflow: hidden;
     min-height: 0;
     width: 100%;
     height: 100%;
+    aspect-ratio: unset;
+    max-width: none;
+    max-height: none;
 }
 
-.kaleidoscope-maker__hex-root {
+.kaleidoscope-maker-art__media-frame .kaleidoscope-maker.kaleidoscope-maker--kaleidoscope-layout:not(.kaleidoscope-maker--fullscreen-immersive),
+.km-art-fullscreen .kaleidoscope-maker--hub.kaleidoscope-maker--kaleidoscope-layout:not(.kaleidoscope-maker--fullscreen-immersive) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+}
+
+.kaleidoscope-maker--kaleidoscope-layout > .kaleidoscope-maker__scalloped-plaque-wrap {
+    grid-area: 1 / 1;
+    z-index: 0;
+    width: min(var(--km-home-menu-width, 34rem), 94vw);
+    max-width: 94vw;
+    align-self: center;
+    justify-self: center;
+}
+
+.kaleidoscope-maker__hex-shell {
+    grid-area: 1 / 1;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    animation: km-kaleidoscope-fade-in 0.55s ease both;
+}
+
+@keyframes km-kaleidoscope-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kaleidoscope-maker__hex-shell {
+        animation: none;
+    }
+}
+
+.kaleidoscope-maker--kaleidoscope-layout .kaleidoscope-maker__hex-root {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    padding: 1.35rem 0.2rem 0.25rem;
+    padding: calc(1.35rem * var(--km-space-scale)) calc(0.2rem * var(--km-space-scale)) calc(0.25rem * var(--km-space-scale));
     box-sizing: border-box;
+}
+
+.kaleidoscope-maker--kaleidoscope-layout:not(.kaleidoscope-maker--fullscreen-immersive) .kaleidoscope-maker__hex-root {
+    padding-top: calc(0.35rem * var(--km-space-scale));
 }
 
 .kaleidoscope-maker__hex-row {
@@ -811,7 +3023,7 @@
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    gap: 0.2rem;
+    gap: calc(0.2rem * var(--km-space-scale));
 }
 
 .kaleidoscope-maker__hex-tilt {
@@ -819,11 +3031,11 @@
     align-self: stretch;
     margin: 0;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 4px;
-    background: rgba(28, 32, 48, 0.75);
-    color: rgba(255, 255, 255, 0.82);
-    font-size: clamp(0.95rem, 3.5vmin, 1.25rem);
+    border: 1px solid rgba(50, 75, 75, 0.22);
+    border-radius: calc(4px * var(--km-space-scale));
+    background: rgba(246, 244, 239, 0.88);
+    color: var(--km-ink);
+    font-size: clamp(calc(0.95rem * var(--km-font-scale)), calc(3.5vmin * var(--km-font-scale)), calc(1.25rem * var(--km-font-scale)));
     line-height: 1;
     cursor: pointer;
     touch-action: manipulation;
@@ -831,16 +3043,16 @@
 }
 
 .kaleidoscope-maker__hex-tilt:hover {
-    background: rgba(42, 48, 68, 0.88);
+    background: rgba(232, 236, 232, 0.95);
 }
 
 .kaleidoscope-maker__hex-tilt:active {
-    background: rgba(18, 20, 32, 0.95);
+    background: rgba(220, 226, 224, 0.98);
 }
 
 .kaleidoscope-maker__hex-tilt:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.45);
-    outline-offset: 1px;
+    outline: 2px solid rgba(50, 75, 75, 0.45);
+    outline-offset: calc(1px * var(--km-space-scale));
 }
 
 .kaleidoscope-maker__hex-stage {
@@ -848,7 +3060,7 @@
     min-width: 0;
     min-height: 120px;
     position: relative;
-    border-radius: 4px;
+    border-radius: calc(4px * var(--km-space-scale));
     overflow: hidden;
     background: #fff;
 }
@@ -863,38 +3075,33 @@
 /* —— Saved kaleidoscopes gallery —— */
 .kaleidoscope-maker.kaleidoscope-maker--gallery {
     /* Override dish square (.kaleidoscope-maker aspect-ratio + 58vh cap) */
+    --km-gallery-thumb: 168px;
+    --km-gallery-chrome-top: var(--km-chrome-top-reserve);
+    --km-gallery-chrome-bottom: calc(0.75rem * var(--km-space-scale));
     aspect-ratio: unset;
-    max-height: min(78vh, calc(100vh - 6.5rem));
-    max-height: min(78dvh, calc(100dvh - 6.5rem));
+    max-height: calc(100dvh - var(--km-gallery-chrome-top) - var(--km-gallery-chrome-bottom));
+    height: min(calc(100dvh - var(--km-gallery-chrome-top) - var(--km-gallery-chrome-bottom)), 100%);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
-    gap: 0.35rem;
-    padding: 0.75rem 0.5rem 1.25rem;
+    gap: calc(0.35rem * var(--km-space-scale));
+    padding: calc(0.5rem * var(--km-space-scale)) calc(0.75rem * var(--km-space-scale)) calc(0.85rem * var(--km-space-scale));
     box-sizing: border-box;
     width: 100%;
-    max-width: 640px;
+    max-width: min(760px, 96vw);
     margin: 0 auto;
     min-height: 0;
     position: relative;
 }
 
 .kaleidoscope-maker__gallery-title {
-    margin: 0.25rem 0 0;
+    margin: 0;
     flex-shrink: 0;
-    font-size: clamp(1rem, 3.2vmin, 1.2rem);
+    font-size: clamp(calc(1rem * var(--km-font-scale)), calc(3.2vmin * var(--km-font-scale)), calc(1.2rem * var(--km-font-scale)));
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--km-ink);
     text-align: center;
-}
-
-.kaleidoscope-maker__gallery-hint {
-    margin: 0 0 0.5rem;
-    font-size: clamp(0.65rem, 2vmin, 0.78rem);
-    color: rgba(255, 255, 255, 0.5);
-    text-align: center;
-    flex-shrink: 0;
 }
 
 .kaleidoscope-maker__gallery-scroll {
@@ -902,51 +3109,169 @@
     align-self: stretch;
     min-height: 0;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    scroll-padding-top: calc(0.75rem * var(--km-space-scale));
+    scroll-padding-bottom: calc(0.75rem * var(--km-space-scale));
+    padding: calc(0.35rem * var(--km-space-scale)) 0 calc(0.5rem * var(--km-space-scale));
+    box-sizing: border-box;
 }
 
 .kaleidoscope-maker__gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
-    gap: 0.65rem 0.85rem;
+    grid-template-columns: repeat(auto-fit, minmax(var(--km-gallery-thumb), var(--km-gallery-thumb)));
+    gap: calc(1rem * var(--km-space-scale)) calc(1.15rem * var(--km-space-scale));
     width: 100%;
+    max-width: min(720px, 100%);
+    justify-content: center;
     justify-items: center;
-    padding: 0.25rem 0 0.5rem;
+    padding: calc(0.5rem * var(--km-space-scale)) calc(0.25rem * var(--km-space-scale)) calc(0.75rem * var(--km-space-scale));
+    margin: 0 auto;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.kaleidoscope-maker__saved-thumb-cell {
+    position: relative;
+    width: var(--km-gallery-thumb);
+    overflow: visible;
+}
+
+.kaleidoscope-maker__saved-thumb-frame {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: transform 0.15s ease;
+}
+
+.kaleidoscope-maker__saved-thumb-cell:hover .kaleidoscope-maker__saved-thumb-frame,
+.kaleidoscope-maker__saved-thumb-cell:focus-within .kaleidoscope-maker__saved-thumb-frame,
+.kaleidoscope-maker__saved-thumb-cell:hover .kaleidoscope-maker__saved-thumb-overlay,
+.kaleidoscope-maker__saved-thumb-cell:focus-within .kaleidoscope-maker__saved-thumb-overlay {
+    transform: scale(1.03);
+}
+
+.kaleidoscope-maker__saved-thumb-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.15s ease;
+    pointer-events: none;
+}
+
+.kaleidoscope-maker__saved-thumb-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 50%;
+    background: rgba(246, 244, 239, 0.82);
+}
+
+.kaleidoscope-maker__saved-thumb-cell:hover .kaleidoscope-maker__saved-thumb-overlay,
+.kaleidoscope-maker__saved-thumb-cell:focus-within .kaleidoscope-maker__saved-thumb-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__saved-thumb-open {
+    margin: 0;
+    padding: calc(0.35rem * var(--km-space-scale)) calc(0.85rem * var(--km-space-scale));
+    border: 1px solid rgba(50, 75, 75, 0.28);
+    border-radius: calc(4px * var(--km-space-scale));
+    background: rgba(246, 244, 239, 0.95);
+    color: var(--km-ink);
+    font: inherit;
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(calc(0.68rem * var(--km-font-scale)), calc(2vmin * var(--km-font-scale)), calc(0.82rem * var(--km-font-scale)));
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kaleidoscope-maker__saved-thumb-open:hover,
+.kaleidoscope-maker__saved-thumb-open:focus-visible {
+    color: #77a28e;
+    border-color: rgba(50, 75, 75, 0.4);
+    outline: none;
+}
+
+.kaleidoscope-maker__saved-thumb-delete {
+    position: absolute;
+    top: 0.15rem;
+    right: 0.15rem;
+    z-index: 3;
+    margin: 0;
+    padding: calc(0.12rem * var(--km-space-scale)) calc(0.4rem * var(--km-space-scale));
+    border: none;
+    border-radius: calc(4px * var(--km-space-scale));
+    background: transparent;
+    color: var(--km-ink-faint);
+    font: inherit;
+    font-size: clamp(calc(0.58rem * var(--km-font-scale)), calc(1.8vmin * var(--km-font-scale)), calc(0.68rem * var(--km-font-scale)));
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+.kaleidoscope-maker__saved-thumb-delete:hover,
+.kaleidoscope-maker__saved-thumb-delete:focus-visible {
+    color: rgba(140, 55, 65, 0.95);
+    background: rgba(50, 75, 75, 0.06);
+    outline: none;
 }
 
 .kaleidoscope-maker__saved-thumb {
     display: block;
+    width: 100%;
+    height: 100%;
     margin: 0;
-    padding: 0.2rem;
-    border: none;
-    background: transparent;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: transform 0.15s ease, background-color 0.15s ease;
-}
-
-.kaleidoscope-maker__saved-thumb:hover {
-    transform: scale(1.04);
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.kaleidoscope-maker__saved-thumb:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.55);
-    outline-offset: 3px;
+    padding: 0;
+    border-radius: 50%;
+    pointer-events: none;
 }
 
 .kaleidoscope-maker__petri-wrap--thumb {
-    width: 118px;
-    max-width: 118px;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
     pointer-events: none;
     touch-action: auto;
 }
 
+.kaleidoscope-maker__petri-wrap--thumb .kaleidoscope-maker__petri-sizer {
+    width: 100%;
+    height: 100%;
+}
+
 /* —— Fullscreen subpage (/art/kaleidoscope-maker/full): maker only, no gallery chrome —— */
 .km-art-fullscreen {
+    --km-font-scale: 1.5;
+    --km-space-scale: var(--km-font-scale);
+    --km-title-top: calc(0.5rem * var(--km-space-scale));
+    --km-title-plaque-h: calc(6.85rem * var(--km-space-scale));
+    --km-title-body-gap: calc(0.75rem * var(--km-space-scale));
+    --km-chrome-top-reserve: calc(var(--km-title-top) + var(--km-title-plaque-h) + var(--km-title-body-gap));
+    --km-home-title-menu-gap: calc(1.4rem * var(--km-space-scale));
+    --km-ink: #324b4b;
+    --km-ink-muted: rgba(50, 75, 75, 0.62);
+    --km-ink-faint: rgba(50, 75, 75, 0.45);
     position: fixed;
     inset: 0;
     z-index: 50;
@@ -954,49 +3279,360 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    padding: 0.5rem;
+    padding: calc(0.25rem * var(--km-space-scale));
     background: #f6f4ef;
-    overflow: auto;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    color: var(--km-ink);
+    font-size: calc(1rem * var(--km-font-scale));
 }
 
 /* Out of flow so the maker stays vertically centered in the full viewport */
 .km-art-fullscreen__header {
     position: absolute;
-    top: 0.65rem;
+    top: var(--km-title-top);
     left: 0.5rem;
     right: 0.5rem;
-    z-index: 5;
-    max-width: min(90vw, 36rem);
-    margin: 0 auto;
-    padding: 0 0.75rem;
+    z-index: 40;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0 calc(0.25rem * var(--km-space-scale));
     box-sizing: border-box;
     text-align: center;
     pointer-events: none;
+    overflow: visible;
+    transition: top 0.45s ease, transform 0.45s ease, opacity 0.55s ease;
+}
+
+/* Home only: title plaque + menu plaque stack in-flow — never overlap. */
+.km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive) {
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Stable wrapper — keeps KaleidoscopeMaker mounted when leaving home. */
+.km-art-fullscreen__chrome-stack:not(.km-art-fullscreen__home-stack) {
+    display: contents;
+}
+
+.km-art-fullscreen__home-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--km-home-title-menu-gap);
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-top: max(var(--km-title-top), min(10dvh, 5rem));
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.km-art-fullscreen__home-stack .km-art-fullscreen__header {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    flex-shrink: 0;
+    width: min(var(--km-home-menu-width, 34rem), 94vw);
+    max-width: 94vw;
+    margin-inline: auto;
+    transform: none;
+    transition: transform 0.45s ease, opacity 0.55s ease;
+}
+
+.km-art-fullscreen__home-stack .km-art-fullscreen__title-plaque,
+.km-art-fullscreen__home-stack .km-art-fullscreen__title-plaque.kaleidoscope-maker__chrome-title-plaque {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+}
+
+.km-art-fullscreen__home-stack .km-art-fullscreen__body {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: 0;
+    width: min(var(--km-home-menu-width, 34rem), 94vw);
+    max-width: 94vw;
+    padding: 0;
+}
+
+.km-art-fullscreen__home-stack .km-art-fullscreen__body > .kaleidoscope-maker {
+    flex: 0 0 auto;
+    align-self: stretch;
+    margin-inline: auto;
+    width: 100%;
+    max-width: 100%;
+}
+
+.km-art-fullscreen__home-stack .kaleidoscope-maker--home-screen > .kaleidoscope-maker__scalloped-plaque-wrap {
+    width: 100%;
+    margin-inline: auto;
+}
+
+/* Fullscreen home (desktop): wider title plaque so the shop name stays on one line. */
+@media (min-width: 681px) {
+    .km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive) .km-art-fullscreen__home-stack .km-art-fullscreen__header {
+        width: min(var(--km-home-title-width, 42rem), 94vw);
+    }
+
+    .km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive) .km-art-fullscreen__home-stack .km-art-fullscreen__title-plaque,
+    .km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive) .km-art-fullscreen__home-stack .km-art-fullscreen__title-plaque.kaleidoscope-maker__chrome-title-plaque {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive) .km-art-fullscreen__title-row {
+        width: 100%;
+        max-width: 100%;
+        grid-template-columns: 2.1rem minmax(0, 1fr) 2.1rem;
+    }
+
+    .km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive) .km-art-fullscreen__title {
+        white-space: nowrap;
+        overflow-wrap: normal;
+    }
+}
+
+.km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive):has(.kaleidoscope-maker--home-intro-pending) .km-art-fullscreen__header {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive):has(.kaleidoscope-maker--home-intro-ready) .km-art-fullscreen__header {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.7s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .km-art-fullscreen--home-screen:not(.km-art-fullscreen--immersive):has(.kaleidoscope-maker--home-intro-ready) .km-art-fullscreen__header {
+        transition: none;
+    }
+
+    .km-art-fullscreen__body {
+        transition: none;
+    }
+}
+
+/* Factory, build, gallery, etc. */
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive) {
+    --km-chrome-bottom-reserve: calc(1rem * var(--km-space-scale));
+    /* The lowered header is plain text (no visible plaque), so reserve less
+       than the home plaque height — content should hug the title. */
+    --km-title-plaque-h: calc(5.4rem * var(--km-space-scale));
+}
+
+/* Factory + build + gallery + stash: tuck content directly under the title. */
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive):has(.kaleidoscope-maker__bead-factory--visible),
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive):has(.kaleidoscope-maker--build-layout),
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive):has(.kaleidoscope-maker--gallery),
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive):has(.kaleidoscope-maker--customize-screen):not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+    --km-title-body-gap: 0px;
+    --km-chrome-top-reserve: calc(var(--km-title-top) + var(--km-title-plaque-h));
+}
+
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive) .km-art-fullscreen__header {
+    top: var(--km-title-top);
+    left: 50%;
+    right: auto;
+    width: max-content;
+    max-width: min(98vw, 56rem);
+    transform: translateX(-50%);
+    transition: top 0.45s ease, transform 0.45s ease, opacity 0.55s ease;
+}
+
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive) .km-art-fullscreen__body {
+    padding-top: var(--km-chrome-top-reserve);
+    padding-bottom: var(--km-chrome-bottom-reserve);
+    box-sizing: border-box;
+}
+
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive) .km-art-fullscreen__body:has(.kaleidoscope-maker--gallery) {
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+.km-art-fullscreen__body:has(.kaleidoscope-maker--gallery) > .kaleidoscope-maker {
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-height: 0;
+    width: 100%;
+    max-width: min(760px, 96vw);
+    max-height: none;
+    height: 100%;
+}
+
+/* Bead stash (no factory open): fill the band below the title so the tray
+   anchors under it instead of floating centered over the whole viewport. */
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive) .km-art-fullscreen__body:has(.kaleidoscope-maker--customize-screen):not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+.km-art-fullscreen__body:has(.kaleidoscope-maker--customize-screen):not(:has(.kaleidoscope-maker__bead-factory--visible)) > .kaleidoscope-maker {
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    width: 100%;
+    max-width: min(1040px, 98vw);
+    margin-inline: auto;
+}
+
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive) .km-art-fullscreen__body:has(.kaleidoscope-maker__bead-factory--visible) {
+    padding-top: var(--km-chrome-top-reserve);
+    padding-bottom: var(--km-chrome-bottom-reserve);
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+.km-art-fullscreen__body:has(.kaleidoscope-maker__bead-factory--visible) {
+    overflow: visible;
+}
+
+.km-art-fullscreen__body:has(.kaleidoscope-maker__bead-factory--visible) > .kaleidoscope-maker {
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-height: 0;
+    width: 100%;
+}
+
+.km-art-fullscreen__body:has(.kaleidoscope-maker__bead-factory--visible) .kaleidoscope-maker__bead-factory-content {
+    justify-content: flex-start;
+    padding-top: 0;
 }
 
 .km-art-fullscreen__header .km-art-fullscreen__title,
-.km-art-fullscreen__header .km-art-fullscreen__wip {
+.km-art-fullscreen__header .km-art-fullscreen__wip,
+.km-art-fullscreen__header .kaleidoscope-maker__back-arrow,
+.km-art-fullscreen__header .kaleidoscope-maker__forward-arrow {
     pointer-events: auto;
+}
+
+.km-art-fullscreen__header--view-chrome {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    top: var(--km-title-top);
+    transform: none;
+    padding-inline: calc(0.5rem * var(--km-space-scale));
+    box-sizing: border-box;
+    transition: top 0.45s ease, opacity 0.55s ease;
+}
+
+.km-art-fullscreen__header--view-chrome .km-art-fullscreen__title-plaque {
+    margin: 0;
+}
+
+.kaleidoscope-maker__chrome-title-plaque {
+    --km-home-cream: #f6f4ef;
+    --km-scallop: calc(9px * var(--km-space-scale));
+    --km-title-font-scale: 0.75;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(0.35rem * var(--km-space-scale));
+    width: max-content;
+    max-width: min(96vw, 40rem);
+    margin: 0 auto;
+    padding: calc(calc(0.9rem * var(--km-space-scale)) + var(--km-scallop)) calc(calc(0.28rem * var(--km-space-scale)) + var(--km-scallop));
+    box-sizing: border-box;
+    background-color: var(--km-home-cream);
+    filter: drop-shadow(0 6px 20px rgba(50, 75, 75, 0.12));
+}
+
+.km-art-fullscreen__title-plaque {
+    max-width: min(96vw, 40rem);
+}
+
+/* 3-column chrome: arrows stay on-screen; title shrinks/wraps in the middle. */
+.km-art-fullscreen__title-row {
+    display: grid;
+    grid-template-columns: 2.1rem minmax(0, max-content) 2.1rem;
+    align-items: center;
+    column-gap: calc(0.65rem * var(--km-space-scale));
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.km-art-fullscreen__title-nav {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.km-art-fullscreen__title-nav--back {
+    justify-content: flex-end;
+}
+
+.km-art-fullscreen__title-nav--forward {
+    justify-content: flex-start;
+}
+
+.km-art-fullscreen__title-row .kaleidoscope-maker__back-arrow--in-title,
+.km-art-fullscreen__title-row .kaleidoscope-maker__forward-arrow--in-title {
+    position: static;
+    transform: none;
+    margin: 0;
+    padding: 0 calc(0.15rem * var(--km-space-scale));
+    flex-shrink: 0;
 }
 
 .km-art-fullscreen__title {
     margin: 0;
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(1.35rem, 3.8vw, 2rem);
+    min-width: 0;
+    font-family: 'Pixel Poiiz', monospace;
+    font-size: clamp(
+        calc(0.95rem * var(--km-font-scale) * var(--km-title-font-scale, 1)),
+        calc(3.2vw * var(--km-font-scale) * var(--km-title-font-scale, 1)),
+        calc(1.65rem * var(--km-font-scale) * var(--km-title-font-scale, 1))
+    );
     font-weight: normal;
-    line-height: 1.2;
-    color: #324b4b;
+    line-height: 1.25;
+    color: var(--km-ink);
+    text-align: center;
+    overflow-wrap: anywhere;
 }
 
 .km-art-fullscreen__wip {
-    margin: 0.35rem 0 0;
+    margin: calc(0.15rem * var(--km-space-scale)) 0 0;
     font-family: 'Instrument Serif', serif;
-    font-size: clamp(0.72rem, 2.1vw, 0.88rem);
-    font-weight: normal;
-    font-style: italic;
+    font-size: clamp(calc(0.72rem * var(--km-font-scale)), calc(2.1vw * var(--km-font-scale)), calc(0.88rem * var(--km-font-scale)));
+    font-weight: 700;
+    font-style: normal;
     letter-spacing: 0.04em;
-    color: rgba(50, 75, 75, 0.58);
+    color: var(--km-ink-muted);
     line-height: 1.3;
+}
+
+.km-art-fullscreen__wip-link {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.km-art-fullscreen__wip-link:hover {
+    text-decoration: underline;
+    color: rgba(31, 56, 56, 0.78);
+}
+
+.km-art-fullscreen__wip-link:focus-visible {
+    outline: 2px solid rgba(50, 75, 75, 0.45);
+    outline-offset: calc(3px * var(--km-space-scale));
+    border-radius: calc(2px * var(--km-space-scale));
 }
 
 .km-art-fullscreen__body {
@@ -1006,16 +3642,947 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    container-type: size;
+    container-name: km-fullscreen-body;
+    transition: padding-top 0.45s ease, padding-bottom 0.45s ease;
 }
 
-.km-art-fullscreen .kaleidoscope-maker {
-    --km-max-vh: min(94dvh, 94vw);
-    --km-max-vw: min(96vw, 96vmin);
-    --km-max-px: 920px;
-    max-height: min(94dvh, 96vw);
+/* Fullscreen hub + art page: classic maker scale on non-home screens. */
+.km-art-fullscreen .kaleidoscope-maker,
+.kaleidoscope-maker-art__media-frame .kaleidoscope-maker {
+    --km-max-px: 640px;
+    --km-max-vw: 62vw;
+    --km-max-vh: 58vh;
+    width: min(var(--km-max-px), var(--km-max-vw));
+    max-height: var(--km-max-vh);
+}
+
+/* Home menu is wider than the square widget — don't inherit the 640px cap. */
+.kaleidoscope-maker-art__media-frame .kaleidoscope-maker.kaleidoscope-maker--home-screen {
+    width: min(var(--km-home-menu-width, 34rem), 94vw);
+    max-width: 94vw;
+    max-height: none;
+    aspect-ratio: unset;
+    height: auto;
+}
+
+.kaleidoscope-maker-art__media-frame .kaleidoscope-maker.kaleidoscope-maker--build-layout {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: unset;
+    overflow: hidden;
+}
+
+.kaleidoscope-maker-art__media-frame .kaleidoscope-maker.kaleidoscope-maker--gallery {
+    width: 100%;
+    max-width: min(760px, 96vw);
+    max-height: none;
+    aspect-ratio: unset;
+}
+
+/* Fullscreen hub: drop the square lock so factory/tray can use full height. */
+.km-art-fullscreen .kaleidoscope-maker--hub {
+    --km-max-px: min(1100px, 96vw);
+    --km-max-vw: 96vw;
+    --km-max-vh: calc(100dvh - 5.5rem);
+    width: min(var(--km-max-px), var(--km-max-vw));
+    max-height: var(--km-max-vh);
+    height: min(var(--km-max-vh), 100%);
+    aspect-ratio: unset;
+}
+
+.km-art-fullscreen .kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen {
+    --km-customize-max-w: min(98cqw, 100%);
+    --km-customize-max-h: 100cqh;
+    width: min(
+        var(--km-customize-max-w),
+        calc((var(--km-customize-max-h) - var(--km-pager-extra)) * var(--km-beadbox-aspect))
+    );
+    height: min(
+        var(--km-customize-max-h),
+        calc(var(--km-customize-max-w) / var(--km-beadbox-aspect) + var(--km-pager-extra))
+    );
+    max-width: var(--km-customize-max-w);
+    max-height: var(--km-customize-max-h);
+}
+
+.km-art-fullscreen .kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen:has(.kaleidoscope-maker__bead-factory--visible) {
+    --km-pager-extra: 0px;
+    --km-customize-max-w: 100%;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+}
+
+/* Bead stash: fill the band below title on portrait mobile only.
+   (The art page's plaque-h lives in KaleidoscopeMakerArt.css — its heading
+   keeps the visible scalloped plaque, which is taller than this plain title.) */
+@media (max-width: 768px) and (orientation: portrait) {
+    .km-art-fullscreen--title-lowered:has(.kaleidoscope-maker--customize-screen):not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+        --km-title-plaque-h: calc(4.35rem * var(--km-space-scale));
+        --km-chrome-top-reserve: calc(var(--km-title-top) + var(--km-title-plaque-h));
+    }
+
+    .km-art-fullscreen .kaleidoscope-maker.kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)),
+    .kaleidoscope-maker-art__media-frame .kaleidoscope-maker.kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+        --km-customize-max-w: 100%;
+        --km-customize-max-h: 100%;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        height: 100%;
+    }
+
+    .km-art-fullscreen__body:has(.kaleidoscope-maker--customize-screen):not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+
+    .km-art-fullscreen__body:has(.kaleidoscope-maker--customize-screen):not(:has(.kaleidoscope-maker__bead-factory--visible)) > .kaleidoscope-maker {
+        flex: 1 1 auto;
+        align-self: stretch;
+        min-height: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        height: 100%;
+    }
 }
 
 .km-art-fullscreen .kaleidoscope-maker.kaleidoscope-maker--gallery {
-    max-height: min(90vh, calc(100vh - 1rem));
-    max-height: min(90dvh, calc(100dvh - 1rem));
+    --km-gallery-chrome-top: 0px;
+    --km-gallery-chrome-bottom: 0px;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    height: 100%;
+    max-width: min(760px, 96vw);
+    justify-content: flex-start;
+}
+
+@media (max-width: 680px) {
+    /* Landscape mobile stash: horizontal tray anchored to the bottom. */
+    @media (min-aspect-ratio: 1/1) {
+        .kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+            --km-pager-extra: calc(2.65rem * var(--km-space-scale));
+            --km-beadbox-tray-max-h: min(
+                calc(96vw * var(--km-beadbox-aspect, 1.531)),
+                max(
+                    calc(100cqh - var(--km-pager-extra)),
+                    calc(62dvh - var(--km-pager-extra))
+                )
+            );
+        }
+
+        .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__customize-scene {
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 0;
+        }
+
+        .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-fly {
+            top: auto;
+            bottom: 0;
+            width: 100%;
+            max-width: 100%;
+            transform: translateX(-50%) translateY(100vh);
+        }
+
+        .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-fly--settled {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible))
+            .kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--factory-out,
+        .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible))
+            .kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--editor-out {
+            transform: translateX(-50%) translateY(calc(-100vh - 100%));
+        }
+
+        .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-stack {
+            width: fit-content;
+            max-width: 100%;
+            margin-inline: auto;
+            max-height: none;
+        }
+
+        .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-img {
+            width: auto;
+            max-width: min(96vw, 100%);
+            height: var(--km-beadbox-tray-max-h);
+            max-height: var(--km-beadbox-tray-max-h);
+            object-fit: contain;
+        }
+    }
+
+    .kaleidoscope-maker__beadbox-pager {
+        position: relative;
+        z-index: 5;
+        flex-shrink: 0;
+        margin-top: calc(0.45rem * var(--km-space-scale));
+        padding: calc(0.15rem * var(--km-space-scale)) 0 calc(0.1rem * var(--km-space-scale));
+        font-size: clamp(calc(0.78rem * var(--km-font-scale)), calc(2.8vmin * var(--km-font-scale)), calc(0.92rem * var(--km-font-scale)));
+    }
+
+    .kaleidoscope-maker__beadbox-pager-btn {
+        padding: calc(0.22rem * var(--km-space-scale)) calc(0.55rem * var(--km-space-scale));
+        font-size: 1em;
+    }
+
+    .kaleidoscope-maker__bead-factory-content {
+        --km-factory-preview-size: clamp(3.25em, 20vw, 5.25em);
+    }
+
+    .kaleidoscope-maker__bead-editor-content {
+        --km-factory-preview-size: clamp(2.75rem, 18vw, 4.5rem);
+        --km-bead-editor-ui-scale: 0.86;
+    }
+
+    /* Bead tray PNG must match the absolute slot grid — height drives size on mobile landscape. */
+    .kaleidoscope-maker__bead-factory-stack,
+    .kaleidoscope-maker__bead-editor-stack {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: var(--km-factory-stack-gap, clamp(0.45em, 2vw, 1em));
+        align-items: center;
+    }
+
+    .kaleidoscope-maker__bead-editor-backdrop .kaleidoscope-maker__scalloped-plaque-wrap--overflow-visible {
+        max-width: min(94vw, 32rem);
+    }
+
+    .kaleidoscope-maker__factory-plaque {
+        --km-factory-plaque-max: min(17.5rem, 62vw);
+    }
+
+    .kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-option-bead {
+        width: clamp(1.65rem, 5.5vmin, 2.35rem);
+        height: clamp(1.65rem, 5.5vmin, 2.35rem);
+    }
+
+    .kaleidoscope-maker__factory-plaque .kaleidoscope-maker__shape-option {
+        min-width: clamp(2.25rem, 7vmin, 2.85rem);
+        min-height: clamp(3rem, 9vmin, 3.65rem);
+    }
+
+    .kaleidoscope-maker.kaleidoscope-maker--gallery {
+        --km-gallery-thumb: min(168px, 40vw);
+        --km-gallery-chrome-top: var(--km-chrome-top-reserve);
+        padding-inline: calc(0.5rem * var(--km-space-scale));
+    }
+
+    .kaleidoscope-maker__gallery-grid {
+        gap: calc(0.85rem * var(--km-space-scale)) calc(0.75rem * var(--km-space-scale));
+    }
+}
+
+/* Portrait / tall mobile: stand the bead tray vertically; keep beads + labels upright. */
+@media (max-width: 768px) and (orientation: portrait) {
+    .kaleidoscope-maker--hub.kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) {
+        --km-pager-extra: calc(1.75rem * var(--km-space-scale));
+        --km-chrome-bottom-reserve: calc(0.75rem * var(--km-space-scale));
+        /* This element IS the km-customize size container, already sized to the
+           space below the title — so 100cqh is the honest budget. (A 100dvh
+           fallback here reads --km-chrome-top-reserve, which this element zeroes,
+           and would wrongly claim the whole viewport.) The scallop inset is
+           subtracted twice so the tray clears the plaque's clipped edges. */
+        --km-stash-available-h: calc(
+            100cqh
+            - var(--km-pager-extra)
+            - calc(2 * var(--km-scallop, calc(9px * var(--km-space-scale))))
+            - calc(0.35rem * var(--km-space-scale))
+        );
+        --km-beadbox-visual-h: min(
+            var(--km-stash-available-h),
+            calc(98vw * var(--km-beadbox-aspect, 1.531))
+        );
+        --km-beadbox-visual-w: calc(var(--km-beadbox-visual-h) / var(--km-beadbox-aspect, 1.531));
+        --km-beadbox-tray-max-h: var(--km-beadbox-visual-h);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        max-height: 100%;
+        flex: 1 1 0;
+        min-height: 0;
+        align-self: stretch;
+    }
+
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__customize-scene {
+        position: relative;
+        inset: auto;
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0;
+    }
+
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-fly {
+        position: relative;
+        top: 0;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 0;
+        justify-content: flex-start;
+        margin-inline: auto;
+        /* Clear the plaque's scalloped top edge so it doesn't clip the tray. */
+        margin-top: var(--km-scallop, calc(9px * var(--km-space-scale)));
+        transform: translateY(100vh);
+    }
+
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-fly--settled {
+        transform: none;
+    }
+
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible))
+        .kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--factory-out,
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible))
+        .kaleidoscope-maker__beadbox-fly--settled.kaleidoscope-maker__beadbox-fly--editor-out {
+        transform: translateY(calc(-100vh - 100%));
+    }
+
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-pager {
+        margin-top: calc(0.35rem * var(--km-space-scale));
+        padding: 0;
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator {
+        --km-tray-slot-font: clamp(
+            calc(0.38rem * var(--km-font-scale)),
+            calc(var(--km-beadbox-visual-w, 92vw) / 26),
+            calc(0.62rem * var(--km-font-scale))
+        );
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-shrink: 0;
+        width: var(--km-beadbox-visual-w);
+        height: var(--km-beadbox-visual-h);
+        max-height: var(--km-beadbox-visual-h);
+        min-width: 0;
+        min-height: 0;
+        margin-inline: auto;
+        overflow: visible;
+        container-type: size;
+        container-name: km-beadbox-tray;
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator > .kaleidoscope-maker__beadbox-stack {
+        /* The rotator is a size container (km-beadbox-tray), so cq units inside
+           --km-beadbox-visual-h would re-resolve against the small rotator.
+           100cqh = the rotator's own height = the tray's on-screen height. */
+        width: 100cqh;
+        max-width: none;
+        max-height: none;
+        margin: 0;
+        /* Rotation keeps the box center fixed: center on both axes pre-rotation
+           (the rotator uses align-items: flex-start) or the tray shifts up. */
+        flex: 0 0 auto;
+        align-self: center;
+        transform: rotate(90deg);
+        transform-origin: center center;
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__beadbox-img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-width: none;
+        max-height: none;
+        object-fit: contain;
+    }
+
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__beadbox-img,
+    .kaleidoscope-maker--customize-screen:not(:has(.kaleidoscope-maker__bead-factory--visible)) .kaleidoscope-maker__beadbox-img {
+        width: 100%;
+        height: auto;
+        max-width: none;
+        max-height: none;
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-pile,
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-actions,
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-plus,
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__build-picker-cell:not(.kaleidoscope-maker__build-picker-cell--empty) {
+        transform: rotate(-90deg);
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-filled:hover .kaleidoscope-maker__slot-pile,
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-filled:focus-within .kaleidoscope-maker__slot-pile,
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-filled:hover .kaleidoscope-maker__slot-actions,
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-filled:focus-within .kaleidoscope-maker__slot-actions {
+        transform: rotate(-90deg) scale(1.03);
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-plus {
+        font-size: var(--km-tray-slot-font);
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-edit,
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-delete {
+        padding: calc(0.1rem * var(--km-space-scale));
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-action-icon {
+        width: clamp(
+            calc(0.62rem * var(--km-font-scale)),
+            calc(var(--km-beadbox-visual-w) / 22),
+            calc(0.82rem * var(--km-font-scale))
+        );
+        height: clamp(
+            calc(0.62rem * var(--km-font-scale)),
+            calc(var(--km-beadbox-visual-w) / 22),
+            calc(0.82rem * var(--km-font-scale))
+        );
+    }
+
+    .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-bead {
+        width: 34%;
+    }
+}
+
+/* Build screen portrait rules live AFTER the fullscreen build rules (see
+   "Build screen portrait" block further down) so they win the cascade. */
+
+@media (hover: none) {
+    .kaleidoscope-maker__saved-thumb-cell:focus-within .kaleidoscope-maker__saved-thumb-overlay,
+    .kaleidoscope-maker__saved-thumb-cell:active .kaleidoscope-maker__saved-thumb-overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .kaleidoscope-maker__slot-filled:focus-within .kaleidoscope-maker__slot-actions,
+    .kaleidoscope-maker__slot-filled:active .kaleidoscope-maker__slot-actions {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+/* Short viewports: keep side-by-side layout; shrink preview + settings instead of stacking. */
+@media (max-height: 520px) {
+    .kaleidoscope-maker__bead-factory-content {
+        --km-factory-preview-size: clamp(2.85em, 18vh, 4.5em);
+        justify-content: center;
+        gap: 0.65em;
+    }
+
+    .kaleidoscope-maker__bead-editor-content {
+        --km-factory-preview-size: clamp(2.35rem, 15vh, 3.65rem);
+        --km-bead-editor-ui-scale: 0.78;
+        gap: calc(0.3rem * var(--km-space-scale));
+    }
+
+    .kaleidoscope-maker__bead-factory-stack,
+    .kaleidoscope-maker__bead-editor-stack {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 0.65em;
+    }
+
+    .kaleidoscope-maker__factory-plaque {
+        --km-factory-plaque-max: min(15rem, 58vw);
+        gap: calc(0.35rem * var(--km-space-scale));
+        padding: calc(calc(0.45rem * var(--km-space-scale)) + var(--km-scallop))
+            calc(calc(0.4rem * var(--km-space-scale)) + var(--km-scallop))
+            calc(calc(0.55rem * var(--km-space-scale)) + var(--km-scallop));
+    }
+}
+
+@container km-factory (max-height: 420px) {
+    .kaleidoscope-maker__bead-factory-content {
+        --km-factory-preview-size: clamp(3rem, 20cqh, 5rem);
+    }
+}
+
+@container km-factory (max-height: 340px) {
+    .kaleidoscope-maker__bead-factory-content {
+        --km-factory-preview-size: clamp(2.75em, 18cqh, 4rem);
+    }
+
+    .kaleidoscope-maker__factory-plaque {
+        --km-factory-plaque-max: 14rem;
+    }
+}
+
+@container km-factory (max-width: 480px) {
+    .kaleidoscope-maker__bead-factory-content {
+        --km-factory-preview-size: clamp(3rem, 18vw, 4.75em);
+    }
+
+    .kaleidoscope-maker__factory-plaque {
+        --km-factory-plaque-max: min(15rem, 58vw);
+    }
+}
+
+/* Fullscreen build: tray left, dish right — sized to fit below title. */
+.km-art-fullscreen .kaleidoscope-maker--build-layout {
+    --km-build-beadbox-width-share: 0.62;
+    --km-build-dish-width-share: 0.28;
+    --km-build-dish-height-share: 0.78;
+    --km-build-dish-cap: calc(16.5rem * var(--km-space-scale));
+    --km-build-assembly-max-w: min(1040px, 98dvw);
+    --km-build-available-w: min(1040px, 98dvw);
+    --km-build-available-h-raw: calc(
+        100dvh
+        - var(--km-title-top)
+        - var(--km-title-plaque-h)
+        - var(--km-title-body-gap)
+        - calc(2rem * var(--km-space-scale))
+        - var(--km-build-body-pad-block)
+    );
+    --km-build-available-h: min(100cqh, var(--km-build-available-h-raw));
+    --km-max-px: none;
+    --km-max-vw: 100%;
+    --km-max-vh: 100%;
+    width: 100%;
+    max-width: min(1080px, 98vw);
+    max-height: 100%;
+    aspect-ratio: unset;
+    height: 100%;
+    overflow: hidden;
+    align-self: stretch;
+    justify-content: flex-start;
+}
+
+.km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-body {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    align-items: center;
+    /* Center the tray + dish assembly in the space below the title. */
+    justify-content: center;
+    padding: calc(0.2rem * var(--km-space-scale)) calc(0.5rem * var(--km-space-scale)) calc(0.5rem * var(--km-space-scale));
+    overflow: hidden;
+}
+
+.km-art-fullscreen__body:has(.kaleidoscope-maker--build-layout) {
+    container-type: size;
+    container-name: km-build-body;
+}
+
+.km-art-fullscreen--title-lowered:not(.km-art-fullscreen--immersive) .km-art-fullscreen__body:has(.kaleidoscope-maker--build-layout) {
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.km-art-fullscreen__body:has(.kaleidoscope-maker--build-layout) > .kaleidoscope-maker {
+    flex: 1 1 auto;
+    align-self: center;
+    /* The fullscreen body is a flex ROW: align-self only centers vertically,
+       so horizontal centering needs auto inline margins. */
+    margin-inline: auto;
+    min-height: 0;
+    width: 100%;
+    max-width: min(1080px, 98vw);
+    max-height: 100%;
+    height: 100%;
+}
+
+.km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-main-row {
+    flex: 0 1 auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    gap: var(--km-build-gap);
+    min-height: 0;
+    min-width: 0;
+    max-height: var(--km-build-available-h);
+}
+
+.km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-stack .kaleidoscope-maker__build-picker-grid {
+    transform: none;
+}
+
+.km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly {
+    transform: translateX(-108%);
+}
+
+.km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly--settled {
+    transform: translateX(0);
+}
+
+/* Build screen portrait: tall vertical tray (left), pager below, smaller dish (right).
+   IMPORTANT: this block must stay AFTER the `.km-art-fullscreen .kaleidoscope-maker--build-layout`
+   rules above — the doubled selectors rely on source order to override them. */
+@media (max-width: 768px) and (orientation: portrait) {
+    .kaleidoscope-maker--build-layout,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout {
+        /* Portrait shares: bigger tray, smaller dish (desktop baseline in kmLayoutTokens.css). */
+        --km-build-beadbox-width-share: 0.65;
+        --km-build-dish-height-share: 0.42;
+        --km-build-gap: calc(0.35rem * var(--km-space-scale));
+        /* Reserves tray-column room for the pager + its gap + body padding so the
+           pager is never clipped at the bottom. */
+        --km-build-pager-extra: calc(2.4rem * var(--km-space-scale));
+        --km-build-dish-cap: calc(13.5rem * var(--km-space-scale));
+        --km-build-available-h-portrait: max(
+            calc(100cqh - var(--km-build-pager-extra)),
+            calc(
+                100dvh
+                - var(--km-chrome-top-reserve, calc(5.5rem * var(--km-space-scale)))
+                - var(--km-chrome-bottom-reserve, calc(1rem * var(--km-space-scale)))
+                - var(--km-build-pager-extra)
+                - calc(0.35rem * var(--km-space-scale))
+            )
+        );
+        --km-beadbox-visual-h: min(
+            var(--km-build-available-h-portrait),
+            calc(100cqw * var(--km-build-beadbox-width-share) * var(--km-beadbox-aspect, 1.531))
+        );
+        --km-beadbox-visual-w: calc(var(--km-beadbox-visual-h) / var(--km-beadbox-aspect, 1.531));
+        --km-build-beadbox-img-max-h: var(--km-beadbox-visual-w);
+        --km-build-beadbox-max: var(--km-beadbox-visual-w);
+        --km-build-dish-max: min(
+            calc(100cqw - var(--km-beadbox-visual-w) - var(--km-build-gap)),
+            calc(var(--km-beadbox-visual-h) * var(--km-build-dish-height-share)),
+            var(--km-build-dish-cap)
+        );
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-body,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-body {
+        padding-inline: calc(0.15rem * var(--km-space-scale));
+        align-items: center;
+        justify-content: center;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-main-row,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-main-row {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        justify-content: center;
+        width: fit-content;
+        max-width: 100%;
+        /* Columns are already sized to fit; a max-height here would clip the pager. */
+        max-height: none;
+        margin-inline: auto;
+        gap: var(--km-build-gap);
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-col,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-col {
+        flex: 0 0 auto;
+        width: var(--km-beadbox-visual-w);
+        max-width: var(--km-beadbox-visual-w);
+        max-height: none;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col {
+        flex: 0 0 auto;
+        width: var(--km-build-dish-max);
+        max-width: var(--km-build-dish-max);
+        max-height: var(--km-build-dish-max);
+        align-self: flex-start;
+        margin-top: max(0px, calc((var(--km-beadbox-visual-h) - var(--km-build-dish-max)) / 2));
+    }
+
+    /* Portrait build: glitter sits at the bottom-left of the petri circle. */
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col .kaleidoscope-maker__glitter-corner,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col .kaleidoscope-maker__glitter-corner {
+        left: 0.35rem;
+        right: auto;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col .kaleidoscope-maker__glitter-popover,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col .kaleidoscope-maker__glitter-popover {
+        left: 0;
+        right: auto;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly {
+        width: 100%;
+        max-width: var(--km-beadbox-visual-w);
+        max-height: none;
+        gap: 0;
+        justify-content: flex-start;
+        transform: translateX(-108%);
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly--settled,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly--settled {
+        transform: translateX(0);
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly .kaleidoscope-maker__beadbox-pager {
+        margin-top: calc(0.35rem * var(--km-space-scale));
+        padding: 0;
+        position: relative;
+        z-index: 2;
+        flex-shrink: 0;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator {
+        width: var(--km-beadbox-visual-w);
+        height: var(--km-beadbox-visual-h);
+        max-height: var(--km-beadbox-visual-h);
+        flex-shrink: 0;
+    }
+
+    /* The rotator is a size container (km-beadbox-tray), so cq units inside the
+       --km-beadbox-visual-* vars would re-resolve against the small rotator and
+       shrink the tray. Use 100cqh directly: the rotator's own height IS the
+       tray's on-screen height, which becomes the stack width pre-rotation. */
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator > .kaleidoscope-maker__build-beadbox-stack,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator > .kaleidoscope-maker__build-beadbox-stack {
+        width: 100cqh;
+        max-width: none;
+        max-height: none;
+        /* The stack is a flex item of the (narrower) rotator; without this it
+           gets flex-shrunk back down to the rotator's width. */
+        flex: 0 0 auto;
+        /* Rotation keeps the box center fixed, so the stack must be centered on
+           both axes pre-rotation to land centered inside the rotator. */
+        align-self: center;
+        transform: rotate(90deg);
+        transform-origin: center center;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-stack {
+        max-height: none;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-stack .kaleidoscope-maker__beadbox-img,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-stack .kaleidoscope-maker__beadbox-img {
+        width: 100%;
+        height: auto;
+        max-width: none;
+        max-height: none;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-pile,
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-actions,
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__slot-plus,
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__beadbox-stack-rotator .kaleidoscope-maker__build-picker-cell:not(.kaleidoscope-maker__build-picker-cell--empty) {
+        transform: rotate(-90deg);
+    }
+}
+
+/* Landscape / short narrow: stack build tray above dish. */
+@media (max-width: 520px) and (min-aspect-ratio: 1/1) {
+    .kaleidoscope-maker__build-beadbox-stack .kaleidoscope-maker__beadbox-img {
+        max-height: min(
+            calc(100cqw / var(--km-beadbox-aspect)),
+            calc((var(--km-build-available-h-raw) - var(--km-build-gap) - var(--km-build-pager-extra)) * 0.62)
+        );
+    }
+
+    .kaleidoscope-maker__build-beadbox-col {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .kaleidoscope-maker__build-dish-col {
+        width: min(100%, var(--km-build-dish-cap), 100cqw);
+        max-width: min(100%, var(--km-build-dish-cap), 100cqw);
+        max-height: min(
+            var(--km-build-dish-cap),
+            calc(
+                var(--km-build-available-h-raw)
+                - var(--km-build-gap)
+                - var(--km-build-pager-extra)
+                - calc(100cqw / var(--km-beadbox-aspect))
+            ),
+            100cqw
+        );
+        margin-top: 0;
+    }
+
+    .kaleidoscope-maker__build-main-row,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-main-row {
+        flex-direction: column;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly {
+        transform: translateY(-108%);
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly--settled,
+    .km-art-fullscreen .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-beadbox-fly--settled {
+        transform: translateY(0);
+    }
+
+    /* Stacked build: glitter at bottom-left of the petri circle. */
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col .kaleidoscope-maker__glitter-corner {
+        left: 0.35rem;
+        right: auto;
+    }
+
+    .kaleidoscope-maker--build-layout .kaleidoscope-maker__build-dish-col .kaleidoscope-maker__glitter-popover {
+        left: 0;
+        right: auto;
+    }
+}
+
+/* Immersive hex view on /full: kaleidoscope fills the viewport; title + back/shake fade. */
+.km-art-fullscreen--immersive {
+    padding: 0;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.km-art-fullscreen--immersive .km-art-fullscreen__body {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    transition: none;
+}
+
+/* Immersive: edge-to-edge stage; fractal zoom is controlled in KaleidoscopeHexView. */
+.km-art-fullscreen--immersive .kaleidoscope-maker--fullscreen-immersive {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    aspect-ratio: unset;
+    --km-max-px: none;
+    --km-max-vw: 100%;
+    --km-max-vh: 100%;
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-root {
+    padding: 0;
+    height: 100%;
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-row {
+    position: relative;
+    gap: 0;
+    height: 100%;
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-stage {
+    border-radius: 0;
+}
+
+/* Tilt controls overlay the edges so the canvas stays full-bleed. */
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-tilt {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 12;
+    flex: none;
+    width: clamp(2.25rem, 5vw, 3.25rem);
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--km-ink-faint);
+    opacity: 0.45;
+    transition: opacity 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-tilt--left {
+    left: 0;
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-tilt--right {
+    right: 0;
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-tilt:hover,
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-tilt:active {
+    opacity: 0.95;
+    background: rgba(246, 244, 239, 0.45);
+    color: var(--km-ink);
+}
+
+/* Invisible strip across the top so chrome is easy to re-summon while faded. */
+.km-art-fullscreen__chrome-hotzone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: min(42vh, 14rem);
+    z-index: 28;
+}
+
+.km-art-fullscreen--immersive .km-art-fullscreen__header {
+    top: 0;
+    left: 50%;
+    right: auto;
+    z-index: 30;
+    width: max-content;
+    max-width: calc(100vw - 1rem);
+    margin: 0;
+    padding: 0;
+    transform: translateX(-50%);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    opacity: 0;
+    transition: opacity 0.55s ease, top 0.45s ease, transform 0.45s ease;
+    pointer-events: auto;
+}
+
+.km-art-fullscreen--immersive .km-art-fullscreen__header--view-chrome {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+}
+
+.km-art-fullscreen--immersive .km-art-fullscreen__title-plaque {
+    background: rgba(246, 244, 239, 0.96);
+    border: 1px solid rgba(50, 75, 75, 0.14);
+    filter: drop-shadow(0 4px 16px rgba(50, 75, 75, 0.1));
+}
+
+.km-art-fullscreen--immersive.km-art-fullscreen--chrome-visible .km-art-fullscreen__header {
+    opacity: 1;
+}
+
+.kaleidoscope-maker__hex-topleft--immersive {
+    z-index: 30;
+    opacity: 0;
+    transition: opacity 0.55s ease;
+    /* Expanded hit area while faded so the buttons are still easy to find. */
+    padding: calc(0.5rem * var(--km-space-scale)) calc(0.65rem * var(--km-space-scale)) calc(0.65rem * var(--km-space-scale)) calc(0.5rem * var(--km-space-scale));
+    margin: calc(-0.15rem * var(--km-space-scale)) 0 0 calc(-0.15rem * var(--km-space-scale));
+    pointer-events: auto;
+}
+
+.kaleidoscope-maker__hex-topleft--immersive.kaleidoscope-maker__hex-topleft--visible {
+    opacity: 1;
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-topleft--immersive .kaleidoscope-maker__customize-back {
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(50, 75, 75, 0.22);
+    color: var(--km-ink);
+    backdrop-filter: blur(4px);
+}
+
+.km-art-fullscreen--immersive .kaleidoscope-maker__hex-topleft--immersive .kaleidoscope-maker__hex-slider {
+    backdrop-filter: blur(4px);
 }

@@ -22,6 +22,7 @@ export function BeadOrbPreview({ bead, layout, x, y }) {
                 shape={bead.shape}
                 fill={bead.fill}
                 accent={bead.accent}
+                image={bead.image}
                 lightDeg={layout.rot}
             />
         </span>

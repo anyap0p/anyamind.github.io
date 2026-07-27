@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { BeadVisual } from './BeadVisual';
-import { petriBeadRadiusPx } from './petriDishPhysics';
+import { petriBodyRadiusForBead } from './petriDishPhysics';
 
-const THUMB_PX = 118;
+const THUMB_PX = 168;
 
 function hashStringToSeed(str) {
     let h = 2166136261;
@@ -23,13 +23,31 @@ function mulberry32(seed) {
     };
 }
 
+/** Thumbnails only render a sample of the glitter — hundreds of sub-pixel specks add DOM weight, not visuals. */
+const THUMB_MAX_GLITTER = 150;
+
 function layoutThumbBeads(saveId, beads, sizePx) {
     const cx = sizePx / 2;
     const cy = sizePx / 2;
     const R = sizePx * 0.43;
     const rng = mulberry32(hashStringToSeed(saveId) ^ 0x9e3779b9);
-    return beads.map((bead, i) => {
-        const r = petriBeadRadiusPx(bead.size, R);
+
+    let glitterTotal = 0;
+    for (const bead of beads) {
+        if (bead.shape === 'glitter') glitterTotal += 1;
+    }
+    const glitterStep = Math.max(1, Math.ceil(glitterTotal / THUMB_MAX_GLITTER));
+
+    const placements = [];
+    let glitterSeen = 0;
+    for (let i = 0; i < beads.length; i += 1) {
+        const bead = beads[i];
+        if (bead.shape === 'glitter') {
+            glitterSeen += 1;
+            if ((glitterSeen - 1) % glitterStep !== 0) continue;
+        }
+        /* Sand-grain glitter would be sub-pixel at thumb scale; keep a faint visible speckle. */
+        const r = Math.max(bead.shape === 'glitter' ? 0.9 : 0, petriBodyRadiusForBead(bead, R));
         const u = rng();
         const v = rng();
         const dist = Math.max(0, R - r - 5) * Math.sqrt(u);
@@ -37,26 +55,22 @@ function layoutThumbBeads(saveId, beads, sizePx) {
         const x = cx + dist * Math.cos(theta);
         const y = cy + dist * Math.sin(theta);
         const spin = rng() * 360;
-        return { bead, x, y, r, spin, key: `${saveId}-${i}` };
-    });
+        placements.push({ bead, x, y, r, spin, seed: i, key: `${saveId}-${i}` });
+    }
+    return placements;
 }
 
 /**
  * Static mini petri dish preview; bead positions are deterministic from save id (random-looking layout).
  */
-export function SavedKaleidoscopeThumbnail({ item, onOpen }) {
+export function SavedKaleidoscopeThumbnail({ item }) {
     const placements = useMemo(
         () => layoutThumbBeads(item.id, item.beads, THUMB_PX),
         [item.id, item.beads],
     );
 
     return (
-        <button
-            type="button"
-            className="kaleidoscope-maker__saved-thumb"
-            onClick={onOpen}
-            aria-label="Open saved kaleidoscope"
-        >
+        <div className="kaleidoscope-maker__saved-thumb" aria-hidden="true">
             <div className="kaleidoscope-maker__petri-wrap kaleidoscope-maker__petri-wrap--thumb">
                 <div className="kaleidoscope-maker__petri-sizer">
                     <div className="kaleidoscope-maker__petri-rotate" style={{ transform: 'none' }}>
@@ -72,12 +86,17 @@ export function SavedKaleidoscopeThumbnail({ item, onOpen }) {
                                         top: `${p.y - p.r}px`,
                                         width: `${p.r * 2}px`,
                                         height: `${p.r * 2}px`,
+                                        zIndex:
+                                            p.bead.shape === 'glitter' ? (p.bead.zFront ? 3 : 1) : 2,
                                     }}
                                 >
                                     <BeadVisual
                                         shape={p.bead.shape}
                                         fill={p.bead.fill}
                                         accent={p.bead.accent}
+                                        image={p.bead.image}
+                                        holo={p.bead.holo}
+                                        seed={p.seed}
                                         lightDeg={p.spin}
                                     />
                                 </div>
@@ -86,6 +105,6 @@ export function SavedKaleidoscopeThumbnail({ item, onOpen }) {
                     </div>
                 </div>
             </div>
-        </button>
+        </div>
     );
 }

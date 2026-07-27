@@ -1,0 +1,36 @@
+/**
+ * Kaleidoscope Maker — shared layout tokens.
+ *
+ * Page shells (KaleidoscopeMakerArt.css, km-art-fullscreen) set chrome vars:
+ *   --km-title-top, --km-title-plaque-h, --km-title-body-gap
+ *   → --km-chrome-top-reserve
+ *
+ * Screen components read these tokens; do not hardcode sizes in JSX.
+ */
+
+.kaleidoscope-maker,
+.kaleidoscope-maker-art__media-frame,
+.km-art-fullscreen {
+    --km-beadbox-aspect: 1.531;
+
+    /* Build assembly (desktop / wide default) */
+    --km-build-beadbox-width-share: 0.62;
+    --km-build-dish-width-share: 0.28;
+    --km-build-dish-height-share: 0.78;
+    --km-build-dish-cap: calc(16.5rem * var(--km-space-scale, 1));
+    --km-build-gap: calc(0.75rem * var(--km-space-scale, 1));
+    --km-build-pager-extra: calc(1.85rem * var(--km-space-scale, 1));
+    --km-build-body-pad-block: calc(0.65rem * var(--km-space-scale, 1));
+    --km-build-assembly-max-w: min(1040px, 98dvw);
+
+    /* Bead editor compact scaling baseline */
+    --km-bead-editor-ui-scale: 1;
+
+    /* Factory / editor preview column */
+    --km-factory-preview-size: clamp(3.25rem, 24cqw, 5.75rem);
+    --km-factory-stack-gap: clamp(0.35em, 1.8vw, 0.65em);
+}
+
+/* Portrait mobile build overrides live in KaleidoscopeMaker.css
+   ("Build screen portrait" block) — they must come after the
+   .km-art-fullscreen build rules in the cascade to take effect. */

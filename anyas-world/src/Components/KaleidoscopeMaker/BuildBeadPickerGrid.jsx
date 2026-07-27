@@ -16,13 +16,13 @@ function BuildPickerCell({ bead, dishFull, onPick }) {
             aria-label={dishFull ? 'Petri dish is full' : `Add ${bead.shape} bead to dish`}
         >
             <span className="kaleidoscope-maker__build-picker-bead">
-                <BeadVisual shape={bead.shape} fill={bead.fill} accent={bead.accent} lightDeg={18} />
+                <BeadVisual shape={bead.shape} fill={bead.fill} accent={bead.accent} image={bead.image} lightDeg={18} />
             </span>
         </button>
     );
 }
 
-export function BuildBeadPickerGrid({ beads, dishCount, onPickBead }) {
+export function BuildBeadPickerGrid({ beads, slotOffset = 0, dishCount, onPickBead }) {
     const dishFull = dishCount >= PETRI_MAX_BEADS;
 
     return (
@@ -31,7 +31,7 @@ export function BuildBeadPickerGrid({ beads, dishCount, onPickBead }) {
                 <div key={row} className="kaleidoscope-maker__bead-slot-row">
                     <div className="kaleidoscope-maker__bead-slot-half">
                         {Array.from({ length: BEAD_HALVES }, (_, j) => {
-                            const i = row * BEAD_GRID_COLS + j;
+                            const i = slotOffset + row * BEAD_GRID_COLS + j;
                             return (
                                 <div key={i} className="kaleidoscope-maker__slot-cell">
                                     <BuildPickerCell bead={beads[i]} dishFull={dishFull} onPick={onPickBead} />
@@ -41,7 +41,7 @@ export function BuildBeadPickerGrid({ beads, dishCount, onPickBead }) {
                     </div>
                     <div className="kaleidoscope-maker__bead-slot-half">
                         {Array.from({ length: BEAD_HALVES }, (_, j) => {
-                            const i = row * BEAD_GRID_COLS + BEAD_HALVES + j;
+                            const i = slotOffset + row * BEAD_GRID_COLS + BEAD_HALVES + j;
                             return (
                                 <div key={i} className="kaleidoscope-maker__slot-cell">
                                     <BuildPickerCell bead={beads[i]} dishFull={dishFull} onPick={onPickBead} />

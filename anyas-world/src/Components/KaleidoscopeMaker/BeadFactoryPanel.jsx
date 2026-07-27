@@ -1,72 +1,118 @@
-import React, { useState } from 'react';
-import { BEAD_SHAPES, beadFactoryDisplayScale, normalizeBead, randomBead, randomHex } from './beadModel';
+import React, { useCallback, useEffect, useState } from 'react';
+import { beadFactoryDisplayPercent, normalizeBead, randomBead } from './beadModel';
+import { BeadColorControls } from './BeadColorControls';
+import { BeadShapePicker } from './BeadShapePicker';
 import { BeadVisual } from './BeadVisual';
+import { ScallopedPlaque } from './ScallopedPlaque';
 
-export function BeadFactoryPanel({ onSave, onCancel }) {
+export function BeadFactoryPanel({
+    onSave,
+    onCancel,
+    backInChrome = false,
+    onChromeBackChange,
+    onChromeForwardChange,
+    onChromeTitleChange,
+}) {
     const [bead, setBead] = useState(() => randomBead());
+    const previewPct = beadFactoryDisplayPercent(bead.size);
 
-    const cycleShape = () => {
-        setBead((b) => {
-            const i = BEAD_SHAPES.indexOf(b.shape);
-            const nextShape = BEAD_SHAPES[(i + 1) % BEAD_SHAPES.length];
-            return { ...b, shape: nextShape };
-        });
-    };
+    const handleSave = useCallback(() => {
+        onSave(normalizeBead(bead));
+    }, [onSave, bead]);
 
-    const bumpSize = () => {
-        setBead((b) => ({ ...b, size: (Number(b.size) + 5) % 101 }));
-    };
+    useEffect(() => {
+        onChromeTitleChange?.('the bead factory');
+        return () => onChromeTitleChange?.(null);
+    }, [onChromeTitleChange]);
 
-    const randomColors = () => {
-        setBead((b) => ({ ...b, fill: randomHex(), accent: randomHex() }));
-    };
+    useEffect(() => {
+        if (!backInChrome) return undefined;
+        onChromeBackChange?.(onCancel, 'cancel');
+        onChromeForwardChange?.(handleSave, 'save');
+        return () => {
+            onChromeBackChange?.(null);
+            onChromeForwardChange?.(null);
+        };
+    }, [
+        backInChrome,
+        onCancel,
+        handleSave,
+        onChromeBackChange,
+        onChromeForwardChange,
+    ]);
 
     return (
         <div className="kaleidoscope-maker__bead-factory-content">
-            <div className="kaleidoscope-maker__bead-factory-stage" aria-hidden>
-                <div className="kaleidoscope-maker__bead-factory-preview">
-                    <div
-                        className="kaleidoscope-maker__bead-factory-preview-scaler"
-                        style={{ transform: `scale(${beadFactoryDisplayScale(bead.size)})` }}
+            {!backInChrome ? (
+                <header className="kaleidoscope-maker__bead-factory-header">
+                    <button
+                        type="button"
+                        className="kaleidoscope-maker__bead-factory-nav kaleidoscope-maker__bead-factory-nav--cancel"
+                        onClick={onCancel}
+                        aria-label="Cancel"
                     >
-                        <BeadVisual shape={bead.shape} fill={bead.fill} accent={bead.accent} />
-                    </div>
+                        <span aria-hidden="true">←</span>
+                        <span className="kaleidoscope-maker__bead-factory-nav-tip" aria-hidden="true">
+                            cancel
+                        </span>
+                    </button>
+                    <h1 className="kaleidoscope-maker__bead-factory-heading">the bead factory</h1>
+                    <button
+                        type="button"
+                        className="kaleidoscope-maker__bead-factory-nav kaleidoscope-maker__bead-factory-nav--save"
+                        onClick={handleSave}
+                        aria-label="Save bead"
+                    >
+                        <span aria-hidden="true">→</span>
+                        <span className="kaleidoscope-maker__bead-factory-nav-tip" aria-hidden="true">
+                            save
+                        </span>
+                    </button>
+                </header>
+            ) : null}
+
+            <div className="kaleidoscope-maker__bead-factory-stack">
+                <div className="kaleidoscope-maker__bead-factory-tools">
+                    <ScallopedPlaque allowOverflow scallopRadius={9} className="kaleidoscope-maker__factory-plaque">
+                        <BeadColorControls bead={bead} onChange={setBead} />
+                        <BeadShapePicker bead={bead} onChange={setBead} />
+                        <label className="kaleidoscope-maker__view-setting kaleidoscope-maker__bead-size-slider">
+                            <span className="kaleidoscope-maker__view-setting-label">
+                                size{' '}
+                                <span className="kaleidoscope-maker__factory-setting-value" aria-hidden>
+                                    {bead.size}
+                                </span>
+                            </span>
+                            <input
+                                type="range"
+                                className="kaleidoscope-maker__view-setting-range"
+                                min={0}
+                                max={100}
+                                step={1}
+                                value={bead.size}
+                                onChange={(e) =>
+                                    setBead((b) => ({ ...b, size: Number(e.target.value) }))
+                                }
+                                aria-valuetext={`size ${bead.size}`}
+                            />
+                        </label>
+                    </ScallopedPlaque>
                 </div>
-            </div>
-            <div className="kaleidoscope-maker__bead-factory-settings">
-                <h1 className="kaleidoscope-maker__bead-factory-heading">the bead factory</h1>
-                <label>
-                    color 1{' '}
-                    <input
-                        type="color"
-                        value={bead.fill}
-                        onChange={(e) => setBead((b) => ({ ...b, fill: e.target.value }))}
-                    />
-                </label>
-                <label>
-                    color 2{' '}
-                    <input
-                        type="color"
-                        value={bead.accent}
-                        onChange={(e) => setBead((b) => ({ ...b, accent: e.target.value }))}
-                    />
-                </label>
-                <button type="button" onClick={() => onSave(normalizeBead(bead))}>
-                    save
-                </button>
-                <button type="button" onClick={onCancel}>
-                    cancel
-                </button>
-                <div className="kaleidoscope-maker__bead-factory-controls">
-                    <button type="button" onClick={cycleShape}>
-                        shape: {bead.shape}
-                    </button>
-                    <button type="button" onClick={bumpSize}>
-                        size: {bead.size}
-                    </button>
-                    <button type="button" onClick={randomColors}>
-                        color
-                    </button>
+
+                <div className="kaleidoscope-maker__bead-factory-stage" aria-hidden>
+                    <div className="kaleidoscope-maker__bead-factory-preview">
+                        <div
+                            className="kaleidoscope-maker__bead-factory-preview-scaler"
+                            style={{ width: `${previewPct}%`, height: `${previewPct}%` }}
+                        >
+                            <BeadVisual
+                                shape={bead.shape}
+                                fill={bead.fill}
+                                accent={bead.accent}
+                                image={bead.image}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

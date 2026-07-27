@@ -5,17 +5,76 @@ const RESTITUTION = 0.07;
 const DAMPING = 0.957;
 const PAIR_ITERS = 4;
 
-/** Min normal closing speed (px/s) to register a bead–bead clack for optional SFX. */
-export const PETRI_PAIR_SOUND_MIN_CLOSING = 10;
+/** Min normal closing speed (px/s) to register a bead–bead clack for optional SFX; high enough that beads settling or grazing slowly stay silent. */
+export const PETRI_PAIR_SOUND_MIN_CLOSING = 70;
 
-/** Min outward radial speed (px/s) at dish rim for wall clack SFX. */
-const PETRI_WALL_SOUND_MIN = 6;
+/** Min outward radial speed (px/s) at dish rim for wall clack SFX; beads resting on the rim while tilting shouldn't click. */
+const PETRI_WALL_SOUND_MIN = 40;
 
 function wrapAngle(rad) {
     let a = rad;
     while (a > Math.PI) a -= Math.PI * 2;
     while (a < -Math.PI) a += Math.PI * 2;
     return a;
+}
+
+/** Stable per-pair hash → 10% of glitter pairs slide over each other instead of stacking. */
+function glitterPairPassesOver(idA, idB) {
+    let h = (Math.min(idA, idB) * 73856093) ^ (Math.max(idA, idB) * 19349663);
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    h ^= h >>> 16;
+    return (h >>> 0) % 10 === 0;
+}
+
+/** Forward-neighbor cell offsets: every adjacent cell pair is visited exactly once. */
+const GRID_NEIGHBORS = [
+    [0, 0],
+    [1, 0],
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+];
+
+/**
+ * Glitter–glitter collisions via a uniform grid (glitter counts are far too
+ * high for the all-pairs loop the beads use). 10% of pairs pass over each
+ * other instead of stacking, decided deterministically per pair so contacts
+ * don't flicker between colliding and passing.
+ */
+function resolveGlitterPairs(glitter) {
+    const m = glitter.length;
+    if (m < 2) return;
+    let maxR = 0;
+    for (let i = 0; i < m; i += 1) {
+        if (glitter[i].r > maxR) maxR = glitter[i].r;
+    }
+    const cell = Math.max(2 * maxR, 1);
+    /* Numeric cell key; +4096 offset keeps floors positive in any dish coordinate space. */
+    const keyOf = (x, y) => (Math.floor(x / cell) + 4096) * 8192 + (Math.floor(y / cell) + 4096);
+
+    const grid = new Map();
+    for (let i = 0; i < m; i += 1) {
+        const k = keyOf(glitter[i].x, glitter[i].y);
+        const bucket = grid.get(k);
+        if (bucket) bucket.push(i);
+        else grid.set(k, [i]);
+    }
+
+    for (let i = 0; i < m; i += 1) {
+        const a = glitter[i];
+        const cxi = Math.floor(a.x / cell) + 4096;
+        const cyi = Math.floor(a.y / cell) + 4096;
+        for (const [dx, dy] of GRID_NEIGHBORS) {
+            const bucket = grid.get((cxi + dx) * 8192 + (cyi + dy));
+            if (!bucket) continue;
+            for (const j of bucket) {
+                if (dx === 0 && dy === 0 && j <= i) continue;
+                const b = glitter[j];
+                if (glitterPairPassesOver(a.id, b.id)) continue;
+                resolvePair(a, b);
+            }
+        }
+    }
 }
 
 /**
@@ -79,6 +138,21 @@ export function petriBeadRadiusPx(beadSize, dishRadiusPx) {
     return base + t * span;
 }
 
+/** Glitter specks: grain-of-sand scale, far below the smallest bead. */
+export function petriGlitterRadiusPx(beadSize, dishRadiusPx) {
+    const t = Math.min(100, Math.max(0, Number(beadSize) || 50)) / 100;
+    const base = dishRadiusPx * 0.0055;
+    const span = dishRadiusPx * 0.0055;
+    return base + t * span;
+}
+
+/** Physics/display radius for any bead-like object (beads vs glitter specks). */
+export function petriBodyRadiusForBead(bead, dishRadiusPx) {
+    return bead?.shape === 'glitter'
+        ? petriGlitterRadiusPx(bead.size, dishRadiusPx)
+        : petriBeadRadiusPx(bead?.size, dishRadiusPx);
+}
+
 /**
  * Effective gravity multiplier from bead size (0–100): larger beads pull “down” harder.
  */
@@ -95,7 +169,7 @@ export function gravityStrengthFromBeadSize(beadSize) {
  */
 export function addPetriBody(world, bead, id, g) {
     const { cx, cy, R, bodies } = world;
-    const r = petriBeadRadiusPx(bead.size, R);
+    const r = petriBodyRadiusForBead(bead, R);
     const glen = Math.hypot(g.gx, g.gy) || 1;
     const ux = g.gx / glen;
     const uy = g.gy / glen;
@@ -104,7 +178,7 @@ export function addPetriBody(world, bead, id, g) {
     const jy = (Math.random() - 0.5) * spawn * 0.35;
     const vx = (Math.random() - 0.5) * 16;
     const vy = (Math.random() - 0.5) * 16;
-    bodies.push({
+    const body = {
         id,
         bead,
         x: cx - ux * spawn + jx,
@@ -114,7 +188,31 @@ export function addPetriBody(world, bead, id, g) {
         r,
         /** Visual roll / highlight direction (rad); nudged by bead–bead and wall contact. */
         spin: Math.atan2(vy, vx),
-    });
+    };
+    if (bead.shape === 'glitter') {
+        /* Per-speck random gravity: grains drift down at different rates, cascading like real glitter. */
+        body.gMul = 0.25 + Math.random() * 1.55;
+    }
+    bodies.push(body);
+}
+
+/**
+ * Scatters every body (beads and glitter alike) to a random spot in the dish
+ * with a fresh velocity kick, as if the kaleidoscope were shaken.
+ */
+export function shakePetriWorld(world) {
+    const { cx, cy, R, bodies } = world;
+    for (const b of bodies) {
+        const maxD = Math.max(1, R - b.r - 4);
+        const ang = Math.random() * Math.PI * 2;
+        /* sqrt for uniform density over the disc, not clumped at the center. */
+        const dist = maxD * Math.sqrt(Math.random());
+        b.x = cx + Math.cos(ang) * dist;
+        b.y = cy + Math.sin(ang) * dist;
+        b.vx = (Math.random() - 0.5) * 420;
+        b.vy = (Math.random() - 0.5) * 420;
+        b.spin = Math.atan2(b.vy, b.vx);
+    }
 }
 
 /**
@@ -192,6 +290,15 @@ export function stepPetriWorld(world, dt, g, substeps = 3, outPairHits = null) {
             b.spin = Math.atan2(b.vy || 0, b.vx || 0);
         }
     }
+
+    /* Separate collision planes: beads use the all-pairs loop (few of them),
+       glitter goes through the spatial grid (can be over a thousand specks). */
+    const beadBodies = [];
+    const glitterBodies = [];
+    for (let i = 0; i < n; i += 1) {
+        (bodies[i].bead?.shape === 'glitter' ? glitterBodies : beadBodies).push(bodies[i]);
+    }
+
     const h = dt / substeps;
     const lastS = substeps - 1;
     /** Pair overlaps are cleared by earlier iterations; sample bead–bead clacks on k===0 only. */
@@ -199,7 +306,7 @@ export function stepPetriWorld(world, dt, g, substeps = 3, outPairHits = null) {
     for (let s = 0; s < substeps; s += 1) {
         for (let i = 0; i < n; i += 1) {
             const b = bodies[i];
-            const gScale = gravityStrengthFromBeadSize(b.bead?.size);
+            const gScale = b.gMul ?? gravityStrengthFromBeadSize(b.bead?.size);
             b.vx += g.gx * h * gScale;
             b.vy += g.gy * h * gScale;
             b.x += b.vx * h;
@@ -214,23 +321,27 @@ export function stepPetriWorld(world, dt, g, substeps = 3, outPairHits = null) {
             if (
                 outPairHits &&
                 s === lastS &&
-                wallImpact >= PETRI_WALL_SOUND_MIN
+                wallImpact >= PETRI_WALL_SOUND_MIN &&
+                bodies[i].bead?.shape !== 'glitter'
             ) {
                 outPairHits.push({ v: Math.min(160, wallImpact * 1.45) });
             }
         }
         for (let k = 0; k < PAIR_ITERS; k += 1) {
             const recordPairHits = outPairHits && s === lastS && k === PAIR_HIT_RECORD_K;
-            for (let i = 0; i < n; i += 1) {
-                for (let j = i + 1; j < n; j += 1) {
-                    const closing = resolvePair(bodies[i], bodies[j]);
+            const nb = beadBodies.length;
+            for (let i = 0; i < nb; i += 1) {
+                for (let j = i + 1; j < nb; j += 1) {
+                    const closing = resolvePair(beadBodies[i], beadBodies[j]);
                     if (recordPairHits && closing >= PETRI_PAIR_SOUND_MIN_CLOSING) {
                         /* Scale into same ballpark as tray wall hits for playTrayWallClicks */
                         outPairHits.push({ v: Math.min(160, closing * 2.1) });
                     }
                 }
             }
+            resolveGlitterPairs(glitterBodies);
         }
     }
-    applyContactSpin(cx, cy, R, bodies);
+    /* Contact spin is a visual on shaped beads only; glitter dots have no visible rotation. */
+    applyContactSpin(cx, cy, R, beadBodies);
 }

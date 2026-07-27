@@ -15,6 +15,15 @@ export function loadBeadsFromStorage() {
     }
 }
 
+export function countFilledBeads(beads = loadBeadsFromStorage()) {
+    return beads.reduce((n, bead) => n + (bead ? 1 : 0), 0);
+}
+
+/** First empty tray slot, or -1 if every slot is filled. */
+export function findFirstEmptyBeadSlot(beads = loadBeadsFromStorage()) {
+    return beads.findIndex((bead) => !bead);
+}
+
 export function saveBeadsToStorage(beads) {
     try {
         localStorage.setItem(STORAGE_CUSTOM_BEADS, JSON.stringify(beads));

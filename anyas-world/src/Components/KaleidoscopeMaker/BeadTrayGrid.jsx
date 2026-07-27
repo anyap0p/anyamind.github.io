@@ -4,6 +4,7 @@ import { BeadSlotCell } from './BeadSlotCell';
 
 export function BeadTrayGrid({
     beads,
+    slotOffset = 0,
     visible,
     interactive = false,
     onAdd,
@@ -21,7 +22,7 @@ export function BeadTrayGrid({
                 <div key={row} className="kaleidoscope-maker__bead-slot-row">
                     <div className="kaleidoscope-maker__bead-slot-half">
                         {Array.from({ length: BEAD_HALVES }, (_, j) => {
-                            const i = row * BEAD_GRID_COLS + j;
+                            const i = slotOffset + row * BEAD_GRID_COLS + j;
                             return (
                                 <div key={i} className="kaleidoscope-maker__slot-cell">
                                     <BeadSlotCell
@@ -40,7 +41,7 @@ export function BeadTrayGrid({
                     </div>
                     <div className="kaleidoscope-maker__bead-slot-half">
                         {Array.from({ length: BEAD_HALVES }, (_, j) => {
-                            const i = row * BEAD_GRID_COLS + BEAD_HALVES + j;
+                            const i = slotOffset + row * BEAD_GRID_COLS + BEAD_HALVES + j;
                             return (
                                 <div key={i} className="kaleidoscope-maker__slot-cell">
                                     <BeadSlotCell

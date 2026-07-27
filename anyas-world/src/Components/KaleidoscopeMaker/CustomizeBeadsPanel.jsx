@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import beadboxImg from '../../Icons/beadbox.png';
+import { BackButton } from './BackButton';
+import { BeadBoxPager } from './BeadBoxPager';
 import { BeadEditorModal } from './BeadEditorModal';
 import { BeadFactoryPanel } from './BeadFactoryPanel';
 import { BeadTrayGrid } from './BeadTrayGrid';
 import { normalizeBead } from './beadModel';
-import { loadBeadsFromStorage, saveBeadsToStorage } from './beadStorage';
+import { findFirstEmptyBeadSlot, loadBeadsFromStorage, saveBeadsToStorage } from './beadStorage';
+import { SLOTS_PER_BOX } from './constants';
 
 /** Mostly-vertical tray motion → random tilt, strength, and lateral kick. */
 function makeTrayImpulse(ix, iy) {
@@ -26,19 +29,49 @@ function makeTrayImpulse(ix, iy) {
     };
 }
 
-export function CustomizeBeadsPanel({ onBack }) {
+/** Open factory on first paint when arriving from the home shortcut — no tray flash. */
+function getHomeFactoryBoot(startInFactory) {
+    if (!startInFactory) {
+        return { factoryMode: false, factorySlot: null, boxIndex: 0, homeFactorySession: false };
+    }
+    const empty = findFirstEmptyBeadSlot();
+    if (empty < 0) {
+        return { factoryMode: false, factorySlot: null, boxIndex: 0, homeFactorySession: false };
+    }
+    return {
+        factoryMode: true,
+        factorySlot: empty,
+        boxIndex: Math.floor(empty / SLOTS_PER_BOX),
+        homeFactorySession: true,
+    };
+}
+
+export function CustomizeBeadsPanel({
+    onBack,
+    backInChrome = false,
+    onChromeBackChange,
+    onChromeForwardChange,
+    onChromeTitleChange,
+    startInFactory = false,
+}) {
+    const [boot] = useState(() => getHomeFactoryBoot(startInFactory));
     const [flySettled, setFlySettled] = useState(false);
     const [showSlotButtons, setShowSlotButtons] = useState(false);
     const [beads, setBeads] = useState(loadBeadsFromStorage);
     const [editorSlot, setEditorSlot] = useState(null);
-    const [factoryMode, setFactoryMode] = useState(false);
-    const [factorySlot, setFactorySlot] = useState(null);
+    const [factoryMode, setFactoryMode] = useState(boot.factoryMode);
+    const [factorySlot, setFactorySlot] = useState(boot.factorySlot);
     const [factoryNonce, setFactoryNonce] = useState(0);
     const [trayRattle, setTrayRattle] = useState({ key: 0, ix: 0, iy: 0 });
     const [trayEditorOut, setTrayEditorOut] = useState(false);
+    const [boxIndex, setBoxIndex] = useState(boot.boxIndex);
+    /** Home → factory: hide tray entirely until save (cancel returns home). */
+    const [homeFactorySession, setHomeFactorySession] = useState(boot.homeFactorySession);
     const pendingRattleRef = useRef({ ix: 0, iy: 0 });
     const editorExitAwaitingReturnRef = useRef(false);
     const flyRef = useRef(null);
+    const slotOffset = boxIndex * SLOTS_PER_BOX;
+    const hideTray = homeFactorySession && factoryMode;
 
     const updateBeads = useCallback((updater) => {
         setBeads((prev) => {
@@ -49,6 +82,7 @@ export function CustomizeBeadsPanel({ onBack }) {
     }, []);
 
     useEffect(() => {
+        if (hideTray) return undefined;
         const id = requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 /* Tray slides up into view → beads lag downward in box frame. */
@@ -57,7 +91,7 @@ export function CustomizeBeadsPanel({ onBack }) {
             });
         });
         return () => cancelAnimationFrame(id);
-    }, []);
+    }, [hideTray]);
 
     useEffect(() => {
         const el = flyRef.current;
@@ -124,6 +158,8 @@ export function CustomizeBeadsPanel({ onBack }) {
         setFactorySlot(slotIndex);
         setFactoryNonce((n) => n + 1);
         setFactoryMode(true);
+        const box = Math.floor(slotIndex / SLOTS_PER_BOX);
+        setBoxIndex(box);
     }, []);
 
     const closeFactory = useCallback(() => {
@@ -131,6 +167,16 @@ export function CustomizeBeadsPanel({ onBack }) {
         setFactoryMode(false);
         setFactorySlot(null);
     }, []);
+
+    /** Leave the factory without saving. From the home shortcut, return to the shop menu. */
+    const cancelFactory = useCallback(() => {
+        if (homeFactorySession) {
+            setHomeFactorySession(false);
+            onBack();
+            return;
+        }
+        closeFactory();
+    }, [homeFactorySession, closeFactory, onBack]);
 
     const saveFactory = useCallback(
         (payload) => {
@@ -143,6 +189,7 @@ export function CustomizeBeadsPanel({ onBack }) {
                 next[index] = saved;
                 return next;
             });
+            setHomeFactorySession(false);
             closeFactory();
         },
         [factorySlot, updateBeads, closeFactory],
@@ -157,7 +204,7 @@ export function CustomizeBeadsPanel({ onBack }) {
 
     const handleCustomizeBack = useCallback(() => {
         if (factoryMode) {
-            closeFactory();
+            cancelFactory();
             return;
         }
         if (editorSlot) {
@@ -165,16 +212,41 @@ export function CustomizeBeadsPanel({ onBack }) {
             return;
         }
         onBack();
-    }, [factoryMode, closeFactory, editorSlot, closeEditorWithTrayExit, onBack]);
+    }, [factoryMode, cancelFactory, editorSlot, closeEditorWithTrayExit, onBack]);
+
+    useEffect(() => {
+        if (!backInChrome) return undefined;
+        /* Factory panel registers title ← / → while open. */
+        if (factoryMode) return undefined;
+        onChromeBackChange?.(handleCustomizeBack, 'home');
+        onChromeForwardChange?.(null);
+        return () => {
+            onChromeBackChange?.(null);
+            onChromeForwardChange?.(null);
+        };
+    }, [
+        backInChrome,
+        factoryMode,
+        handleCustomizeBack,
+        onChromeBackChange,
+        onChromeForwardChange,
+    ]);
+
+    useEffect(() => {
+        /* Tray title; factory panel overrides while open. */
+        if (factoryMode) return undefined;
+        onChromeTitleChange?.('your bead stash');
+        return () => onChromeTitleChange?.(null);
+    }, [factoryMode, onChromeTitleChange]);
 
     useEffect(() => {
         if (!factoryMode) return undefined;
         const onKey = (e) => {
-            if (e.key === 'Escape') closeFactory();
+            if (e.key === 'Escape') cancelFactory();
         };
         document.addEventListener('keydown', onKey);
         return () => document.removeEventListener('keydown', onKey);
-    }, [factoryMode, closeFactory]);
+    }, [factoryMode, cancelFactory]);
 
     const openEdit = useCallback((slotIndex) => {
         const b = beads[slotIndex];
@@ -209,6 +281,18 @@ export function CustomizeBeadsPanel({ onBack }) {
         [updateBeads],
     );
 
+    const changeBox = useCallback(
+        (nextIndex) => {
+            if (factoryMode || editorSlot || trayEditorOut) return;
+            setBoxIndex(nextIndex);
+            setTrayRattle((prev) => ({
+                key: prev.key + 1,
+                ...makeTrayImpulse(nextIndex > boxIndex ? 1 : -1, 0),
+            }));
+        },
+        [factoryMode, editorSlot, trayEditorOut, boxIndex],
+    );
+
     const flyClass = [
         'kaleidoscope-maker__beadbox-fly',
         flySettled ? 'kaleidoscope-maker__beadbox-fly--settled' : '',
@@ -220,9 +304,9 @@ export function CustomizeBeadsPanel({ onBack }) {
 
     return (
         <>
-            <button type="button" className="kaleidoscope-maker__customize-back" onClick={handleCustomizeBack}>
-                back
-            </button>
+            {backInChrome || factoryMode ? null : (
+                <BackButton onClick={handleCustomizeBack} />
+            )}
             <div className="kaleidoscope-maker__customize-scene">
                 <div
                     className={`kaleidoscope-maker__bead-factory${factoryMode ? ' kaleidoscope-maker__bead-factory--visible' : ''}`}
@@ -232,26 +316,46 @@ export function CustomizeBeadsPanel({ onBack }) {
                         <BeadFactoryPanel
                             key={`${factorySlot}-${factoryNonce}`}
                             onSave={saveFactory}
-                            onCancel={closeFactory}
+                            onCancel={cancelFactory}
+                            backInChrome={backInChrome}
+                            onChromeBackChange={onChromeBackChange}
+                            onChromeForwardChange={onChromeForwardChange}
+                            onChromeTitleChange={onChromeTitleChange}
                         />
                     ) : null}
                 </div>
-                <div ref={flyRef} className={flyClass}>
-                    <div className="kaleidoscope-maker__beadbox-stack">
-                        <img src={beadboxImg} alt="" className="kaleidoscope-maker__beadbox-img" draggable={false} />
-                        <BeadTrayGrid
-                            beads={beads}
-                            visible
-                            interactive={showSlotButtons && !trayEditorOut}
-                            onAdd={openNew}
-                            onEdit={openEdit}
-                            onDelete={deleteSlot}
-                            rattleKey={trayRattle.key}
-                            rattleIx={trayRattle.ix}
-                            rattleIy={trayRattle.iy}
+                {hideTray ? null : (
+                    <div ref={flyRef} className={flyClass}>
+                        <div className="kaleidoscope-maker__beadbox-stack-rotator">
+                            <div className="kaleidoscope-maker__beadbox-stack">
+                                <img
+                                    src={beadboxImg}
+                                    alt=""
+                                    className="kaleidoscope-maker__beadbox-img"
+                                    draggable={false}
+                                />
+                                <BeadTrayGrid
+                                    key={boxIndex}
+                                    beads={beads}
+                                    slotOffset={slotOffset}
+                                    visible
+                                    interactive={showSlotButtons && !trayEditorOut}
+                                    onAdd={openNew}
+                                    onEdit={openEdit}
+                                    onDelete={deleteSlot}
+                                    rattleKey={trayRattle.key}
+                                    rattleIx={trayRattle.ix}
+                                    rattleIy={trayRattle.iy}
+                                />
+                            </div>
+                        </div>
+                        <BeadBoxPager
+                            boxIndex={boxIndex}
+                            onChange={changeBox}
+                            disabled={factoryMode || Boolean(editorSlot) || trayEditorOut}
                         />
                     </div>
-                </div>
+                )}
             </div>
             {editorSlot ? (
                 <BeadEditorModal

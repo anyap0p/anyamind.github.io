@@ -8,6 +8,11 @@
 # testing
 /coverage
 
+# diagnostic screenshots from scripts/*-screenshot*.mjs
+/km-*.png
+/hexview-*.png
+/build-*.png
+
 # production
 /build
 /dist

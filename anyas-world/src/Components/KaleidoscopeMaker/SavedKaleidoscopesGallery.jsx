@@ -1,18 +1,42 @@
 import React from 'react';
+import { BackButton } from './BackButton';
 import { SavedKaleidoscopeThumbnail } from './SavedKaleidoscopeThumbnail';
 
-export function SavedKaleidoscopesGallery({ items, onBack, onOpen }) {
+export function SavedKaleidoscopesGallery({ items, onBack, onOpen, onDelete, backInChrome = false }) {
     return (
         <div className="kaleidoscope-maker kaleidoscope-maker--gallery">
-            <button type="button" className="kaleidoscope-maker__customize-back" onClick={onBack}>
-                back
-            </button>
-            <h2 className="kaleidoscope-maker__gallery-title">saved kaleidoscopes</h2>
-            <p className="kaleidoscope-maker__gallery-hint">tap a dish to open the live kaleidoscope</p>
+            {backInChrome ? null : <BackButton onClick={onBack} />}
+            {backInChrome ? null : (
+                <h2 className="kaleidoscope-maker__gallery-title">your kaleidoscope collection</h2>
+            )}
             <div className="kaleidoscope-maker__gallery-scroll">
                 <div className="kaleidoscope-maker__gallery-grid">
                     {items.map((item) => (
-                        <SavedKaleidoscopeThumbnail key={item.id} item={item} onOpen={() => onOpen(item)} />
+                        <div key={item.id} className="kaleidoscope-maker__saved-thumb-cell" tabIndex={0}>
+                            <div className="kaleidoscope-maker__saved-thumb-frame">
+                                <SavedKaleidoscopeThumbnail item={item} />
+                            </div>
+                            <div className="kaleidoscope-maker__saved-thumb-overlay">
+                                <button
+                                    type="button"
+                                    className="kaleidoscope-maker__saved-thumb-open"
+                                    onClick={() => onOpen?.(item)}
+                                >
+                                    open
+                                </button>
+                                <button
+                                    type="button"
+                                    className="kaleidoscope-maker__saved-thumb-delete"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDelete?.(item);
+                                    }}
+                                    aria-label="Delete saved kaleidoscope"
+                                >
+                                    delete
+                                </button>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>

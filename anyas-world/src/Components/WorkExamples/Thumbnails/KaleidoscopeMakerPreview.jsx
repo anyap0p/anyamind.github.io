@@ -5,7 +5,7 @@ import KaleidoscopeThumb from '../../../Icons/kaleidoscopeMaker.svg';
 function KaleidoscopeMakerPreview({ opacityEffect }) {
     return (
         <WorkBox
-            title="kaleidoscope maker"
+            title="anya's kaleidoscope shop"
             body=""
             image={KaleidoscopeThumb}
             hoverImage={KaleidoscopeThumb}

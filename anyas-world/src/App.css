@@ -50,6 +50,13 @@
 }
 
 @font-face {
+  font-family: 'Pixel Poiiz';
+  src: url('./Fonts/pixelpoiiz.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'Palanquin';
   src: url('./Fonts/Palanquin-Regular.ttf');
   font-weight: normal;
