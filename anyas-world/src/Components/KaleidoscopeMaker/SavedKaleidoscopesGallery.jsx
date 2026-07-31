@@ -1,6 +1,7 @@
 import React from 'react';
 import { BackButton } from './BackButton';
 import { SavedKaleidoscopeThumbnail } from './SavedKaleidoscopeThumbnail';
+import { TrashCanIcon } from './slotActionIcons';
 
 export function SavedKaleidoscopesGallery({ items, onBack, onOpen, onDelete, backInChrome = false }) {
     return (
@@ -33,7 +34,7 @@ export function SavedKaleidoscopesGallery({ items, onBack, onOpen, onDelete, bac
                                     }}
                                     aria-label="Delete saved kaleidoscope"
                                 >
-                                    delete
+                                    <TrashCanIcon />
                                 </button>
                             </div>
                         </div>
